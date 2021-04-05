@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>MuckiLogPlugin Settings</title>
+        <title lang="de-DE">MuckiLogPlugin Settings</title>
+        <input-field type="bool">
+            <name>active</name>
+            <label>Active</label>
+            <label lang="de-DE">Aktiviert</label>
+        </input-field>
+        <input-field type="single-select">
+            <name>level</name>
+            <options>
+                <option>
+                    <id>fatal</id>
+                    <name>Fatal</name>
+                </option>
+                <option>
+                    <id>error</id>
+                    <name>Error</name>
+                </option>
+                <option>
+                    <id>warn</id>
+                    <name>Warn</name>
+                </option>
+                <option>
+                    <id>info</id>
+                    <name>Info</name>
+                </option>
+                <option>
+                    <id>debug</id>
+                    <name>Debug</name>
+                </option>
+            </options>
+            <label>Log Level</label>
+        </input-field>
+        <input-field type="text">
+            <name>maxbackupindex</name>
+            <label>Max Numbers of Logfiles</label>
+        </input-field>
+        <input-field type="text">
+            <name>maxfilesize</name>
+            <label>Max Logfile Size</label>
+        </input-field>
+    </card>
+</config>
