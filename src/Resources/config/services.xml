@@ -14,10 +14,11 @@
         	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
+        <service id="MuckiLogPlugin\Logging\LoggerInterface" alias="MuckiLogPlugin\Logging\Logger"/>
         <service id="MuckiLogPlugin\Subscriber\ResponseHeaderListener">
         	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
-        	<argument type="service" id="MuckiLogPlugin\Logging\Logger"/>
+        	<argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
