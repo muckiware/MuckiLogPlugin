@@ -10,6 +10,7 @@
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
+        <service id="MuckiLogPlugin\Services\LogconfigInterface" alias="MuckiLogPlugin\Services\Logconfig"/>
         <service id="MuckiLogPlugin\Logging\Logger">
         	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>

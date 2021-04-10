@@ -3,11 +3,11 @@
  * MuckiLogPlugin plugin
  *
  *
- * @category   Smoppit
- * @package    SmoppitLogger
- * @copyright  Copyright (c) 2021 by smoppit.com
+ * @category   Muckiware
+ * @package    Muckilog
+ * @copyright  Copyright (c) 2021 by Muckiware
  *
- * @author      smoppit.com
+ * @author     Muckiware
  *
  */
 
@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use MuckiLogPlugin\Services\Settings;
 use MuckiLogPlugin\log4php\Logger;
 
-class Logconfig {
+class Logconfig implements LogconfigInterface {
 
     /**
      * 
