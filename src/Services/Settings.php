@@ -3,11 +3,11 @@
  * MuckiLogPlugin plugin
  *
  *
- * @category   Smoppit
- * @package    SmoppitLogger
- * @copyright  Copyright (c) 2021 by smoppit.com
+ * @category   Muckiware
+ * @package    Muckilog
+ * @copyright  Copyright (c) 2021 by Muckiware
  *
- * @author      smoppit.com
+ * @author     Muckiware
  *
  */
 
@@ -16,7 +16,7 @@ namespace MuckiLogPlugin\Services;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class Settings {
+class Settings implements SettingsInterface {
     
     const LOGGER_PATH = '/custom/plugins/MuckiLogPlugin/src/log4php/Logger.php';
     

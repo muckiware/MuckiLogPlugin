@@ -11,8 +11,8 @@
 
 namespace MuckiLogPlugin\Logging;
 
-use MuckiLogPlugin\Services\Settings;
-use MuckiLogPlugin\Services\Logconfig;
+use MuckiLogPlugin\Services\SettingsInterface;
+use MuckiLogPlugin\Services\LogconfigInterface;
 
 /**
  * @package MuckiLogPlugin\Logging
@@ -28,20 +28,20 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 	
 	/**
 	 * 
-	 * @var Settings
+	 * @var SettingsInterface
 	 */
 	protected $_settings;
 	
 	/**
 	 * 
-	 * @var Logconfig
+	 * @var LogconfigInterface
 	 */
  	protected $_logconfig;
 
 	
 	public function __construct(
- 	    Logconfig $logconfig,
-	    Settings $settings
+ 	    LogconfigInterface $logconfig,
+	    SettingsInterface $settings
 	) {
 
  	    $this->_logconfig = $logconfig;

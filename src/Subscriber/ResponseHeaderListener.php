@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use MuckiLogPlugin\Services\Settings;
+use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface;
 
@@ -18,7 +18,7 @@ class ResponseHeaderListener implements EventSubscriberInterface {
 
     /**
      *
-     * @var Settings
+     * @var SettingsInterface
      */
     protected $_settings;
     
@@ -35,7 +35,7 @@ class ResponseHeaderListener implements EventSubscriberInterface {
 
     public function __construct(
         LogconfigInterface $logconfig,
-        Settings $settings,
+        SettingsInterface $settings,
         LoggerInterface $logger
     ) {
         $this->_logconfig = $logconfig;

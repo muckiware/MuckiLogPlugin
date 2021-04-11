@@ -3,18 +3,15 @@
  * MuckiLogPlugin plugin
  *
  *
- * @category   Smoppit
- * @package    SmoppitLogger
- * @copyright  Copyright (c) 2021 by smoppit.com
+ * @category   Muckiware
+ * @package    Muckilog
+ * @copyright  Copyright (c) 2021 by Muckiware
  *
- * @author      smoppit.com
+ * @author     Muckiware
  *
  */
 
 namespace MuckiLogPlugin\Logging;
-
-use MuckiLogPlugin\Services\Settings;
-use MuckiLogPlugin\Services\Logconfig;
 
 /**
  * @package MuckiLogPlugin\Logging

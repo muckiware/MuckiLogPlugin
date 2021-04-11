@@ -6,6 +6,7 @@
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         </service>
+        <service id="MuckiLogPlugin\Services\SettingsInterface" alias="MuckiLogPlugin\Services\Settings"/>
         <service id="MuckiLogPlugin\Services\Logconfig" public="true">
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>

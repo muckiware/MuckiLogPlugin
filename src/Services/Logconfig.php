@@ -14,7 +14,7 @@
 namespace MuckiLogPlugin\Services;
 
 use Symfony\Component\HttpKernel\KernelInterface;
-use MuckiLogPlugin\Services\Settings;
+use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\log4php\Logger;
 
 class Logconfig implements LogconfigInterface {
@@ -27,7 +27,7 @@ class Logconfig implements LogconfigInterface {
     
     /**
      * 
-     * @var Settings
+     * @var SettingsInterface
      */
     protected $_settings;
     
@@ -39,7 +39,7 @@ class Logconfig implements LogconfigInterface {
     
     public function __construct(
         KernelInterface $kernel,
-        Settings $settings
+        SettingsInterface $settings
     ) {
         $this->kernel = $kernel;
         $this->_settings = $settings;
