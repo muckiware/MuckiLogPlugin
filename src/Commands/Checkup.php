@@ -24,11 +24,13 @@ use Shopware\Core\Framework\Context;
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
+use MuckiLogPlugin\Services\LoggerServiceDecorator;
 
 class Checkup extends Command {
 
     const CONTEXT = 'acme';
     const EXTENSION = 'loggerCheck';
+    const EXTENSION_SW = 'loggerCheckSw';
 
     protected Importer $importer;
 
@@ -39,6 +41,8 @@ class Checkup extends Command {
     protected LoggerInterface $logger;
 
     protected MuckiLoggerInterface $muckilogLogger;
+
+    protected LoggerServiceDecorator $loggerServiceDecorator;
 
     /**
      * @var string
@@ -51,7 +55,8 @@ class Checkup extends Command {
         SettingsInterface $settingsInterface,
         LogconfigInterface $logconfigInterface,
         LoggerInterface $logger,
-        MuckiLoggerInterface $muckiLogger
+        MuckiLoggerInterface $muckiLogger,
+        LoggerServiceDecorator $loggerServiceDecorator
     ) {
 
         parent::__construct(self::$defaultName);
@@ -59,6 +64,7 @@ class Checkup extends Command {
         $this->_logconfig = $logconfigInterface;
         $this->muckilogLogger = $muckiLogger;
         $this->logger = $logger;
+        $this->loggerServiceDecorator = $loggerServiceDecorator;
     }
 
     /**
@@ -96,6 +102,7 @@ class Checkup extends Command {
 
         $this->removeOldFiles($output);
         $this->writeTestLogFiles($output, true);
+        $this->writeTestLogFiles($output, false);
 
         $output->writeln('Done muckilog checkup');
 
@@ -115,6 +122,12 @@ class Checkup extends Command {
         }
         if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
             unlink($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log');
+        }
+        if(file_exists($this->_settings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log')) {
+            unlink($this->_settings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log');
+        }
+        if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log')) {
+            unlink($this->_settings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log');
         }
     }
 
@@ -142,6 +155,38 @@ class Checkup extends Command {
             }
             if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
                 $output->writeln('Write '.$this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log'.' seems okay');
+            }
+        } else {
+
+            $loggingMethods = get_class_methods($this->logger);
+
+            foreach ($loggingMethods as $key => $loggingMethod) {
+
+                if($loggingMethod !== '__construct') {
+
+                    if($loggingMethod !== 'log') {
+
+                        $output->writeln($key . ' - Write ' . $loggingMethod . '. Default shopware log');
+                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod);
+
+                        $output->writeln($key . ' - Write ' . $loggingMethod . '. With context: ' . self::CONTEXT . ' extension ' . self::EXTENSION_SW);
+                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod, array(self::CONTEXT, self::EXTENSION_SW));
+
+                    } else {
+
+                        foreach ($loggingMethods as $key => $loggingLevel) {
+
+                            if($loggingLevel !== '__construct') {
+
+                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. Default shopware log');
+                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel);
+
+                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. With context: ' . self::CONTEXT . ' extension ' . self::EXTENSION_SW);
+                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel, array(self::CONTEXT, self::EXTENSION_SW));
+                            }
+                        }
+                    }
+                }
             }
         }
     }

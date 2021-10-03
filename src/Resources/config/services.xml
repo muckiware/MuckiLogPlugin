@@ -28,10 +28,15 @@
             <argument type="service" id="MuckiLogPlugin\Services\LogconfigInterface"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator"/>
             <tag name="console.command"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+        <service id="MuckiLogPlugin\Services\LoggerServiceDecorator" decorates="Psr\Log\LoggerInterface" decoration-priority="0">
+            <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator.inner" />
+            <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
         </service>
     </services>
 </container>
