@@ -153,7 +153,6 @@ class YourHeaderPageSubscriber implements EventSubscriberInterface {
 You have these kind of log levels
 
 ```php
-$this->logger->traceItem('Call HeaderPageletLoadedEvent', 'myplugin', 'vendor');
 $this->logger->debugItem('Call HeaderPageletLoadedEvent', 'myplugin', 'vendor');
 $this->logger->infoItem('Call HeaderPageletLoadedEvent', 'myplugin', 'vendor');
 $this->logger->warnItem('Call HeaderPageletLoadedEvent', 'myplugin', 'vendor');
