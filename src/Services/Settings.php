@@ -23,18 +23,18 @@ class Settings implements SettingsInterface {
     const LOGGER_CONFIG_PATH = '/custom/plugins/MuckiLogPlugin/src/Resources/config';
     
     const MAXBACKUPINDEX = 10;
-    
-    const CONVERSIONPATTERN = '%date{Y-m-d H:i:s,u} [%t] %-5p (%C) %m%n%ex';
-    
+
     const CONFIG_PATH_ACTIVE = 'MuckiLogPlugin.config.active';
     const CONFIG_PATH_LOG_LEVEL = 'MuckiLogPlugin.config.level';
     const CONFIG_PATH_MAX_BACKUP_INDEX = 'MuckiLogPlugin.config.maxbackupindex';
     const CONFIG_PATH_MAX_FILESIZE = 'MuckiLogPlugin.config.maxfilesize';
+    const CONFIG_PATH_CONVERSIONPATTERN = 'MuckiLogPlugin.config.logpattern';
     
     //Default values
     const CONFIG_PATH_LOG_LEVEL_DEFAULT = 'info';
     const CONFIG_PATH_MAX_BACKUP_INDEX_DEFAULT = '10';
     const CONFIG_PATH_MAX_FILESIZE_DEFAULT = '10MB';
+    const CONFIG_PATH_CONVERSIONPATTERN_DEFAULT = '%date{Y-m-d H:i:s,u} [%t] %-5p: %m%n%ex';
     
     const PLUGIN_ROOT_PATH = '/custom/plugins/MuckiLogPlugin/src';
     
@@ -113,6 +113,15 @@ class Settings implements SettingsInterface {
             return $this->_config->get($this::CONFIG_PATH_LOG_LEVEL);
         } else {
             return $this::CONFIG_PATH_LOG_LEVEL_DEFAULT;
+        }
+    }
+
+    public function getConversionPattern(): string {
+
+        if($this->_config->get($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
+            return $this->_config->get($this::CONFIG_PATH_CONVERSIONPATTERN);
+        } else {
+            return $this::CONFIG_PATH_CONVERSIONPATTERN_DEFAULT;
         }
     }
     

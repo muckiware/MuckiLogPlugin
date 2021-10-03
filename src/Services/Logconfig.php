@@ -23,13 +23,13 @@ class Logconfig implements LogconfigInterface {
      * 
      * @var KernelInterface
      */
-    protected $kernel;
+    protected KernelInterface $kernel;
     
     /**
      * 
      * @var SettingsInterface
      */
-    protected $_settings;
+    protected SettingsInterface $_settings;
     
     /**
      * 
@@ -182,7 +182,7 @@ class Logconfig implements LogconfigInterface {
         $attr->appendChild($dom->createTextNode('conversionPattern'));
         $nodeLayoutParam->appendChild($attr);
         $attr = $dom->createAttribute('value');
-        $attr->appendChild($dom->createTextNode(Settings::CONVERSIONPATTERN));
+        $attr->appendChild($dom->createTextNode($this->_settings->getConversionPattern()));
         $nodeLayoutParam->appendChild($attr);
         
         $attr = $dom->createAttribute('name');

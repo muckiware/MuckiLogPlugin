@@ -42,5 +42,10 @@
             <name>maxfilesize</name>
             <label>Max Logfile Size</label>
         </input-field>
+        <input-field type="text">
+            <name>logpattern</name>
+            <label>Log file pattern</label>
+            <helpText>https://logging.apache.org/log4php/docs/layouts/pattern.html</helpText>
+        </input-field>
     </card>
 </config>

@@ -23,20 +23,19 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
     /**
      * @var \MuckiLogPlugin\log4php\Logger
      */
-	
-	protected $_logger;
+	protected \MuckiLogPlugin\log4php\Logger $_logger;
 	
 	/**
 	 * 
 	 * @var SettingsInterface
 	 */
-	protected $_settings;
+	protected SettingsInterface $_settings;
 	
 	/**
 	 * 
 	 * @var LogconfigInterface
 	 */
- 	protected $_logconfig;
+ 	protected LogconfigInterface $_logconfig;
 
 	
 	public function __construct(
@@ -54,12 +53,12 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 	 * Log into debugging level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function debugItem($message, $loggerContext = '', $extensionContext = '') {
+	public function debugItem($message, $loggerContext = '', $extensionContext = ''): void {
 
 	    if($this->_settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
@@ -72,12 +71,12 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 	 * Log into fatal level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function fatalItem($message, $loggerContext = '', $extensionContext = '') {
+	public function fatalItem($message, $loggerContext = '', $extensionContext = ''): void {
 		
 	    if($this->_settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
@@ -86,34 +85,34 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 		}
 	}
 	
-	/**
-	 * Log into trace level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function traceItem($message, $loggerContext = '', $extensionContext = '') {
-		
-	    if($this->_settings->isEnabled()) {
-	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->_logger->trace($message);
-			}
-		}
-	}
+//	/**
+//	 * Log into trace level
+//	 *
+//	 * @param string $message
+//	 * @param string $loggerContext, usually name of plugin
+//	 * @param string $extensionContext, like name of plugin vendor
+//	 *
+//	 * @return void
+//	 */
+//	public function traceItem($message, $loggerContext = '', $extensionContext = ''): void {
+//
+//	    if($this->_settings->isEnabled()) {
+//	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
+//				$this->_logger->trace($message);
+//			}
+//		}
+//	}
 	
 	/**
 	 * Log into info level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function infoItem($message, $loggerContext = '', $extensionContext = '') {
+	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void {
 		
 	    if($this->_settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
@@ -126,12 +125,12 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 	 * Log into error level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function errorItem($message, $loggerContext = '', $extensionContext = '') {
+	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void {
 		
 	    if($this->_settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
@@ -144,12 +143,12 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 	 * Log into warning level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function warnItem($message, $loggerContext = '', $extensionContext = '') {
+	public function warnItem($message, $loggerContext = '', $extensionContext = ''): void {
 		
 	    if($this->_settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
@@ -157,14 +156,15 @@ class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
 			}
 		}
 	}
-	
-	/**
-	 * Method for to load a xml config file, if it already exists.
-	 *
-	 * @param string $loggerContext
-	 * @return boolean
-	 */
-	protected function _setLoggerConfig($loggerContext = '', $extensionContext = ''): bool {
+
+    /**
+     * Method for to load a xml config file, if it already exists, otherwise if will create a new config file.
+     *
+     * @param string $loggerContext
+     * @param string $extensionContext
+     * @return boolean
+     */
+	protected function _setLoggerConfig(string $loggerContext = '', string $extensionContext = ''): bool {
 		
 		if($this->_logconfig->checkConfigPath($loggerContext, $extensionContext)) {
 

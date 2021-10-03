@@ -32,5 +32,7 @@ interface SettingsInterface {
     public function getLoglevel(): string;
     
     public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string;
+
+    public function getConversionPattern(): string;
 }
 

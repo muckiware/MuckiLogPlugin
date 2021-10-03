@@ -23,7 +23,7 @@ interface LoggerInterface {
      * Log into debugging level
      *  
      * @param string $message
-     * @param string $loggerContext, usualy name of plugin
+     * @param string $loggerContext, usually name of plugin
      * @param string $extensionContext, like name of plugin vendor
      * 
      * @return void
@@ -34,29 +34,29 @@ interface LoggerInterface {
 	 * Log into fatal problems level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
 	public function fatalItem($message, $loggerContext = '', $extensionContext = '');
 	
-	/**
-	 * Log into trace level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function traceItem($message, $loggerContext = '', $extensionContext = '');
+//	/**
+//	 * Log into trace level
+//	 *
+//	 * @param string $message
+//	 * @param string $loggerContext, usually name of plugin
+//	 * @param string $extensionContext, like name of plugin vendor
+//	 *
+//	 * @return void
+//	 */
+//	public function traceItem($message, $loggerContext = '', $extensionContext = '');
 	
 	/**
 	 * Log into info level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
@@ -67,22 +67,22 @@ interface LoggerInterface {
 	 * Log in error problems level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function errorItem($message, $loggerContext = '', $extensionContext = '');
+	public function errorItem(string $message, $loggerContext = '', $extensionContext = '');
 	
 	/**
 	 * Log into warning level
 	 *
 	 * @param string $message
-	 * @param string $loggerContext, usualy name of plugin
+	 * @param string $loggerContext, usually name of plugin
 	 * @param string $extensionContext, like name of plugin vendor
 	 *
 	 * @return void
 	 */
-	public function warnItem($message, $loggerContext = '', $extensionContext = '');
+	public function warnItem(string $message, $loggerContext = '', $extensionContext = '');
 
 }
