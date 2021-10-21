@@ -36,6 +36,10 @@ class LoggerServiceDecorator implements LoggerInterface {
 
     public function emergency($message, array $context = array()) {
 
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
+
         if(!empty($context)) {
             $this->muckiLogger->fatalItem($message, $context[0], $context[1]);
         } else {
@@ -44,6 +48,10 @@ class LoggerServiceDecorator implements LoggerInterface {
     }
 
     public function alert($message, array $context = array()) {
+
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
 
         if(!empty($context)) {
             $this->muckiLogger->warnItem($message, $context[0], $context[1]);
@@ -54,6 +62,10 @@ class LoggerServiceDecorator implements LoggerInterface {
 
     public function critical($message, array $context = array()) {
 
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
+
         if(!empty($context)) {
             $this->muckiLogger->fatalItem($message, $context[0], $context[1]);
         } else {
@@ -62,6 +74,10 @@ class LoggerServiceDecorator implements LoggerInterface {
     }
 
     public function error($message, array $context = array()) {
+
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
 
         if(!empty($context)) {
             $this->muckiLogger->errorItem($message, $context[0], $context[1]);
@@ -72,6 +88,10 @@ class LoggerServiceDecorator implements LoggerInterface {
 
     public function warning($message, array $context = array()) {
 
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
+
         if(!empty($context)) {
             $this->muckiLogger->warnItem($message, $context[0], $context[1]);
         } else {
@@ -80,6 +100,10 @@ class LoggerServiceDecorator implements LoggerInterface {
     }
 
     public function notice($message, array $context = array()) {
+
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
 
         if(!empty($context)) {
             $this->muckiLogger->warnItem($message, $context[0], $context[1]);
@@ -90,6 +114,10 @@ class LoggerServiceDecorator implements LoggerInterface {
 
     public function info($message, array $context = array()) {
 
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
+
         if(!empty($context)) {
             $this->muckiLogger->infoItem($message, $context[0], $context[1]);
         } else {
@@ -99,6 +127,10 @@ class LoggerServiceDecorator implements LoggerInterface {
 
     public function debug($message, array $context = array()) {
 
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
+
         if(!empty($context)) {
             $this->muckiLogger->debugItem($message, $context[0], $context[1]);
         } else {
@@ -107,6 +139,10 @@ class LoggerServiceDecorator implements LoggerInterface {
     }
 
     public function log($level, $message, array $context = array()) {
+
+        if(!is_string($message)) {
+            $message = serialize($message);
+        }
 
         switch($level) {
 
