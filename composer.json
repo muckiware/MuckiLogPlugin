@@ -1,12 +1,17 @@
 {
 	"name" : "mucki/log-plugin",
 	"description" : "Mucki Log Plugin",
-	"version": "v2.0.0",
+	"version": "v2.0.1",
 	"type" : "shopware-platform-plugin",
 	"license" : "MIT",
+	"authors": [
+		{
+			"name": "muckiware"
+		}
+	],
 	"extra" : {
 		"shopware-plugin-class" : "MuckiLogPlugin\\MuckiLogPlugin",
-		"author" : "muckiware",
+		"copyright" : "(c) by muckiware",
 		"label" : {
 			"de-DE" : "Mucki Log Erweiterung",
 			"en-GB" : "Mucki Log Plugin"
