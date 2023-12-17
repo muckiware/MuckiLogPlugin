@@ -4,7 +4,15 @@
 This Shopware 6 Plugin creates log files by using php4log with file rotation, max file size setup, loglevels, etc. You can create for all your plugins own log fieles by context.
 like /var/log/myloginplugin.vendor.log, or /var/log/myextraplugin.vendor.log
 
-# How to use
+## Installation
+```shell
+cd <shop root folder>/custom/plugins
+git clone https://github.com/muckiware/MuckiLogPlugin.git
+<shop root folder>/bin/console plugin:install -a MuckiLogPlugin
+```
+Do not change the name of directory _MuckiLogPlugin_, please!
+
+## How to use
 To inject the logger class, you will need first the service configuration like this:
 
 ```xml
