@@ -19,6 +19,7 @@
  */
 namespace MuckiLogPlugin\log4php\configurators;
 
+use MuckiLogPlugin\log4php\LoggerConfigurator;
 use MuckiLogPlugin\log4php\LoggerAppender;
 use MuckiLogPlugin\log4php\LoggerException;
 use MuckiLogPlugin\log4php\LoggerHierarchy;
@@ -37,7 +38,7 @@ use MuckiLogPlugin\log4php\helpers\LoggerOptionConverter;
  * @version $Revision: 1394956 $
  * @since 2.2
  */
-class LoggerConfiguratorDefault implements \MuckiLogPlugin\log4php\LoggerConfigurator
+class LoggerConfiguratorDefault implements LoggerConfigurator
 {
 	/** XML configuration file format. */
 	const FORMAT_XML = 'xml';
@@ -49,14 +50,14 @@ class LoggerConfiguratorDefault implements \MuckiLogPlugin\log4php\LoggerConfigu
 	const FORMAT_INI = 'ini';
 
 	/** Defines which adapter should be used for parsing which format. */
-	private $adapters = array(
+	private array $adapters = array(
 		self::FORMAT_XML => 'MuckiLogPlugin\log4php\configurators\LoggerConfigurationAdapterXML',
 		self::FORMAT_INI => 'MuckiLogPlugin\log4php\configurators\LoggerConfigurationAdapterINI',
 		self::FORMAT_PHP => 'MuckiLogPlugin\log4php\configurators\LoggerConfigurationAdapterPHP',
 	);
 	
 	/** Default configuration; used if no configuration file is provided. */
-	private static $defaultConfiguration = array(
+	private static array $defaultConfiguration = array(
         'threshold' => 'ALL',
         'rootLogger' => array(
             'level' => 'DEBUG',
@@ -70,7 +71,7 @@ class LoggerConfiguratorDefault implements \MuckiLogPlugin\log4php\LoggerConfigu
 	);
 	
 	/** Holds the appenders before they are linked to loggers. */
-	private $appenders = array();
+	private array $appenders = array();
 	
 	/**
 	 * Configures log4php based on the given configuration. The input can 

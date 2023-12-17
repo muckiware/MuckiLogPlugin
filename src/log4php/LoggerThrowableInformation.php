@@ -18,6 +18,8 @@
  * @package log4php
  */
 namespace MuckiLogPlugin\log4php;
+
+use MuckiLogPlugin\log4php\renderers\LoggerRendererException;
 /**
  * The internal representation of throwables.
  *
@@ -27,10 +29,10 @@ namespace MuckiLogPlugin\log4php;
 class LoggerThrowableInformation {
 	
 	/** @var \Exception Throwable to log */
-	private $throwable;
+	private \Exception $throwable;
 	
 	/** @var array Array of throwable messages */
-	private $throwableArray;
+	private ?array $throwableArray = null;
 	
 	/**
 	 * Create a new instance
@@ -58,7 +60,7 @@ class LoggerThrowableInformation {
 	 */
 	public function getStringRepresentation() {
 		if (!is_array($this->throwableArray)) {
-			$renderer = new \MuckiLogPlugin\log4php\renderers\LoggerRendererException();
+			$renderer = new LoggerRendererException();
 			
 			$this->throwableArray = explode("\n", $renderer->render($this->throwable));
 		}

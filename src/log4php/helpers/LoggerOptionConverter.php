@@ -34,7 +34,7 @@ use MuckiLogPlugin\log4php\LoggerLevel;
 class LoggerOptionConverter {
 	
 	/** String values which are converted to boolean TRUE. */
-	private static $trueValues = array('1', 'true', 'yes', 'on');
+	private static array $trueValues = array('1', 'true', 'yes', 'on');
 	
 	/** 
 	 * String values which are converted to boolean FALSE.
@@ -43,7 +43,7 @@ class LoggerOptionConverter {
 	 * parse_ini_file() which is used for parsing configuration 
 	 * converts the value _false_ to an empty string.
 	 */
-	private static $falseValues = array('0', 'false', 'no', 'off', '');
+	private static array $falseValues = array('0', 'false', 'no', 'off', '');
 	
 	/**
 	 * Read a predefined var.

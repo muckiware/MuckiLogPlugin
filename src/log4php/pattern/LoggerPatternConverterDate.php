@@ -44,13 +44,13 @@ class LoggerPatternConverterDate extends LoggerPatternConverter {
 	
 	private $format = self::DATE_FORMAT_ISO8601;
 	
-	private $specials = array(
+	private array $specials = array(
 		'ISO8601' => self::DATE_FORMAT_ISO8601,
 		'ABSOLUTE' => self::DATE_FORMAT_ABSOLUTE,
 		'DATE' => self::DATE_FORMAT_DATE,
 	);
 	
-	private $useLocalDate = false;
+	private bool $useLocalDate = false;
 	
 	public function activateOptions() {
 		

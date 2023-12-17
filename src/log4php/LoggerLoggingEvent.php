@@ -36,7 +36,7 @@ class LoggerLoggingEvent {
 	/**
 	* @var Logger reference
 	*/
-	private $logger;
+	private ?Logger $logger = null;
 	
 	/** 
 	 * The category (logger) name.
@@ -60,13 +60,12 @@ class LoggerLoggingEvent {
 	private $ndc;
 	
 	/** 
-	 * Have we tried to do an NDC lookup? If we did, there is no need
-	 * to do it again.	Note that its value is always false when
-	 * serialized. Thus, a receiving SocketNode will never use it's own
-	 * (incorrect) NDC. See also writeObject method.
-	 * @var boolean
-	 */
-	private $ndcLookupRequired = true;
+  * Have we tried to do an NDC lookup? If we did, there is no need
+  * to do it again.	Note that its value is always false when
+  * serialized. Thus, a receiving SocketNode will never use it's own
+  * (incorrect) NDC. See also writeObject method.
+  */
+ private bool $ndcLookupRequired = true;
 	
 	/** 
 	 * @var mixed The application supplied message of logging event. 
@@ -97,12 +96,12 @@ class LoggerLoggingEvent {
 	/** 
 	* @var LoggerLocationInfo Location information for the caller. 
 	*/
-	private $locationInfo;
+	private ?LoggerLocationInfo $locationInfo = null;
 	
 	/**
 	 * @var LoggerThrowableInformation log4php internal representation of throwable
 	 */
-	private $throwableInfo;
+	private ?LoggerThrowableInformation $throwableInfo = null;
 	
 	/**
 	* Instantiate a LoggingEvent from the supplied parameters.

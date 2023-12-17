@@ -35,7 +35,7 @@ spl_autoload_register(array('MuckiLogPlugin\log4php\LoggerAutoloader', 'autoload
 class LoggerAutoloader {
 	
 	/** Maps classnames to files containing the class. */
-	private static $classes = array(
+	private static array $classes = array(
 	
 		// Base
 		'MuckiLogPlugin\log4php\LoggerAppender' => '/LoggerAppender.php',

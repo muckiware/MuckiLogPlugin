@@ -35,10 +35,10 @@ use MuckiLogPlugin\log4php\helpers\LoggerUtils;
 class LoggerPatternConverterLogger extends LoggerPatternConverter {
 
 	/** Length to which to shorten the name. */
-	private $length;
+	private ?int $length = null;
 	
 	/** Holds processed logger names. */
-	private $cache = array();
+	private array $cache = array();
 	
 	public function activateOptions() {
 		// Parse the option (desired output length)

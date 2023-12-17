@@ -138,12 +138,12 @@ abstract class LoggerAppender extends LoggerConfigurable {
 	}
 	
 	/**
-	 * Performs threshold checks and invokes filters before delegating logging 
-	 * to the subclass' specific <i>append()</i> method.
-	 * @see LoggerAppender::append()
-	 * @param \MuckiLogPlugin\log4php\LoggerLoggingEvent $event
-	 */
-	public function doAppend(\MuckiLogPlugin\log4php\LoggerLoggingEvent $event) {
+  * Performs threshold checks and invokes filters before delegating logging 
+  * to the subclass' specific <i>append()</i> method.
+  * @see LoggerAppender::append()
+  * @param LoggerLoggingEvent $event
+  */
+ public function doAppend(LoggerLoggingEvent $event) {
 		if($this->closed) {
 			return;
 		}
@@ -270,7 +270,7 @@ abstract class LoggerAppender extends LoggerConfigurable {
 	 * 
 	 * @param LoggerLoggingEvent $event
 	 */
-	abstract protected function append(\MuckiLogPlugin\log4php\LoggerLoggingEvent $event); 
+	abstract protected function append(LoggerLoggingEvent $event); 
 
 	/**
 	 * Releases any resources allocated by the appender.

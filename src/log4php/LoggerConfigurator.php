@@ -29,14 +29,14 @@ namespace MuckiLogPlugin\log4php;
 interface LoggerConfigurator
 {
 	/**
-	 * Configures log4php based on the given configuration. 
-	 * 
-	 * All configurators implementations must implement this interface.
-	 * 
-	 * @param \MuckiLogPlugin\log4php\LoggerHierarchy $hierarchy The hierarchy on which to perform 
-	 * 		the configuration. 
-	 * @param mixed $input Either path to the config file or the 
-	 * 		configuration as an array.
-	 */
-	public function configure(\MuckiLogPlugin\log4php\LoggerHierarchy $hierarchy, $input = null);
+  * Configures log4php based on the given configuration. 
+  * 
+  * All configurators implementations must implement this interface.
+  *
+  * @param LoggerHierarchy $hierarchy The hierarchy on which to perform 
+  * 		the configuration. 
+  * @param mixed $input Either path to the config file or the 
+  * 		configuration as an array.
+  */
+ public function configure(LoggerHierarchy $hierarchy, $input = null);
 }

@@ -18,7 +18,7 @@ use MuckiLogPlugin\Services\LogconfigInterface;
  * @package MuckiLogPlugin\Logging
  *
  */
-class Logger implements \MuckiLogPlugin\Logging\LoggerInterface {
+class Logger implements LoggerInterface {
     
     /**
      * @var \MuckiLogPlugin\log4php\Logger

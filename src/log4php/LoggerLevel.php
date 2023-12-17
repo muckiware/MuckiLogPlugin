@@ -33,20 +33,20 @@ namespace MuckiLogPlugin\log4php;
  */
 class LoggerLevel {
 	
-	const OFF = 2147483647;
+	const OFF = 2_147_483_647;
 	const FATAL = 50000;
 	const ERROR = 40000;
 	const WARN = 30000;
 	const INFO = 20000;
 	const DEBUG = 10000;
 	const TRACE = 5000;
-	const ALL = -2147483647;
+	const ALL = -2_147_483_647;
 
 	/** Integer level value. */
 	private $level;
 	
 	/** Contains a list of instantiated levels. */
-	private static $levelMap;
+	private static ?array $levelMap = null;
 
 	/** String representation of the level. */
 	private $levelStr;

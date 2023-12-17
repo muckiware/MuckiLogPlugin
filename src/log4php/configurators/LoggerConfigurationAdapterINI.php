@@ -56,7 +56,7 @@ class LoggerConfigurationAdapterINI implements LoggerConfigurationAdapter {
 	const RENDERER_PREFIX = "log4php.renderer.";
 	
 	/** Holds the configuration. */
-	private $config = array();
+	private array $config = array();
 	
 	/**
 	 * Loads and parses the INI configuration file.

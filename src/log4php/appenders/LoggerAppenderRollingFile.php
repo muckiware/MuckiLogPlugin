@@ -58,7 +58,7 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 *
 	 * @var integer
 	 */
-	protected $maxFileSize = 10485760;
+	protected $maxFileSize = 10_485_760;
 	
 	/**
 	 * Set the maximum number of backup files to keep around.
@@ -82,12 +82,11 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	protected $compress = false;
 
 	/**
-	 * Set to true in the constructor if PHP >= 5.3.0. In that case clearstatcache
-	 * supports conditional clearing of statistics.
-	 * @var boolean
-	 * @see http://php.net/manual/en/function.clearstatcache.php
-	 */
-	private $clearConditional = false;
+  * Set to true in the constructor if PHP >= 5.3.0. In that case clearstatcache
+  * supports conditional clearing of statistics.
+  * @see http://php.net/manual/en/function.clearstatcache.php
+  */
+ private bool $clearConditional = false;
 	
 	/**
 	 * Get the maximum size that the output file is allowed to reach

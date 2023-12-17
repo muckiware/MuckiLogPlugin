@@ -36,7 +36,7 @@ namespace MuckiLogPlugin\log4php;
 class LoggerMDC {
 	
 	/** Holds the context map. */
-	private static $map = array();
+	private static array $map = array();
 		
 	/**
 	 * Stores a context value as identified with the key parameter into the 

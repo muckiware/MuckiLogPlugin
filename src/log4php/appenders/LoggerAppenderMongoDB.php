@@ -169,7 +169,7 @@ class LoggerAppenderMongoDB extends LoggerAppender {
 	 */
 	protected function format(LoggerLoggingEvent $event) {
 		$timestampSec = (int) $event->getTimestamp();
-		$timestampUsec = (int) (($event->getTimestamp() - $timestampSec) * 1000000);
+		$timestampUsec = (int) (($event->getTimestamp() - $timestampSec) * 1_000_000);
 
 		$document = array(
 			'timestamp' => new MongoDate($timestampSec, $timestampUsec),

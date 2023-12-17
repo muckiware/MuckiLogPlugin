@@ -47,29 +47,28 @@ use MuckiLogPlugin\log4php\configurators\LoggerConfiguratorDefault;
 class Logger {
 	
 	/**
-	 * Logger additivity. If set to true then child loggers will inherit
-	 * the appenders of their ancestors by default.
-	 * @var boolean
-	 */
-	private $additive = true;
+  * Logger additivity. If set to true then child loggers will inherit
+  * the appenders of their ancestors by default.
+  */
+ private bool $additive = true;
 	
 	/** 
 	 * The Logger's fully qualified class name.
 	 * TODO: Determine if this is useful. 
 	 */
-	private $fqcn = 'Logger';
+	private string $fqcn = 'Logger';
 
 	/** The assigned Logger level. */
-	private $level;
+	private ?LoggerLevel $level = null;
 	
 	/** The name of this Logger instance. */
 	private $name;
 	
 	/** The parent logger. Set to null if this is the root logger. */
-	private $parent;
+	private ?\MuckiLogPlugin\log4php\Logger $parent = null;
 	
 	/** A collection of appenders linked to this logger. */
-	private $appenders = array();
+	private array $appenders = array();
 
 	/**
 	 * Constructor.
@@ -107,7 +106,7 @@ class Logger {
 	 *   in the logging event.
 	 */
 	public function trace($message, $throwable = null) {
-	    $this->log(\MuckiLogPlugin\log4php\LoggerLevel::getLevelTrace(), $message, $throwable);
+	    $this->log(LoggerLevel::getLevelTrace(), $message, $throwable);
 	} 		
 	
 	/**
@@ -118,7 +117,7 @@ class Logger {
 	 *   in the logging event.
 	 */
 	public function debug($message, $throwable = null) {
-	    $this->log(\MuckiLogPlugin\log4php\LoggerLevel::getLevelDebug(), $message, $throwable);
+	    $this->log(LoggerLevel::getLevelDebug(), $message, $throwable);
 	} 
 
 	/**
@@ -129,7 +128,7 @@ class Logger {
 	 *   in the logging event.
 	 */
 	public function info($message, $throwable = null) {
-	    $this->log(\MuckiLogPlugin\log4php\LoggerLevel::getLevelInfo(), $message, $throwable);
+	    $this->log(LoggerLevel::getLevelInfo(), $message, $throwable);
 	}
 
 	/**
@@ -140,7 +139,7 @@ class Logger {
 	 *   in the logging event.
 	 */
 	public function warn($message, $throwable = null) {
-	    $this->log(\MuckiLogPlugin\log4php\LoggerLevel::getLevelWarn(), $message, $throwable);
+	    $this->log(LoggerLevel::getLevelWarn(), $message, $throwable);
 	}
 	
 	/**
@@ -437,10 +436,10 @@ class Logger {
 	// ******************************************
 	
 	/** The logger hierarchy used by log4php. */
-	private static $hierarchy;
+	private static ?LoggerHierarchy $hierarchy = null;
 	
 	/** Inidicates if log4php has been initialized */
-	private static $initialized = false;
+	private static bool $initialized = false;
 	
 	/**
 	 * Returns the hierarchy used by this Logger.

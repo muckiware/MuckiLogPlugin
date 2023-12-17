@@ -53,7 +53,7 @@ class Logconfig implements LogconfigInterface {
         
         if(!$this->_logger) {
             require_once $this->kernel->getProjectDir().Settings::LOGGER_PATH;
-            $this->_logger = \MuckiLogPlugin\log4php\Logger::getLogger('muckilog');
+            $this->_logger = Logger::getLogger('muckilog');
         }
 
         return $this->_logger;

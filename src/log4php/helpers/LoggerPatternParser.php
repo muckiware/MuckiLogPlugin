@@ -47,16 +47,15 @@ class LoggerPatternParser {
 	private $pattern;
 	
 	/** Regex pattern used for parsing the conversion pattern. */
-	private $regex;
+	private string $regex;
 	
 	/** 
-	 * First converter in the chain. 
-	 * @var LoggerPatternConverter
-	 */
-	private $head;
+  * First converter in the chain.
+  */
+ private ?LoggerPatternConverter $head = null;
 	
 	/** Last converter in the chain. */
-	private $tail;
+	private ?LoggerPatternConverter $tail = null;
 	
 	public function __construct($pattern, $converterMap) {
 		$this->pattern = $pattern;

@@ -22,20 +22,21 @@ class LoggerServiceDecorator implements LoggerInterface {
     const DEFAULT_SW_CONTEXT = 'sw';
     const DEFAULT_SW_EXTENSION = 'dev';
 
-    private $originalLoggerSerivce;
+    private LoggerInterface $originalLoggerSerivce;
 
     protected $muckiLogger;
 
     public function __construct(
         LoggerInterface $loggerService,
         \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger
-    ) {
+    )
+    {
         $this->originalLoggerSerivce = $loggerService;
         $this->muckiLogger = $muckiLogger;
     }
 
-    public function emergency($message, array $context = array()) {
-
+    public function emergency(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -47,8 +48,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function alert($message, array $context = array()) {
-
+    public function alert(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -60,8 +61,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function critical($message, array $context = array()) {
-
+    public function critical(string|\Stringable$message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -73,8 +74,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function error($message, array $context = array()) {
-
+    public function error(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -86,8 +87,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function warning($message, array $context = array()) {
-
+    public function warning(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -99,8 +100,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function notice($message, array $context = array()) {
-
+    public function notice(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -112,8 +113,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function info($message, array $context = array()) {
-
+    public function info(string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -125,8 +126,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function debug($message, array $context = array()) {
-
+    public function debug(string|\Stringable$message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }
@@ -138,8 +139,8 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
     }
 
-    public function log($level, $message, array $context = array()) {
-
+    public function log($level, string|\Stringable $message, array $context = array()): void
+    {
         if(!is_string($message)) {
             $message = serialize($message);
         }

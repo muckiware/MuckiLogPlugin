@@ -34,7 +34,7 @@ class LoggerConfigurationAdapterXML implements LoggerConfigurationAdapter
 	/** Path to the XML schema used for validation. */
 	const SCHEMA_PATH = '/../xml/log4php.xsd';
 	
-	private $config = array(
+	private array $config = array(
 		'appenders' => array(),
 		'loggers' => array(),
 		'renderers' => array(),

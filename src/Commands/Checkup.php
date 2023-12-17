@@ -96,7 +96,7 @@ class Checkup extends Command {
      * @return int
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output): int {
 
         $output->writeln('Start muckilog checkup');
 
