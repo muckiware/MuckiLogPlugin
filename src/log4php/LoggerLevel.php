@@ -31,31 +31,31 @@ namespace MuckiLogPlugin\log4php;
  * @package log4php
  * @since 0.5
  */
-class LoggerLevel {
-	
+class LoggerLevel
+{
 	const OFF = 2_147_483_647;
-	const FATAL = 50000;
+	const CRITICAL = 50000;
 	const ERROR = 40000;
-	const WARN = 30000;
+	const WARNING = 30000;
 	const INFO = 20000;
 	const DEBUG = 10000;
 	const TRACE = 5000;
 	const ALL = -2_147_483_647;
 
 	/** Integer level value. */
-	private $level;
+	private int $level;
 	
 	/** Contains a list of instantiated levels. */
 	private static ?array $levelMap = null;
 
 	/** String representation of the level. */
-	private $levelStr;
+	private string $levelStr;
 
 	/** 
 	 * Equivalent syslog level.
 	 * @var integer
 	 */
-	private $syslogEquivalent;
+	private int $syslogEquivalent;
 
 	/**
 	 * Constructor
@@ -74,7 +74,7 @@ class LoggerLevel {
 	 * Compares two logger levels.
 	 *
 	 * @param \MuckiLogPlugin\log4php\LoggerLevel $other
-	 * @return boolean 
+	 * @return boolean
 	 */
 	public function equals($other) {
 		if($other instanceof LoggerLevel) {
@@ -101,11 +101,11 @@ class LoggerLevel {
 	 * Returns a Fatal Level
 	 * @return LoggerLevel
 	 */
-	public static function getLevelFatal() {
-		if(!isset(self::$levelMap[LoggerLevel::FATAL])) {
-			self::$levelMap[LoggerLevel::FATAL] = new LoggerLevel(LoggerLevel::FATAL, 'FATAL', LOG_ALERT);
+	public static function getLevelCritical() {
+		if(!isset(self::$levelMap[LoggerLevel::CRITICAL])) {
+			self::$levelMap[LoggerLevel::CRITICAL] = new LoggerLevel(LoggerLevel::CRITICAL, 'CRITICAL', LOG_ALERT);
 		}
-		return self::$levelMap[LoggerLevel::FATAL];
+		return self::$levelMap[LoggerLevel::CRITICAL];
 	}
 	
 	/**
@@ -123,11 +123,11 @@ class LoggerLevel {
 	 * Returns a Warn Level
 	 * @return LoggerLevel
 	 */
-	public static function getLevelWarn() {
-		if(!isset(self::$levelMap[LoggerLevel::WARN])) {
-			self::$levelMap[LoggerLevel::WARN] = new LoggerLevel(LoggerLevel::WARN, 'WARN', LOG_WARNING);
+	public static function getLevelWarning() {
+		if(!isset(self::$levelMap[LoggerLevel::WARNING])) {
+			self::$levelMap[LoggerLevel::WARNING] = new LoggerLevel(LoggerLevel::WARNING, 'WARNING', LOG_WARNING);
 		}
-		return self::$levelMap[LoggerLevel::WARN];
+		return self::$levelMap[LoggerLevel::WARNING];
 	}
 
 	/**
@@ -161,7 +161,7 @@ class LoggerLevel {
 			self::$levelMap[LoggerLevel::TRACE] = new LoggerLevel(LoggerLevel::TRACE, 'TRACE', LOG_DEBUG);
 		}
 		return self::$levelMap[LoggerLevel::TRACE];
-	}	
+	}
 
 	/**
 	 * Returns an All Level
@@ -224,7 +224,7 @@ class LoggerLevel {
 	 *
 	 * @param mixed $arg The value to convert to level.
 	 * @param LoggerLevel $default Value to return if conversion is not possible.
-	 * @return LoggerLevel 
+	 * @return LoggerLevel
 	 */
 	public static function toLevel($arg, $defaultLevel = null) {
 		if(is_int($arg)) {
@@ -233,9 +233,9 @@ class LoggerLevel {
 				case self::TRACE: return self::getLevelTrace();
 				case self::DEBUG: return self::getLevelDebug();
 				case self::INFO: return self::getLevelInfo();
-				case self::WARN: return self::getLevelWarn();
+				case self::WARNING: return self::getLevelWarning();
 				case self::ERROR: return self::getLevelError();
-				case self::FATAL: return self::getLevelFatal();
+				case self::CRITICAL: return self::getLevelCritical();
 				case self::OFF:	return self::getLevelOff();
 				default: return $defaultLevel;
 			}
@@ -245,9 +245,9 @@ class LoggerLevel {
 				case 'TRACE': return self::getLevelTrace();
 				case 'DEBUG': return self::getLevelDebug();
 				case 'INFO': return self::getLevelInfo();
-				case 'WARN': return self::getLevelWarn();
+				case 'WARNING': return self::getLevelWarning();
 				case 'ERROR': return self::getLevelError();
-				case 'FATAL': return self::getLevelFatal();
+				case 'CRITICAL': return self::getLevelCritical();
 				case 'OFF':	return self::getLevelOff();
 				default: return $defaultLevel;
 			}

@@ -26,13 +26,13 @@ class Logger implements LoggerInterface
 	protected \MuckiLogPlugin\log4php\Logger $logger;
 	
 	/**
-	 * 
+	 *
 	 * @var SettingsInterface
 	 */
 	protected SettingsInterface $settings;
 	
 	/**
-	 * 
+	 *
 	 * @var LogconfigInterface
 	 */
  	protected LogconfigInterface $logConfig;
@@ -68,7 +68,7 @@ class Logger implements LoggerInterface
 	}
 	
 	/**
-	 * Log into fatal level
+	 * Log into critical level
 	 *
 	 * @param string $message
 	 * @param string $loggerContext, usually name of plugin
@@ -76,11 +76,12 @@ class Logger implements LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function fatalItem($message, $loggerContext = '', $extensionContext = ''): void
+	public function criticalItem($message, $loggerContext = '', $extensionContext = ''): void
     {
 	    if($this->settings->isEnabled()) {
+
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->logger->fatal($message);
+				$this->logger->critical($message);
 			}
 		}
 	}
@@ -94,9 +95,10 @@ class Logger implements LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void {
-		
+	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void
+    {
 	    if($this->settings->isEnabled()) {
+
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
 				$this->logger->info($message);
 			}
@@ -115,6 +117,7 @@ class Logger implements LoggerInterface
 	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void
     {
 	    if($this->settings->isEnabled()) {
+
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
 				$this->logger->error($message);
 			}
@@ -130,14 +133,25 @@ class Logger implements LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function warnItem($message, $loggerContext = '', $extensionContext = ''): void
+	public function warningItem($message, $loggerContext = '', $extensionContext = ''): void
     {
 	    if($this->settings->isEnabled()) {
+
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->logger->warn($message);
+				$this->logger->warning($message);
 			}
 		}
 	}
+
+    public function warnItem($message, $loggerContext = '', $extensionContext = ''): void
+    {
+        if($this->settings->isEnabled()) {
+
+            if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
+                $this->logger->warning($message);
+            }
+        }
+    }
 
     /**
      * Method for to load a xml config file, if it already exists, otherwise if will create a new config file.

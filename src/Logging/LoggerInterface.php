@@ -21,14 +21,14 @@ interface LoggerInterface {
 
     /**
      * Log into debugging level
-     *  
+     *
      * @param string $message
      * @param string $loggerContext, usually name of plugin
      * @param string $extensionContext, like name of plugin vendor
-     * 
+     *
      * @return void
      */
-	public function debugItem($message, $loggerContext = '', $extensionContext = '');
+	public function debugItem($message, $loggerContext = '', $extensionContext = ''): void;
 	
 	/**
 	 * Log into fatal problems level
@@ -39,18 +39,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function fatalItem($message, $loggerContext = '', $extensionContext = '');
-	
-//	/**
-//	 * Log into trace level
-//	 *
-//	 * @param string $message
-//	 * @param string $loggerContext, usually name of plugin
-//	 * @param string $extensionContext, like name of plugin vendor
-//	 *
-//	 * @return void
-//	 */
-//	public function traceItem($message, $loggerContext = '', $extensionContext = '');
+	public function criticalItem($message, $loggerContext = '', $extensionContext = ''): void;
 	
 	/**
 	 * Log into info level
@@ -61,7 +50,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function infoItem($message, $loggerContext = '', $extensionContext = '');
+	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void;
 	
 	/**
 	 * Log in error problems level
@@ -72,7 +61,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function errorItem(string $message, $loggerContext = '', $extensionContext = '');
+	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void;
 	
 	/**
 	 * Log into warning level
@@ -83,6 +72,6 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function warnItem(string $message, $loggerContext = '', $extensionContext = '');
-
+	public function warnItem(string $message, $loggerContext = '', $extensionContext = ''): void;
+    public function warningItem($message, $loggerContext = '', $extensionContext = ''): void;
 }

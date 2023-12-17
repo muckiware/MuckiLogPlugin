@@ -42,9 +42,9 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
 
         if(!empty($context)) {
-            $this->muckiLogger->fatalItem($message, $context[0], $context[1]);
+            $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
-            $this->muckiLogger->fatalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+            $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
@@ -55,9 +55,9 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
 
         if(!empty($context)) {
-            $this->muckiLogger->warnItem($message, $context[0], $context[1]);
+            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
-            $this->muckiLogger->warnItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
@@ -68,9 +68,9 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
 
         if(!empty($context)) {
-            $this->muckiLogger->fatalItem($message, $context[0], $context[1]);
+            $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
-            $this->muckiLogger->fatalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+            $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
@@ -94,9 +94,9 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
 
         if(!empty($context)) {
-            $this->muckiLogger->warnItem($message, $context[0], $context[1]);
+            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
-            $this->muckiLogger->warnItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
@@ -107,9 +107,9 @@ class LoggerServiceDecorator implements LoggerInterface {
         }
 
         if(!empty($context)) {
-            $this->muckiLogger->warnItem($message, $context[0], $context[1]);
+            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
-            $this->muckiLogger->warnItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
@@ -167,9 +167,9 @@ class LoggerServiceDecorator implements LoggerInterface {
             case'warning':
             case 'alert':
                 if(!empty($context)) {
-                    $this->muckiLogger->warnItem($message, $context[0], $context[1]);
+                    $this->muckiLogger->warningItem($message, $context[0], $context[1]);
                 } else {
-                    $this->muckiLogger->warnItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+                    $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
                 }
                 break;
 
@@ -184,9 +184,9 @@ class LoggerServiceDecorator implements LoggerInterface {
             case 'critical':
             case 'emergency':
                 if(!empty($context)) {
-                    $this->muckiLogger->fatalItem($message, $context[0], $context[1]);
+                    $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
                 } else {
-                    $this->muckiLogger->fatalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
+                    $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
                 }
                 break;
 

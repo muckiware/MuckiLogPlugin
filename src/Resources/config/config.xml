@@ -12,16 +12,16 @@
             <name>level</name>
             <options>
                 <option>
-                    <id>fatal</id>
-                    <name>Fatal</name>
+                    <id>critical</id>
+                    <name>critical</name>
                 </option>
                 <option>
                     <id>error</id>
                     <name>Error</name>
                 </option>
                 <option>
-                    <id>warn</id>
-                    <name>Warn</name>
+                    <id>warning</id>
+                    <name>Warning</name>
                 </option>
                 <option>
                     <id>info</id>
@@ -46,6 +46,7 @@
             <name>logpattern</name>
             <label>Log file pattern</label>
             <helpText>https://logging.apache.org/log4php/docs/layouts/pattern.html</helpText>
+            <defaultValue>[%date{Y-m-d H:i:s.ssZ}] %method.%-0level: %message%n%ex</defaultValue>
         </input-field>
     </card>
 </config>

@@ -34,9 +34,9 @@ use MuckiLogPlugin\log4php\configurators\LoggerConfiguratorDefault;
  * 		<li>{@link trace()}</li>
  * 		<li>{@link debug()}</li>
  * 		<li>{@link info()}</li>
- * 		<li>{@link warn()}</li>
+ * 		<li>{@link warning()}</li>
  * 		<li>{@link error()}</li>
- * 		<li>{@link fatal()}</li>
+ * 		<li>{@link critical()}</li>
  * 	</ul>
  * 
  * @package    log4php
@@ -138,15 +138,15 @@ class Logger {
   	 * @param \Exception $throwable Optional throwable information to include 
 	 *   in the logging event.
 	 */
-	public function warn($message, $throwable = null) {
-	    $this->log(LoggerLevel::getLevelWarn(), $message, $throwable);
+	public function warning($message, $throwable = null) {
+	    $this->log(LoggerLevel::getLevelWarning(), $message, $throwable);
 	}
 	
 	/**
 	 * Log a message object with the ERROR level.
 	 *
 	 * @param mixed $message message
-	 * @param  \Exception $throwable Optional throwable information to include 
+	 * @param  \Exception $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
 	public function error($message, $throwable = null) {
@@ -154,14 +154,14 @@ class Logger {
 	}
 	
 	/**
-	 * Log a message object with the FATAL level.
+	 * Log a message object with the CRITICAL level.
 	 *
 	 * @param mixed $message message
-	 * @param \Exception $throwable Optional throwable information to include 
+	 * @param \Exception $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function fatal($message, $throwable = null) {
-		$this->log(LoggerLevel::getLevelFatal(), $message, $throwable);
+	public function critical($message, $throwable = null) {
+		$this->log(LoggerLevel::getLevelCritical(), $message, $throwable);
 	}
 
 	/**
@@ -219,20 +219,21 @@ class Logger {
 	}
 	
 	/**
-	 * This method creates a new logging event and logs the event without 
+	 * This method creates a new logging event and logs the event without
 	 * further checks.
 	 *
 	 * It should not be called directly. Use {@link trace()}, {@link debug()},
-	 * {@link info()}, {@link warn()}, {@link error()} and {@link fatal()} 
+	 * {@link info()}, {@link warn()}, {@link error()} and {@link fatal()}
 	 * wrappers.
 	 *
 	 * @param string $fqcn Fully qualified class name of the Logger
-	 * @param \Exception $throwable Optional throwable information to include 
+	 * @param \Exception $throwable Optional throwable information to include
 	 *   in the logging event.
-	 * @param LoggerLevel $level log level	   
+	 * @param LoggerLevel $level log level
 	 * @param mixed $message message to log
 	 */
-	public function forcedLog($fqcn, $throwable, LoggerLevel $level, $message) {
+	public function forcedLog($fqcn, $throwable, LoggerLevel $level, $message)
+    {
 		$event = new LoggerLoggingEvent($fqcn, $this, $level, $message, null, $throwable);
 		$this->callAppenders($event);
 		
@@ -246,7 +247,8 @@ class Logger {
 	 * Forwards the given logging event to all linked appenders.
 	 * @param LoggerLoggingEvent $event
 	 */
-	public function callAppenders($event) {
+	public function callAppenders($event)
+    {
 		foreach($this->appenders as $appender) {
 			$appender->doAppend($event);
 		}
@@ -294,15 +296,17 @@ class Logger {
 	 * Check whether this Logger is enabled for the WARN Level.
 	 * @return boolean
 	 */
-	public function isWarnEnabled() {
-		return $this->isEnabledFor(LoggerLevel::getLevelWarn());
+	public function isWarnEnabled()
+    {
+		return $this->isEnabledFor(LoggerLevel::getLevelWarning());
 	}
 	
 	/**
 	 * Check whether this Logger is enabled for the ERROR Level.
 	 * @return boolean
 	 */
-	public function isErrorEnabled() {
+	public function isErrorEnabled()
+    {
 		return $this->isEnabledFor(LoggerLevel::getLevelError());
 	}
 	
@@ -310,8 +314,9 @@ class Logger {
 	 * Check whether this Logger is enabled for the FATAL Level.
 	 * @return boolean
 	 */
-	public function isFatalEnabled() {
-		return $this->isEnabledFor(LoggerLevel::getLevelFatal());
+	public function isFatalEnabled()
+    {
+		return $this->isEnabledFor(LoggerLevel::getLevelCritical());
 	}
 	
 	// ******************************************
