@@ -18,35 +18,35 @@ use MuckiLogPlugin\Services\LogconfigInterface;
  * @package MuckiLogPlugin\Logging
  *
  */
-class Logger implements LoggerInterface {
-    
+class Logger implements LoggerInterface
+{
     /**
      * @var \MuckiLogPlugin\log4php\Logger
      */
-	protected \MuckiLogPlugin\log4php\Logger $_logger;
+	protected \MuckiLogPlugin\log4php\Logger $logger;
 	
 	/**
 	 * 
 	 * @var SettingsInterface
 	 */
-	protected SettingsInterface $_settings;
+	protected SettingsInterface $settings;
 	
 	/**
 	 * 
 	 * @var LogconfigInterface
 	 */
- 	protected LogconfigInterface $_logconfig;
+ 	protected LogconfigInterface $logConfig;
 
 	
 	public function __construct(
- 	    LogconfigInterface $logconfig,
+ 	    LogconfigInterface $logConfig,
 	    SettingsInterface $settings
 	) {
 
- 	    $this->_logconfig = $logconfig;
-	    $this->_settings = $settings;
+ 	    $this->logConfig = $logConfig;
+	    $this->settings = $settings;
 
-	    $this->_logger = $this->_logconfig->getLogger();
+	    $this->logger = $this->logConfig->getLogger();
 	}
 	
 	/**
@@ -58,11 +58,11 @@ class Logger implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function debugItem($message, $loggerContext = '', $extensionContext = ''): void {
-
-	    if($this->_settings->isEnabled()) {
+	public function debugItem($message, $loggerContext = '', $extensionContext = ''): void
+    {
+	    if($this->settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-			    $this->_logger->debug($message);
+			    $this->logger->debug($message);
 			}
 		}
 	}
@@ -76,32 +76,14 @@ class Logger implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function fatalItem($message, $loggerContext = '', $extensionContext = ''): void {
-		
-	    if($this->_settings->isEnabled()) {
+	public function fatalItem($message, $loggerContext = '', $extensionContext = ''): void
+    {
+	    if($this->settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->_logger->fatal($message);
+				$this->logger->fatal($message);
 			}
 		}
 	}
-	
-//	/**
-//	 * Log into trace level
-//	 *
-//	 * @param string $message
-//	 * @param string $loggerContext, usually name of plugin
-//	 * @param string $extensionContext, like name of plugin vendor
-//	 *
-//	 * @return void
-//	 */
-//	public function traceItem($message, $loggerContext = '', $extensionContext = ''): void {
-//
-//	    if($this->_settings->isEnabled()) {
-//	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-//				$this->_logger->trace($message);
-//			}
-//		}
-//	}
 	
 	/**
 	 * Log into info level
@@ -114,9 +96,9 @@ class Logger implements LoggerInterface {
 	 */
 	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void {
 		
-	    if($this->_settings->isEnabled()) {
+	    if($this->settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->_logger->info($message);
+				$this->logger->info($message);
 			}
 		}
 	}
@@ -130,11 +112,11 @@ class Logger implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void {
-		
-	    if($this->_settings->isEnabled()) {
+	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void
+    {
+	    if($this->settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->_logger->error($message);
+				$this->logger->error($message);
 			}
 		}
 	}
@@ -148,11 +130,11 @@ class Logger implements LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function warnItem($message, $loggerContext = '', $extensionContext = ''): void {
-		
-	    if($this->_settings->isEnabled()) {
+	public function warnItem($message, $loggerContext = '', $extensionContext = ''): void
+    {
+	    if($this->settings->isEnabled()) {
 	        if($this->_setLoggerConfig($loggerContext, $extensionContext)) {
-				$this->_logger->warn($message);
+				$this->logger->warn($message);
 			}
 		}
 	}
@@ -164,14 +146,14 @@ class Logger implements LoggerInterface {
      * @param string $extensionContext
      * @return boolean
      */
-	protected function _setLoggerConfig(string $loggerContext = '', string $extensionContext = ''): bool {
-		
-		if($this->_logconfig->checkConfigPath($loggerContext, $extensionContext)) {
+	protected function _setLoggerConfig(string $loggerContext = '', string $extensionContext = ''): bool
+    {
+		if($this->logConfig->checkConfigPath($loggerContext, $extensionContext)) {
 
-		    $this->_logger->configure($this->_settings->getConfigPath($loggerContext, $extensionContext));
+		    $this->logger->configure($this->settings->getConfigPath($loggerContext, $extensionContext));
 		    return true;
-		} else {
-		    return false;
 		}
+
+        return false;
 	}
 }
