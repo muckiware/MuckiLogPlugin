@@ -1,5 +1,15 @@
-<?php 
-
+<?php
+/**
+ * MuckiLogPlugin plugin
+ *
+ *
+ * @category   Muckiware
+ * @package    Muckilog
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @license    MIT
+ * @author     Muckiware
+ *
+ */
 
 declare(strict_types=1);
 
@@ -10,36 +20,36 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use MuckiLogPlugin\Services\SettingsInterface;
+use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface;
 
-class ResponseHeaderListener implements EventSubscriberInterface {
+class ResponseHeaderListener implements EventSubscriberInterface
+{
+    /**
+     *
+     * @var PluginSettings
+     */
+    protected PluginSettings $pluginSettings;
 
     /**
      *
-     * @var SettingsInterface
-     */
-    protected $_settings;
-    
-    /**
-     *
-     * @var LogconfigInterface
-     */
-    protected $_logconfig;
-    /**
-     * 
      * @var LoggerInterface
      */
-    protected $logger;
+    protected LoggerInterface $logger;
+
+    /**
+     * @var LogconfigInterface
+     */
+    protected LogconfigInterface $logConfig;
 
     public function __construct(
-        LogconfigInterface $logconfig,
-        SettingsInterface $settings,
+        LogconfigInterface $logConfig,
+        PluginSettings $pluginSettings,
         LoggerInterface $logger
     ) {
-        $this->_logconfig = $logconfig;
-        $this->_settings = $settings;
+        $this->logConfig = $logConfig;
+        $this->pluginSettings = $pluginSettings;
         $this->logger = $logger;
     }
 
@@ -50,12 +60,12 @@ class ResponseHeaderListener implements EventSubscriberInterface {
         ];
     }
 
-    public function onResponse(ResponseEvent $event): void {
-        
+    public function onResponse(ResponseEvent $event): void
+    {
         if($this->checkRequest($event)) {
 
             $requestContent = [];
-            
+
             try {
                 $requestContent = json_decode($event->getRequest()->getContent(), true);
             } catch (\Exception $e) {
@@ -63,50 +73,43 @@ class ResponseHeaderListener implements EventSubscriberInterface {
                 $this->logger->errorItem($e->getMessage());
             }
 
-            if(count($requestContent, COUNT_RECURSIVE) >= 1) {
-
-                if($this->checkConfigItems($requestContent)) {
-                    $this->_logconfig->removeLogConfigFiles(
-                        $this->_settings->getLogConfigPath()
-                    );
-                }
+            if(
+                count($requestContent, COUNT_RECURSIVE) >= 1 &&
+                $this->checkConfigItems($requestContent)
+            ) {
+                $this->logConfig->removeLogConfigFiles($this->pluginSettings->getLogConfigPath());
             }
         }
     }
     
-    protected function checkConfigItems(array $requestContent, string $configActive = Settings::CONFIG_PATH_ACTIVE): bool {
-        
+    protected function checkConfigItems(array $requestContent): bool
+    {
+        $configActive = PluginSettings::CONFIG_PATH_ACTIVE;
         if(array_search(1, array_column($requestContent, $configActive)) >= 0) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
     
-    protected function checkRequest(ResponseEvent $event): bool {
-        
-        if($event->getResponse()->getStatusCode() < 200) {
-            return false;
-        }
-        
-        if($event->getRequest()->getMethod() !== 'POST') {
+    protected function checkRequest(ResponseEvent $event): bool
+    {
+        if(
+            $event->getResponse()->getStatusCode() < 200 ||
+            ($event->getRequest()->getMethod() !== 'POST')
+        ) {
             return false;
         }
         
         $requestArray = explode('/', $event->getRequest()->getPathInfo(), 6);
-        
-        if(count($requestArray) === 6) {
 
-            if($requestArray[1] !== 'api') {
-                return false;
-            }
-            if($requestArray[4] !== 'system-config' && $requestArray[5] !== 'batch') {
-                return  false;
-            }
-        } else {
-            return false;
+        if(
+            in_array('api', $requestArray) &&
+            (in_array('system-config', $requestArray) ||
+            in_array('batch', $requestArray))
+        ) {
+            return true;
         }
-        
-        return true;
+
+        return false;
     }
 }
