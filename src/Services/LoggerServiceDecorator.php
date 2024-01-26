@@ -5,8 +5,8 @@
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021 by Muckiware
- *
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -17,12 +17,12 @@ use http\Message;
 use Psr\Log\LoggerInterface;
 use MuckiLogPlugin\Services\SettingsInterface;
 
-class LoggerServiceDecorator implements LoggerInterface {
-
+class LoggerServiceDecorator implements LoggerInterface
+{
     const DEFAULT_SW_CONTEXT = 'sw';
     const DEFAULT_SW_EXTENSION = 'dev';
 
-    private LoggerInterface $originalLoggerSerivce;
+    private LoggerInterface $originalLoggerService;
 
     protected $muckiLogger;
 
@@ -31,7 +31,7 @@ class LoggerServiceDecorator implements LoggerInterface {
         \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger
     )
     {
-        $this->originalLoggerSerivce = $loggerService;
+        $this->originalLoggerService = $loggerService;
         $this->muckiLogger = $muckiLogger;
     }
 
