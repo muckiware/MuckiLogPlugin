@@ -5,8 +5,8 @@
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021 by Muckiware
- *
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -20,21 +20,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Shopware\Core\Framework\Context;
-use MuckiLogPlugin\Services\SettingsInterface;
+
+use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
 use MuckiLogPlugin\Services\LoggerServiceDecorator;
 
-class Checkup extends Command {
-
+class Checkup extends Command
+{
     const CONTEXT = 'acme';
     const EXTENSION = 'loggerCheck';
     const EXTENSION_SW = 'loggerCheckSw';
 
     protected Importer $importer;
 
-    protected SettingsInterface $_settings;
+    protected PluginSettings $pluginSettings;
 
     protected LogconfigInterface $_logconfig;
 
@@ -52,15 +52,15 @@ class Checkup extends Command {
     protected ?ContainerInterface $container = null;
 
     public function __construct(
-        SettingsInterface $settingsInterface,
+        PluginSettings $pluginSettings,
         LogconfigInterface $logconfigInterface,
         LoggerInterface $logger,
         MuckiLoggerInterface $muckiLogger,
         LoggerServiceDecorator $loggerServiceDecorator
-    ) {
-
+    )
+    {
         parent::__construct(self::$defaultName);
-        $this->_settings = $settingsInterface;
+        $this->pluginSettings = $pluginSettings;
         $this->_logconfig = $logconfigInterface;
         $this->muckilogLogger = $muckiLogger;
         $this->logger = $logger;
@@ -70,22 +70,24 @@ class Checkup extends Command {
     /**
      * @param ContainerInterface $container
      */
-    public function setContainer(ContainerInterface $container) {
+    public function setContainer(ContainerInterface $container)
+    {
         $this->container = $container;
     }
 
     /**
      * @return ContainerInterface
      */
-    public function getContainer(): ContainerInterface {
+    public function getContainer(): ContainerInterface
+    {
         return $this->container;
     }
 
     /**
      * @internal
      */
-    public function configure() {
-
+    public function configure()
+    {
         $this->setDescription('This command is just for testing logging method.');
         parent::configure();
     }
@@ -96,9 +98,10 @@ class Checkup extends Command {
      * @return int
      * @throws \Exception
      */
-    public function execute(InputInterface $input, OutputInterface $output): int {
-
+    public function execute(InputInterface $input, OutputInterface $output): int
+    {
         $output->writeln('Start muckilog checkup');
+        $output->writeln('Plugin is run in '.$this->pluginSettings->getPluginInstallPath());
 
         $this->removeOldFiles($output);
         $this->writeTestLogFiles($output, true);
@@ -109,31 +112,31 @@ class Checkup extends Command {
         return 0;
     }
 
-    protected function removeOldFiles($output) {
-
-        $output->writeln('Remove log config files from '.$this->_settings->getLogConfigPath());
+    protected function removeOldFiles($output)
+    {
+        $output->writeln('Remove log config files from '.$this->pluginSettings->getLogConfigPath());
         $this->_logconfig->removeLogConfigFiles(
-            $this->_settings->getLogConfigPath()
+            $this->pluginSettings->getLogConfigPath()
         );
 
         $output->writeln('Remove old log files');
-        if(file_exists($this->_settings->getLogPath().'/muckilog.log')) {
-            unlink($this->_settings->getLogPath().'/muckilog.log');
+        if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
+            unlink($this->pluginSettings->getLogPath().'/muckilog.log');
         }
-        if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
-            unlink($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log');
+        if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
+            unlink($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log');
         }
-        if(file_exists($this->_settings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log')) {
-            unlink($this->_settings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log');
+        if(file_exists($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log')) {
+            unlink($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log');
         }
-        if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log')) {
-            unlink($this->_settings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log');
+        if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log')) {
+            unlink($this->pluginSettings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log');
         }
     }
 
-    protected function writeTestLogFiles($output, $useMuckilogger = true) {
-
-        $output->writeln('Write into path: '.$this->_settings->getLogPath());
+    protected function writeTestLogFiles($output, $useMuckilogger = true)
+    {
+        $output->writeln('Write into path: '.$this->pluginSettings->getLogPath());
 
         if($useMuckilogger) {
 
@@ -150,11 +153,11 @@ class Checkup extends Command {
                 }
             }
 
-            if(file_exists($this->_settings->getLogPath().'/muckilog.log')) {
-                $output->writeln('Write '.$this->_settings->getLogPath().'/muckilog.log'.' seems okay');
+            if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
+                $output->writeln('Write '.$this->pluginSettings->getLogPath().'/muckilog.log'.' seems okay');
             }
-            if(file_exists($this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
-                $output->writeln('Write '.$this->_settings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log'.' seems okay');
+            if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
+                $output->writeln('Write '.$this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log'.' seems okay');
             }
         } else {
 

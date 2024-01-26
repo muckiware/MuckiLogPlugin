@@ -5,8 +5,8 @@
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021 by Muckiware
- *
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -14,49 +14,48 @@
 namespace MuckiLogPlugin\Services;
 
 use Symfony\Component\HttpKernel\KernelInterface;
-use MuckiLogPlugin\Services\SettingsInterface;
+
+use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\log4php\Logger;
 
-class Logconfig implements LogconfigInterface {
-
+class Logconfig implements LogconfigInterface
+{
     /**
-     * 
+     *
      * @var KernelInterface
      */
     protected KernelInterface $kernel;
     
     /**
-     * 
-     * @var SettingsInterface
+     *
+     * @var PluginSettings
      */
-    protected SettingsInterface $_settings;
+    protected PluginSettings $pluginSettings;
     
     /**
-     * 
+     *
      * @var Logger
      */
-    protected $_logger;
+    protected ?Logger $logger;
     
     public function __construct(
         KernelInterface $kernel,
-        SettingsInterface $settings
-    ) {
+        PluginSettings $pluginSettings
+    )
+    {
         $this->kernel = $kernel;
-        $this->_settings = $settings;
+        $this->pluginSettings = $pluginSettings;
+        $this->logger = null;
     }
     
-    public function  setSettings($settings) {
-        $this->_settings = $settings;
-    }
-    
-    public function getLogger() {
-        
-        if(!$this->_logger) {
-            require_once $this->kernel->getProjectDir().Settings::LOGGER_PATH;
-            $this->_logger = Logger::getLogger('muckilog');
+    public function getLogger(): Logger
+    {
+        if(!$this->logger) {
+            require_once $this->pluginSettings->getLoggerPath();
+            $this->logger = Logger::getLogger('muckilog');
         }
 
-        return $this->_logger;
+        return $this->logger;
     }
     /**
      * Method for to load a xml config file, if it already exists.
@@ -64,9 +63,9 @@ class Logconfig implements LogconfigInterface {
      * @param string $loggerContext
      * @return boolean
      */
-    public function checkConfigPath($loggerContext = '', $extensionContext = ''): bool {
-
-        $configFilePath = $this->_settings->getConfigPath($loggerContext, $extensionContext);
+    public function checkConfigPath($loggerContext = '', $extensionContext = ''): bool
+    {
+        $configFilePath = $this->pluginSettings->getConfigPath($loggerContext, $extensionContext);
         
         if($this->_checkConfigFile($configFilePath, $loggerContext, $extensionContext)) {
             return true;
@@ -75,8 +74,8 @@ class Logconfig implements LogconfigInterface {
         }
     }
     
-    protected function _checkConfigFile($path, $loggerContext = '', $extensionContext = '') {
-        
+    protected function _checkConfigFile($path, $loggerContext = '', $extensionContext = '')
+    {
         if(file_exists($path)) {
             return true;
         } else {
@@ -96,8 +95,8 @@ class Logconfig implements LogconfigInterface {
      * @param string $loggerContext
      * @return void
      */
-    protected function _createConfigXML($configFilePath, $loggerContext = '', $extensionContext = '') {
-
+    protected function _createConfigXML($configFilePath, $loggerContext = '', $extensionContext = '')
+    {
         $dom = new \DomDocument('1.0', 'UTF-8');
         
         //add root
@@ -150,7 +149,7 @@ class Logconfig implements LogconfigInterface {
         $nodeParam1->appendChild($attr);
         $attr = $dom->createAttribute('value');
         $attr->appendChild($dom->createTextNode(
-            $this->_settings->getLoggerFileName(
+            $this->pluginSettings->getLoggerFileName(
                 $loggerContext,
                 $extensionContext
             )
@@ -161,13 +160,13 @@ class Logconfig implements LogconfigInterface {
         $attr->appendChild($dom->createTextNode('maxBackupIndex'));
         $nodeParam2->appendChild($attr);
         $attr = $dom->createAttribute('value');
-        $attr->appendChild($dom->createTextNode($this->_settings->getMaxBackupIndex()));
+        $attr->appendChild($dom->createTextNode($this->pluginSettings->getMaxBackupIndex()));
         $nodeParam2->appendChild($attr);
         $attr = $dom->createAttribute('name');
         $attr->appendChild($dom->createTextNode('maxFileSize'));
         $nodeParam3->appendChild($attr);
         $attr = $dom->createAttribute('value');
-        $attr->appendChild($dom->createTextNode($this->_settings->getMaxFileSize()));
+        $attr->appendChild($dom->createTextNode($this->pluginSettings->getMaxFileSize()));
         $nodeParam3->appendChild($attr);
         
         $attr = $dom->createAttribute('class');
@@ -182,14 +181,14 @@ class Logconfig implements LogconfigInterface {
         $attr->appendChild($dom->createTextNode('conversionPattern'));
         $nodeLayoutParam->appendChild($attr);
         $attr = $dom->createAttribute('value');
-        $attr->appendChild($dom->createTextNode($this->_settings->getConversionPattern()));
+        $attr->appendChild($dom->createTextNode($this->pluginSettings->getConversionPattern()));
         $nodeLayoutParam->appendChild($attr);
         
         $attr = $dom->createAttribute('name');
         $attr->appendChild($dom->createTextNode('levelMin'));
         $nodeFilterParam1->appendChild($attr);
         $attr = $dom->createAttribute('value');
-        $attr->appendChild($dom->createTextNode($this->_settings->getLoglevel()));
+        $attr->appendChild($dom->createTextNode($this->pluginSettings->getLoglevel()));
         $nodeFilterParam1->appendChild($attr);
         
         $attr = $dom->createAttribute('name');
@@ -217,11 +216,13 @@ class Logconfig implements LogconfigInterface {
         }
     }
     
-    public function removeLogConfigFiles($path) {
-        
+    public function removeLogConfigFiles($path)
+    {
         foreach(glob($path.'/logconfig.*') as $file) {
-            if(is_file($file))
+
+            if(is_file($file)) {
                 unlink($file);
+            }
         }
     }
 }

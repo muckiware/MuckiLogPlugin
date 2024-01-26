@@ -13,10 +13,8 @@
 
 namespace MuckiLogPlugin\Services;
 
-interface LogconfigInterface {
-
-    public function setSettings($settings);
-
+interface LogconfigInterface
+{
     /**
      * Method for to get an php4log logger object
      * 

@@ -1,12 +1,12 @@
-<?php 
+<?php
 /**
  * MuckiLogPlugin plugin
  *
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021 by Muckiware
- *
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @license    MIT
  * @author     Muckiware
  *
  */
@@ -16,11 +16,12 @@ namespace MuckiLogPlugin\Services;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class Settings implements SettingsInterface {
-    
-    const LOGGER_PATH = '/custom/plugins/MuckiLogPlugin/src/log4php/Logger.php';
-    
-    const LOGGER_CONFIG_PATH = '/custom/plugins/MuckiLogPlugin/src/Resources/config';
+class Settings implements SettingsInterface
+{
+    const LOGGER_PATH = '/log4php/Logger.php';
+
+    const LOG_PATH = '/var/log';
+    const LOGGER_CONFIG_PATH = '/Resources/config';
     
     const MAXBACKUPINDEX = 10;
 
@@ -42,41 +43,59 @@ class Settings implements SettingsInterface {
      * Absolute path to folder of log config files
      * @var string
      */
-    protected $_logConfigPath;
+    protected string $logConfigPath;
+
+    protected SystemConfigService $config;
+
+    protected KernelInterface $kernel;
 
     public function __construct(
         SystemConfigService $config,
         KernelInterface $kernel
-    ) {
-        
-        $this->_config = $config;
+    )
+    {
+        $this->config = $config;
         $this->kernel = $kernel;
+
+        $this->logConfigPath = false;
     }
     
-    public function isEnabled() {
-        return $this->_config->get($this::CONFIG_PATH_ACTIVE);
+    public function isEnabled(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_ACTIVE);
     }
 
-    public function getPluginConfig() {
-        
-        return $this->_config;
+    public function getPluginConfig()
+    {
+        return $this->config;
     }
 
-    public function getLogPath(): string {
-        return $this->kernel->getProjectDir().'/var/log';
+    public function getLogPath(): string
+    {
+        return $this->kernel->getProjectDir().$this::LOG_PATH;
+    }
+
+    public function getLoggerPath(): string
+    {
+        return dirname(__DIR__).$this::LOGGER_PATH;
+    }
+
+    public function getPluginInstallPath(): string
+    {
+        return dirname(__DIR__);
     }
     
-    public function getLogConfigPath(): string {
-        
-        if(!$this->_logConfigPath || $this->_logConfigPath === '') {
-            $this->_logConfigPath = $this->kernel->getProjectDir().$this::LOGGER_CONFIG_PATH;
+    public function getLogConfigPath(): string
+    {
+        if(!$this->logConfigPath) {
+            $this->logConfigPath = dirname(__DIR__).$this::LOGGER_CONFIG_PATH;
         }
 
-        return $this->_logConfigPath;
+        return $this->logConfigPath;
     }
     
-    public function getConfigPath($loggerContext = '', $extensionContext = ''): string {
-
+    public function getConfigPath($loggerContext = '', $extensionContext = ''): string
+    {
         switch (true) {
             case ($loggerContext !== '' && $extensionContext !== ''):
                 return $this->getLogConfigPath().'/logconfig.'.$extensionContext.'.'.$loggerContext.'.xml';
@@ -91,8 +110,8 @@ class Settings implements SettingsInterface {
     
     public function getMaxBackupIndex(): string {
 
-        if($this->_config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX) != '') {
-            return $this->_config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX);
+        if($this->config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX) != '') {
+            return $this->config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX);
         } else {
             return $this::CONFIG_PATH_MAX_BACKUP_INDEX_DEFAULT;
         }
@@ -100,8 +119,8 @@ class Settings implements SettingsInterface {
     
     public function getMaxFileSize(): string {
         
-        if($this->_config->get($this::CONFIG_PATH_MAX_FILESIZE) != '') {
-            return $this->_config->get($this::CONFIG_PATH_MAX_FILESIZE).'MB';
+        if($this->config->get($this::CONFIG_PATH_MAX_FILESIZE) != '') {
+            return $this->config->get($this::CONFIG_PATH_MAX_FILESIZE).'MB';
         } else {
             return $this::CONFIG_PATH_MAX_FILESIZE_DEFAULT;
         }
@@ -109,24 +128,24 @@ class Settings implements SettingsInterface {
     
     public function getLoglevel(): string {
         
-        if($this->_config->get($this::CONFIG_PATH_LOG_LEVEL) != '') {
-            return $this->_config->get($this::CONFIG_PATH_LOG_LEVEL);
+        if($this->config->get($this::CONFIG_PATH_LOG_LEVEL) != '') {
+            return $this->config->get($this::CONFIG_PATH_LOG_LEVEL);
         } else {
             return $this::CONFIG_PATH_LOG_LEVEL_DEFAULT;
         }
     }
 
-    public function getConversionPattern(): string {
-
-        if($this->_config->get($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
-            return $this->_config->get($this::CONFIG_PATH_CONVERSIONPATTERN);
+    public function getConversionPattern(): string
+    {
+        if($this->config->get($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
+            return $this->config->get($this::CONFIG_PATH_CONVERSIONPATTERN);
         } else {
             return $this::CONFIG_PATH_CONVERSIONPATTERN_DEFAULT;
         }
     }
     
-    public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string {
-        
+    public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string
+    {
         switch (true) {
             case ($loggerContext !== '' && $extensionContext !== ''):
                 return $this->getLogPath().'/'.$extensionContext.'.'.$loggerContext.'.log';

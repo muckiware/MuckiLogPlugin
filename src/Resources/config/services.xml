@@ -24,7 +24,7 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service class="MuckiLogPlugin\Commands\Checkup" id="wwu.muckilog.commands.checkup" public="true">
-            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
             <argument type="service" id="MuckiLogPlugin\Services\LogconfigInterface"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
