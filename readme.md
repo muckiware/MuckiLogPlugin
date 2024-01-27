@@ -6,9 +6,8 @@ like /var/log/myloginplugin.vendor.log, or /var/log/myextraplugin.vendor.log
 
 ## Installation
 ```shell
-cd <shop root folder>/custom/plugins
-git clone https://github.com/muckiware/MuckiLogPlugin.git
-<shop root folder>/bin/console plugin:install -a MuckiLogPlugin
+composer require muckiware/log-plugin
+bin/console plugin:install -a MuckiLogPlugin
 ```
 Do not change the name of directory _MuckiLogPlugin_, please!
 
