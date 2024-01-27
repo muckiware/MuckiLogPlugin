@@ -9,7 +9,6 @@ like /var/log/myloginplugin.vendor.log, or /var/log/myextraplugin.vendor.log
 composer require muckiware/log-plugin
 bin/console plugin:install -a MuckiLogPlugin
 ```
-Do not change the name of directory _MuckiLogPlugin_, please!
 
 ## How to use
 To inject the logger class, you will need first the service configuration like this:
