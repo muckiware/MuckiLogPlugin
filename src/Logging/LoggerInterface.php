@@ -5,7 +5,7 @@
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021 by Muckiware
+ * @copyright  Copyright (c) 2021-2024 by Muckiware
  *
  * @author     Muckiware
  *
@@ -17,8 +17,8 @@ namespace MuckiLogPlugin\Logging;
  * @package MuckiLogPlugin\Logging
  *
  */
-interface LoggerInterface {
-
+interface LoggerInterface
+{
     /**
      * Log into debugging level
      *
@@ -28,7 +28,7 @@ interface LoggerInterface {
      *
      * @return void
      */
-	public function debugItem($message, $loggerContext = '', $extensionContext = ''): void;
+	public function debugItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
 	
 	/**
 	 * Log into fatal problems level
@@ -39,7 +39,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function criticalItem($message, $loggerContext = '', $extensionContext = ''): void;
+	public function criticalItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
 	
 	/**
 	 * Log into info level
@@ -50,7 +50,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void;
+	public function infoItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
 	
 	/**
 	 * Log in error problems level
@@ -61,7 +61,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function errorItem(string $message, $loggerContext = '', $extensionContext = ''): void;
+	public function errorItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
 	
 	/**
 	 * Log into warning level
@@ -72,6 +72,6 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function warnItem(string $message, $loggerContext = '', $extensionContext = ''): void;
-    public function warningItem($message, $loggerContext = '', $extensionContext = ''): void;
+	public function warnItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
+    public function warningItem(mixed $message, string $loggerContext = '', string $extensionContext = ''): void;
 }

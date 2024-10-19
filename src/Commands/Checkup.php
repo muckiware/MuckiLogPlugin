@@ -2,7 +2,6 @@
 /**
  * MuckiLogPlugin plugin
  *
- *
  * @category   Muckiware
  * @package    Muckilog
  * @copyright  Copyright (c) 2021-2024 by Muckiware
@@ -32,17 +31,9 @@ class Checkup extends Command
     const EXTENSION = 'loggerCheck';
     const EXTENSION_SW = 'loggerCheckSw';
 
-    protected Importer $importer;
-
-    protected PluginSettings $pluginSettings;
-
-    protected LogconfigInterface $_logconfig;
-
-    protected LoggerInterface $logger;
+    protected LogconfigInterface $logconfig;
 
     protected MuckiLoggerInterface $muckilogLogger;
-
-    protected LoggerServiceDecorator $loggerServiceDecorator;
 
     /**
      * @var string
@@ -52,19 +43,16 @@ class Checkup extends Command
     protected ?ContainerInterface $container = null;
 
     public function __construct(
-        PluginSettings $pluginSettings,
-        LogconfigInterface $logconfigInterface,
-        LoggerInterface $logger,
-        MuckiLoggerInterface $muckiLogger,
-        LoggerServiceDecorator $loggerServiceDecorator
+        protected PluginSettings $pluginSettings,
+        protected LogconfigInterface $logconfigInterface,
+        protected LoggerInterface $logger,
+        protected MuckiLoggerInterface $muckiLogger,
+        protected LoggerServiceDecorator $loggerServiceDecorator
     )
     {
         parent::__construct(self::$defaultName);
-        $this->pluginSettings = $pluginSettings;
-        $this->_logconfig = $logconfigInterface;
+        $this->logconfig = $logconfigInterface;
         $this->muckilogLogger = $muckiLogger;
-        $this->logger = $logger;
-        $this->loggerServiceDecorator = $loggerServiceDecorator;
     }
 
     /**
@@ -115,7 +103,7 @@ class Checkup extends Command
     protected function removeOldFiles($output)
     {
         $output->writeln('Remove log config files from '.$this->pluginSettings->getLogConfigPath());
-        $this->_logconfig->removeLogConfigFiles(
+        $this->logconfig->removeLogConfigFiles(
             $this->pluginSettings->getLogConfigPath()
         );
 
@@ -147,9 +135,14 @@ class Checkup extends Command
 
                     $output->writeln($key.' - Write '.$loggingMethod.'. Default muckilog');
                     $this->muckilogLogger->{$loggingMethod}($key.' - Test log item for -> '.$loggingMethod);
+                    $this->muckilogLogger->{$loggingMethod}([$key.' - Test log array for -> '.$loggingMethod]);
 
-                    $output->writeln($key.' - Write '.$loggingMethod.'. With context: '. self::CONTEXT.' extension '.self::EXTENSION);
-                    $this->muckilogLogger->{$loggingMethod}($key.' - Test log item for -> '.$loggingMethod, self::CONTEXT, self::EXTENSION);
+                    $output->writeln(
+                        $key.' - Write '.$loggingMethod.'. With context: '. self::CONTEXT.' extension '.self::EXTENSION
+                    );
+                    $this->muckilogLogger->{$loggingMethod}(
+                        $key.' - Test log item for -> '.$loggingMethod, self::CONTEXT, self::EXTENSION
+                    );
                 }
             }
 
