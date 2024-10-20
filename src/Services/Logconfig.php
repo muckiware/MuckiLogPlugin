@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * MuckiLogPlugin plugin
+ * MuckiLogPlugin
  *
- *
- * @category   Muckiware
+ * @category   SW6 Plugin
  * @package    Muckilog
  * @copyright  Copyright (c) 2021-2024 by Muckiware
  * @license    MIT
