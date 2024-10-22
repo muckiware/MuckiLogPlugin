@@ -7,11 +7,11 @@
  * @copyright  Copyright (c) 2021-2024 by muckiware
  *
  */
-
 namespace MuckiLogPlugin\Logging;
 
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
+use MuckiLogPlugin\Services\LoggingEvent;
 
 /**
  * @package MuckiLogPlugin\Logging
@@ -27,7 +27,8 @@ class Logger implements LoggerInterface
 	
 	public function __construct(
         protected LogconfigInterface $logConfig,
-        protected SettingsInterface $settings
+        protected SettingsInterface $settings,
+        protected LoggingEvent $loggingEvent
 	) {
 	    $this->logger = $this->logConfig->getLogger();
 	}
@@ -41,13 +42,23 @@ class Logger implements LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function debugItem($message, string $loggerContext = '', string $extensionContext = ''): void
+	public function debugItem(
+        mixed $message,
+        string $loggerContext = '',
+        string $extensionContext = '',
+        bool $notififaction=false
+    ): void
     {
 	    if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->debug($this->inputMessageFilter($message));
+
+            $messageInput = $this->inputMessageFilter($message);
+            $this->logger->debug($this->inputMessageFilter($messageInput));
+            if($this->settings->isDebugNotification() || $notififaction) {
+                $this->loggingEvent->saveEvent('debug', $loggerContext, $extensionContext, $message);
+            }
 		}
 	}
-	
+
 	/**
 	 * Log into critical level
 	 *

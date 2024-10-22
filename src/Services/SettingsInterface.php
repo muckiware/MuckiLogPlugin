@@ -34,5 +34,7 @@ interface SettingsInterface {
     public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string;
 
     public function getConversionPattern(): string;
+
+    public function isDebugNotification(): bool;
 }
 

@@ -157,5 +157,10 @@ class Settings implements SettingsInterface
                 return $this->kernel->getLogDir().'/muckilog.log';
         }
     }
+
+    public function isDebugNotification(): bool
+    {
+        return true;
+    }
 }
 

@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2021-2024 by muckiware
  *
  */
-namespace MuckiLogPlugin\LoggingEvent;
+namespace MuckiLogPlugin\Core\LoggingEvent;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
