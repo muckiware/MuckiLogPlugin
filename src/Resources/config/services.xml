@@ -2,6 +2,9 @@
 
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <service id="MuckiLogPlugin\LoggingEvent\LoggingEventDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_logging_event" />
+        </service>
     	<service id="MuckiLogPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
@@ -34,7 +37,7 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
-        <service id="MuckiLogPlugin\Services\LoggerServiceDecorator" decorates="Psr\Log\LoggerInterface" decoration-priority="100">
+        <service id="MuckiLogPlugin\Services\LoggerServiceDecorator" decorates="Psr\Log\LoggerInterface" decoration-priority="10">
             <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator.inner" />
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
         </service>
