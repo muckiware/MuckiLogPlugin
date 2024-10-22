@@ -29,7 +29,7 @@ class MuckiLogPlugin extends Plugin
     {
         parent::install($installContext);
         $setup = new Setup($this->container, $installContext);
-        $setup->install();
+        $setup->install($installContext);
     }
 
     /**
@@ -43,7 +43,7 @@ class MuckiLogPlugin extends Plugin
             return;
         }
         $setup = new Setup($this->container, $uninstallContext);
-        $setup->uninstall();
+        $setup->uninstall($uninstallContext);
     }
 
     public function activate(ActivateContext $activateContext): void
@@ -64,7 +64,7 @@ class MuckiLogPlugin extends Plugin
     public function update(UpdateContext $updateContext): void
     {
         $setup = new Setup($this->container, $updateContext);
-        $setup->update();
+        $setup->update($updateContext);
     }
 
     public function postInstall(InstallContext $installContext): void

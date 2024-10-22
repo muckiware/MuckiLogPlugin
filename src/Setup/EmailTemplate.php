@@ -30,9 +30,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 class EmailTemplate
 {
-    private readonly EntityRepository $mailTemplateTypeRepository;
+    protected EntityRepository $mailTemplateTypeRepository;
 
-    private readonly EntityRepository $mailTemplateRepository;
+    protected EntityRepository $mailTemplateRepository;
 
     public function __construct(
         ContainerInterface $container,
@@ -125,38 +125,5 @@ class EmailTemplate
         }
 
         return 'Missing template content';
-    }
-
-    public function removeNotificationTemplateItems(Context $context): void
-    {
-        $mailTemplateTypeId = $this->getMailTemplateTypeIdByTechnicalName(
-            PluginDefaults::EMAIL_TEMPLATE_TECHNICAL_NAME,
-            $context
-        );
-        if($mailTemplateTypeId) {
-
-            $this->removeEmailTemplate($mailTemplateTypeId, $context);
-            $this->removeEmailTemplateType($mailTemplateTypeId, $context);
-        }
-    }
-
-    public function removeEmailTemplateType(string $mailTemplateTypeId, Context $context): void
-    {
-        $this->mailTemplateTypeRepository->delete(
-            array_values(array(array('id' => $mailTemplateTypeId))), $context
-        );
-    }
-
-    public function removeEmailTemplate(string $mailTemplateTypeId, Context $context): void
-    {
-        $templateIds = $this->getMailTemplateIdsByTemplateTypeId($mailTemplateTypeId, $context);
-        if(!empty($templateIds)) {
-
-            $templateIds = array_map(
-                static fn ($id) => [ 'id' => $id ],
-                $templateIds,
-            );
-            $this->mailTemplateRepository->delete(array_values($templateIds), $context);
-        }
     }
 }

@@ -13,37 +13,37 @@ namespace MuckiLogPlugin\Setup;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
+use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
-use MuckiLogPlugin\Setup\EmailTemplate;
 
 class Setup
 {
-    protected EmailTemplate $mailTemplateSetup;
     protected Connection $db;
 
     public function __construct(
-        ?ContainerInterface $container,
-        private readonly InstallContext $context,
+        protected ?ContainerInterface $container,
+        protected InstallContext $context,
     ) {
         if (!$container instanceof ContainerInterface) {
             throw new \Exception('Service container not available');
         }
-
-        $this->mailTemplateSetup = new EmailTemplate($container);
     }
-    public function install(): void
+    public function install(InstallContext $installContext): void
     {
-        $this->mailTemplateSetup->createEmailTemplate($this->context->getContext());
-    }
-
-    public function uninstall(): void
-    {
-        $this->mailTemplateSetup->removeNotificationTemplateItems($this->context->getContext());
+        $installMailTemplateSetup = new InstallEmailTemplate($this->container);
+        $installMailTemplateSetup->createEmailTemplate($installContext->getContext());
     }
 
-    public function update(): void
+    public function uninstall(UninstallContext $installContext): void
     {
-        $this->mailTemplateSetup->createEmailTemplate($this->context->getContext());
+        $uninstallMailTemplateSetup = new UninstallEmailTemplate($this->container);
+        $uninstallMailTemplateSetup->removeNotificationTemplateItems($installContext->getContext());
+    }
+
+    public function update(UpdateContext $installContext): void
+    {
+        $updateMailTemplateSetup = new UpdateEmailTemplate($this->container);
+        $updateMailTemplateSetup->createEmailTemplate($installContext->getContext());
     }
 }
