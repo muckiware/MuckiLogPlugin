@@ -13,8 +13,8 @@
 
 namespace MuckiLogPlugin\Services;
 
-interface SettingsInterface {
-    
+interface SettingsInterface
+{
     public function isEnabled();
 
     public function getPluginConfig();
@@ -34,7 +34,12 @@ interface SettingsInterface {
     public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string;
 
     public function getConversionPattern(): string;
-
+    public function getNotificationMailTemplateId(): ?string;
+    public function getNotificationMailAddress(): ?string;
     public function isDebugNotification(): bool;
+    public function isInfoNotification(): bool;
+    public function isWarningNotification(): bool;
+    public function isErrorNotification(): bool;
+    public function isCriticalNotification(): bool;
 }
 

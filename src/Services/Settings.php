@@ -38,7 +38,14 @@ class Settings implements SettingsInterface
     const CONFIG_PATH_CONVERSIONPATTERN_DEFAULT = '%date{Y-m-d H:i:s,u} [%t] %-5p: %m%n%ex';
     
     const PLUGIN_ROOT_PATH = '/custom/plugins/MuckiLogPlugin/src';
-    
+
+    const CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS = 'MuckiLogPlugin.config.notificationMailAddress';
+    const CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID = 'MuckiLogPlugin.config.notificationMailTemplateId';
+    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG = 'MuckiLogPlugin.config.notificationMailActiveDebug';
+    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO = 'MuckiLogPlugin.config.notificationMailActiveInfo';
+    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING = 'MuckiLogPlugin.config.notificationMailActiveWarning';
+    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR = 'MuckiLogPlugin.config.notificationMailActiveError';
+    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL = 'MuckiLogPlugin.config.notificationMailActiveCritical';
     /**
      * Absolute path to folder of log config files
      * @var string
@@ -158,9 +165,47 @@ class Settings implements SettingsInterface
         }
     }
 
+    public function getNotificationMailAddress(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS) != '') {
+            return $this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS);
+        }
+
+        return null;
+    }
+
+    public function getNotificationMailTemplateId(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID) != '') {
+            return $this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID);
+        }
+
+        return null;
+    }
+
     public function isDebugNotification(): bool
     {
-        return true;
+        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+    }
+
+    public function isInfoNotification(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+    }
+
+    public function isWarningNotification(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+    }
+
+    public function isErrorNotification(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+    }
+
+    public function isCriticalNotification(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
     }
 }
 

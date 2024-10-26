@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
-        <title>MuckiLogPlugin Settings</title>
-        <title lang="de-DE">MuckiLogPlugin Settings</title>
+        <title>MuckiLogPlugin global settings</title>
         <input-field type="bool">
             <name>active</name>
             <label>Active</label>
-            <label lang="de-DE">Aktiviert</label>
         </input-field>
         <input-field type="single-select">
             <name>level</name>
             <options>
                 <option>
                     <id>critical</id>
-                    <name>critical</name>
+                    <name>Critical</name>
                 </option>
                 <option>
                     <id>error</id>
@@ -35,6 +33,15 @@
             <label>Log Level</label>
         </input-field>
         <input-field type="text">
+            <name>logpattern</name>
+            <label>Log file pattern</label>
+            <helpText>https://logging.apache.org/log4php/docs/layouts/pattern.html</helpText>
+            <defaultValue>[%date{Y-m-d H:i:s.ssZ}] %method.%-0level: %message%n%ex</defaultValue>
+        </input-field>
+    </card>
+    <card>
+        <title>Log rotation settings</title>
+        <input-field type="text">
             <name>maxbackupindex</name>
             <label>Max Numbers of Logfiles</label>
         </input-field>
@@ -42,11 +49,37 @@
             <name>maxfilesize</name>
             <label>Max Logfile Size</label>
         </input-field>
+    </card>
+    <card>
+        <title>Log event notification settings</title>
         <input-field type="text">
-            <name>logpattern</name>
-            <label>Log file pattern</label>
-            <helpText>https://logging.apache.org/log4php/docs/layouts/pattern.html</helpText>
-            <defaultValue>[%date{Y-m-d H:i:s.ssZ}] %method.%-0level: %message%n%ex</defaultValue>
+            <name>notificationMailAddress</name>
+            <label>Notification mail address</label>
+        </input-field>
+        <component name="sw-entity-single-select">
+            <name>notificationMailTemplateId</name>
+            <entity>mail_template_type</entity>
+            <label>Notification mail template</label>
+        </component>
+        <input-field type="bool">
+            <name>notificationMailActiveDebug</name>
+            <label>Active notification mail for Debug event</label>
+        </input-field>
+        <input-field type="bool">
+            <name>notificationMailActiveInfo</name>
+            <label>Active notification mail for Info event</label>
+        </input-field>
+        <input-field type="bool">
+            <name>notificationMailActiveWarning</name>
+            <label>Active notification mail for Warning event</label>
+        </input-field>
+        <input-field type="bool">
+            <name>notificationMailActiveError</name>
+            <label>Active notification mail for Error event</label>
+        </input-field>
+        <input-field type="bool">
+            <name>notificationMailActiveCritical</name>
+            <label>Active notification mail for Critical event</label>
         </input-field>
     </card>
 </config>

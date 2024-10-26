@@ -63,7 +63,7 @@ class Logger implements LoggerInterface
                 break;
         }
 
-        if($this->settings->isDebugNotification() || $notification) {
+        if($notification) {
             $this->loggingEvent->saveEvent($logLevel, $loggerContext, $extensionContext, $messageInput);
         }
     }
@@ -85,7 +85,14 @@ class Logger implements LoggerInterface
     ): void
     {
 	    if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('debug', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'debug',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isDebugNotification() || $notification
+            );
 		}
 	}
 
@@ -106,7 +113,14 @@ class Logger implements LoggerInterface
     ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('critical', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'critical',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isCriticalNotification() || $notification
+            );
         }
 	}
 	
@@ -127,7 +141,14 @@ class Logger implements LoggerInterface
     ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('info', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'info',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isInfoNotification() || $notification
+            );
         }
 	}
 
@@ -148,7 +169,14 @@ class Logger implements LoggerInterface
     ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('error', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'error',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isErrorNotification() || $notification
+            );
         }
 	}
 
@@ -169,7 +197,14 @@ class Logger implements LoggerInterface
     ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('warning', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'warning',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isWarningNotification() || $notification
+            );
         }
 	}
 
@@ -181,7 +216,14 @@ class Logger implements LoggerInterface
     ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->executeLoggingByLogLevel('warning', $message, $loggerContext, $extensionContext);
+
+            $this->executeLoggingByLogLevel(
+                'warning',
+                $message,
+                $loggerContext,
+                $extensionContext,
+                $this->settings->isWarningNotification() || $notification
+            );
         }
     }
 
