@@ -17,4 +17,8 @@ class Defaults
     public const EMAIL_TEMPLATE_TYPE_NAME = 'Log Notification';
     public const EMAIL_TEMPLATE_DESC = 'Template for log notification events';
     public const EMAIL_TEMPLATE_SUBJECT = 'Log Notification';
+
+    const CONTEXT = 'acme';
+    const EXTENSION = 'loggerCheck';
+    const EXTENSION_SW = 'loggerCheckSw';
 }

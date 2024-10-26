@@ -20,6 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
@@ -27,14 +28,8 @@ use MuckiLogPlugin\Services\LoggerServiceDecorator;
 
 class Checkup extends Command
 {
-    const CONTEXT = 'acme';
-    const EXTENSION = 'loggerCheck';
-    const EXTENSION_SW = 'loggerCheckSw';
-
     protected LogconfigInterface $logconfig;
-
     protected MuckiLoggerInterface $muckilogLogger;
-
     /**
      * @var string
      */
@@ -111,14 +106,14 @@ class Checkup extends Command
         if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
             unlink($this->pluginSettings->getLogPath().'/muckilog.log');
         }
-        if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
-            unlink($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log');
+        if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log')) {
+            unlink($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log');
         }
         if(file_exists($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log')) {
             unlink($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log');
         }
-        if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log')) {
-            unlink($this->pluginSettings->getLogPath() . '/' . self::EXTENSION_SW . '.' . self::CONTEXT . '.log');
+        if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION_SW . '.' . PluginDefaults::CONTEXT . '.log')) {
+            unlink($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION_SW . '.' . PluginDefaults::CONTEXT . '.log');
         }
     }
 
@@ -142,10 +137,10 @@ class Checkup extends Command
                     $this->muckilogLogger->{$loggingMethod}([$key.' - Test log array for -> '.$loggingMethod]);
 
                     $output->writeln(
-                        $key.' - Write '.$loggingMethod.'. With context: '. self::CONTEXT.' extension '.self::EXTENSION
+                        $key.' - Write '.$loggingMethod.'. With context: '. PluginDefaults::CONTEXT.' extension '.PluginDefaults::EXTENSION
                     );
                     $this->muckilogLogger->{$loggingMethod}(
-                        $key.' - Test log item for -> '.$loggingMethod, self::CONTEXT, self::EXTENSION
+                        $key.' - Test log item for -> '.$loggingMethod, PluginDefaults::CONTEXT, PluginDefaults::EXTENSION
                     );
                 }
             }
@@ -153,8 +148,8 @@ class Checkup extends Command
             if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
                 $output->writeln('Write '.$this->pluginSettings->getLogPath().'/muckilog.log'.' seems okay');
             }
-            if(file_exists($this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log')) {
-                $output->writeln('Write '.$this->pluginSettings->getLogPath() . '/' . self::EXTENSION . '.' . self::CONTEXT . '.log'.' seems okay');
+            if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log')) {
+                $output->writeln('Write '.$this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log'.' seems okay');
             }
         } else {
 
@@ -169,8 +164,8 @@ class Checkup extends Command
                         $output->writeln($key . ' - Write ' . $loggingMethod . '. Default shopware log');
                         $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod);
 
-                        $output->writeln($key . ' - Write ' . $loggingMethod . '. With context: ' . self::CONTEXT . ' extension ' . self::EXTENSION_SW);
-                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod, array(self::CONTEXT, self::EXTENSION_SW));
+                        $output->writeln($key . ' - Write ' . $loggingMethod . '. With context: ' . PluginDefaults::CONTEXT . ' extension ' . PluginDefaults::EXTENSION_SW);
+                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION_SW));
 
                     } else {
 
@@ -181,8 +176,8 @@ class Checkup extends Command
                                 $output->writeln($key . ' - Write with level ' . $loggingLevel . '. Default shopware log');
                                 $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel);
 
-                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. With context: ' . self::CONTEXT . ' extension ' . self::EXTENSION_SW);
-                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel, array(self::CONTEXT, self::EXTENSION_SW));
+                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. With context: ' . PluginDefaults::CONTEXT . ' extension ' . PluginDefaults::EXTENSION_SW);
+                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION_SW));
                             }
                         }
                     }
