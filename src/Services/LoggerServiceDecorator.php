@@ -37,7 +37,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function emergency(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -46,7 +46,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function alert(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -55,7 +55,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function critical(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -64,7 +64,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function error(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->errorItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->errorItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -73,7 +73,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function warning(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -82,7 +82,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function notice(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -91,7 +91,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function info(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->infoItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->infoItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -100,19 +100,19 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function debug(mixed $message, array $context = array()): void
     {
-        if(!empty($context)) {
+        if(!empty($context) && count($context) >= 2) {
             $this->muckiLogger->debugItem($message, $context[0], $context[1]);
         } else {
             $this->muckiLogger->debugItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
         }
     }
 
-    public function log($level, string|\Stringable $message, array $context = array()): void
+    public function log($level, mixed $message, array $context=[]): void
     {
         switch($level) {
 
             case 'info':
-                if(!empty($context)) {
+                if(!empty($context) && count($context) >= 2) {
                     $this->muckiLogger->infoItem($message, $context[0], $context[1]);
                 } else {
                     $this->muckiLogger->infoItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -122,7 +122,7 @@ class LoggerServiceDecorator implements LoggerInterface
             case 'notice':
             case'warning':
             case 'alert':
-                if(!empty($context)) {
+                if(!empty($context) && count($context) >= 2) {
                     $this->muckiLogger->warningItem($message, $context[0], $context[1]);
                 } else {
                     $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -130,7 +130,7 @@ class LoggerServiceDecorator implements LoggerInterface
                 break;
 
             case 'error':
-                if(!empty($context)) {
+                if(!empty($context) && count($context) >= 2) {
                     $this->muckiLogger->errorItem($message, $context[0], $context[1]);
                 } else {
                     $this->muckiLogger->errorItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -139,7 +139,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
             case 'critical':
             case 'emergency':
-                if(!empty($context)) {
+                if(!empty($context) && count($context) >= 2) {
                     $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
                 } else {
                     $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
@@ -147,7 +147,7 @@ class LoggerServiceDecorator implements LoggerInterface
                 break;
 
             default:
-                if(!empty($context)) {
+                if(!empty($context) && count($context) >= 2) {
                     $this->muckiLogger->debugItem($message, $context[0], $context[1]);
                 } else {
                     $this->muckiLogger->debugItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
