@@ -21,4 +21,7 @@ class Defaults
     const CONTEXT = 'acme';
     const EXTENSION = 'loggerCheck';
     const EXTENSION_SW = 'loggerCheckSw';
+
+    const DEFAULT_SW_CONTEXT = 'sw';
+    const DEFAULT_SW_EXTENSION = 'dev';
 }

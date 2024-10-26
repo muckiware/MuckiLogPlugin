@@ -9,6 +9,8 @@
  */
 namespace MuckiLogPlugin\Logging;
 
+use MuckiLogPlugin\Core\LogLevel;
+use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Services\LoggingEvent;
@@ -34,224 +36,50 @@ class Logger implements LoggerInterface
 	    $this->logger = $this->logConfig->getLogger();
 	}
 
-    public function executeLoggingByLogLevel(
-        string $logLevel,
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
+    public function executeLoggingByLogLevel(LoggerSetup $loggerSetup): void
     {
-        $messageInput = $this->inputMessageFilter($message);
-
-        switch ($logLevel) {
+        switch ($loggerSetup->getLogLevel()) {
 
             default:
-                $this->logger->debug($messageInput);
+                $this->logger->debug($loggerSetup->getMessage());
                 break;
-            case 'info':
-                $this->logger->info($messageInput);
+            case LogLevel::INFO;
+                $this->logger->info($loggerSetup->getMessage());
                 break;
-            case 'warning':
-                $this->logger->warning($messageInput);
+            case LogLevel::WARNING:
+                $this->logger->warning($loggerSetup->getMessage());
                 break;
-            case 'error':
-                $this->logger->error($messageInput);
+            case LogLevel::ERROR:
+                $this->logger->error($loggerSetup->getMessage());
                 break;
-            case 'critical':
-                $this->logger->critical($messageInput);
+            case LogLevel::CRITICAL:
+                $this->logger->critical($loggerSetup->getMessage());
                 break;
         }
 
-        if($notification) {
-            $this->loggingEvent->saveEvent($logLevel, $loggerContext, $extensionContext, $messageInput);
+        if($loggerSetup->isSendNotification()) {
+            $this->loggingEvent->saveEvent($loggerSetup);
         }
     }
 
-    /**
-     * Log into debugging level
-     *
-     * @param string $message
-     * @param string $loggerContext , usually name of plugin
-     * @param string $extensionContext , like name of plugin vendor
-     * @param bool $notification
-     * @return void
-     */
-	public function debugItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
+	public function logItem(LoggerSetup $loggerSetup): void
     {
-	    if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'debug',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isDebugNotification() || $notification
-            );
+	    if($this->settings->isEnabled() && $this->setLoggerConfig($loggerSetup)) {
+            $this->executeLoggingByLogLevel($loggerSetup);
 		}
 	}
 
     /**
-     * Log into critical level
-     *
-     * @param string $message
-     * @param string $loggerContext , usually name of plugin
-     * @param string $extensionContext , like name of plugin vendor
-     * @param bool $notification
-     * @return void
-     */
-	public function criticalItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'critical',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isCriticalNotification() || $notification
-            );
-        }
-	}
-	
-	/**
-	 * Log into info level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usually name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function infoItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'info',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isInfoNotification() || $notification
-            );
-        }
-	}
-
-    /**
-     * Log into error level
-     *
-     * @param string $message
-     * @param string $loggerContext , usually name of plugin
-     * @param string $extensionContext , like name of plugin vendor
-     * @param bool $notification
-     * @return void
-     */
-	public function errorItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'error',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isErrorNotification() || $notification
-            );
-        }
-	}
-
-    /**
-     * Log into warning level
-     *
-     * @param string $message
-     * @param string $loggerContext , usually name of plugin
-     * @param string $extensionContext , like name of plugin vendor
-     * @param bool $notification
-     * @return void
-     */
-	public function warningItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'warning',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isWarningNotification() || $notification
-            );
-        }
-	}
-
-    public function warnItem(
-        mixed $message,
-        string $loggerContext='',
-        string $extensionContext='',
-        bool $notification=false
-    ): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $this->executeLoggingByLogLevel(
-                'warning',
-                $message,
-                $loggerContext,
-                $extensionContext,
-                $this->settings->isWarningNotification() || $notification
-            );
-        }
-    }
-
-    public function inputMessageFilter(mixed $message): string
-    {
-        if(is_array($message) || is_object($message)) {
-            return print_r($message, true);
-        }
-
-        if(is_int($message) || is_float($message)) {
-            return strval($message);
-        }
-
-        return $message;
-    }
-
-    /**
      * Method for to load a xml config file, if it already exists, otherwise if will create a new config file.
      *
-     * @param string $loggerContext
-     * @param string $extensionContext
+     * @param LoggerSetup $loggerSetup
      * @return boolean
      */
-	protected function setLoggerConfig(string $loggerContext = '', string $extensionContext = ''): bool
+	protected function setLoggerConfig(LoggerSetup $loggerSetup): bool
     {
-		if($this->logConfig->checkConfigPath($loggerContext, $extensionContext)) {
+		if($this->logConfig->checkConfigPath($loggerSetup->getVendor(), $loggerSetup->getPlugin())) {
 
-		    $this->logger->configure($this->settings->getConfigPath($loggerContext, $extensionContext));
+		    $this->logger->configure($this->settings->getConfigPath($loggerSetup->getVendor(), $loggerSetup->getPlugin()));
 		    return true;
 		}
 

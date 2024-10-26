@@ -28,6 +28,9 @@ class Migration1729614227 extends MigrationStep
               `plugin` VARCHAR(255) NULL,
               `loglevel` VARCHAR(255) NULL,
               `message` LONGTEXT NULL,
+              `notification_email_template_id` binary(16) NOT NULL,
+              `notification_email_receiver` varchar(255) NOT NULL,
+              `notification_email_sender` varchar(255) DEFAULT NULL,
               `created_at` DATETIME(3) NOT NULL,
                PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

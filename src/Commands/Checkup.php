@@ -12,6 +12,7 @@
 
 namespace MuckiLogPlugin\Commands;
 
+use MuckiLogPlugin\Core\LogLevel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -87,8 +88,7 @@ class Checkup extends Command
         $output->writeln('Plugin is run in '.$this->pluginSettings->getPluginInstallPath());
 
         $this->removeOldFiles($output);
-        $this->writeTestLogFiles($output, true);
-        $this->writeTestLogFiles($output, false);
+        $this->writeTestLogFiles($output);
 
         $output->writeln('Done muckilog checkup');
 
@@ -117,72 +117,31 @@ class Checkup extends Command
         }
     }
 
-    protected function writeTestLogFiles($output, $useMuckilogger = true)
+    protected function writeTestLogFiles($output)
     {
         $output->writeln('Write into path: '.$this->pluginSettings->getLogPath());
 
-        if($useMuckilogger) {
+        foreach (LogLevel::cases() as $key => $loggingMethod) {
 
-            $loggingMethods = get_class_methods($this->muckilogLogger);
-            foreach ($loggingMethods as $key => $loggingMethod) {
+            $output->writeln($key.' - Write '.$loggingMethod->value.'. Default muckilog');
 
-                if(
-                    $loggingMethod !== '__construct' &&
-                    $loggingMethod !== 'executeLoggingByLogLevel' &&
-                    $loggingMethod !== 'inputMessageFilter'
-                ) {
+            $this->logger->{$loggingMethod->value}($key.' - Test log item for -> '.$loggingMethod->value);
+            $this->logger->{$loggingMethod->value}([$key.' - Test log array for -> '.$loggingMethod->value]);
 
-                    $output->writeln($key.' - Write '.$loggingMethod.'. Default muckilog');
-                    $this->muckilogLogger->{$loggingMethod}($key.' - Test log item for -> '.$loggingMethod);
-                    $this->muckilogLogger->{$loggingMethod}([$key.' - Test log array for -> '.$loggingMethod]);
+            $output->writeln(
+                $key.' - Write '.$loggingMethod->value.'. With context: '. PluginDefaults::CONTEXT.' extension '.PluginDefaults::EXTENSION
+            );
+            $this->logger->{$loggingMethod->value}(
+                $key.' - Test log item for -> '.$loggingMethod->value, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION)
+            );
 
-                    $output->writeln(
-                        $key.' - Write '.$loggingMethod.'. With context: '. PluginDefaults::CONTEXT.' extension '.PluginDefaults::EXTENSION
-                    );
-                    $this->muckilogLogger->{$loggingMethod}(
-                        $key.' - Test log item for -> '.$loggingMethod, PluginDefaults::CONTEXT, PluginDefaults::EXTENSION
-                    );
-                }
-            }
+        }
 
-            if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
-                $output->writeln('Write '.$this->pluginSettings->getLogPath().'/muckilog.log'.' seems okay');
-            }
-            if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log')) {
-                $output->writeln('Write '.$this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log'.' seems okay');
-            }
-        } else {
-
-            $loggingMethods = get_class_methods($this->logger);
-
-            foreach ($loggingMethods as $key => $loggingMethod) {
-
-                if($loggingMethod !== '__construct') {
-
-                    if($loggingMethod !== 'log') {
-
-                        $output->writeln($key . ' - Write ' . $loggingMethod . '. Default shopware log');
-                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod);
-
-                        $output->writeln($key . ' - Write ' . $loggingMethod . '. With context: ' . PluginDefaults::CONTEXT . ' extension ' . PluginDefaults::EXTENSION_SW);
-                        $this->logger->{$loggingMethod}($key . ' - Test log item for -> ' . $loggingMethod, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION_SW));
-
-                    } else {
-
-                        foreach ($loggingMethods as $key => $loggingLevel) {
-
-                            if($loggingLevel !== '__construct') {
-
-                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. Default shopware log');
-                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel);
-
-                                $output->writeln($key . ' - Write with level ' . $loggingLevel . '. With context: ' . PluginDefaults::CONTEXT . ' extension ' . PluginDefaults::EXTENSION_SW);
-                                $this->logger->log($loggingLevel, $key . ' - Test log item with log parameter -> ' . $loggingLevel, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION_SW));
-                            }
-                        }
-                    }
-                }
-            }
+        if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {
+            $output->writeln('Write '.$this->pluginSettings->getLogPath().'/muckilog.log'.' seems okay');
+        }
+        if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log')) {
+            $output->writeln('Write '.$this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log'.' seems okay');
         }
     }
 }

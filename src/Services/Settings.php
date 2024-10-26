@@ -16,6 +16,8 @@ namespace MuckiLogPlugin\Services;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+use MuckiLogPlugin\Core\LogLevel;
+
 class Settings implements SettingsInterface
 {
     const LOGGER_PATH = '/log4php/Logger.php';
@@ -206,6 +208,25 @@ class Settings implements SettingsInterface
     public function isCriticalNotification(): bool
     {
         return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+    }
+
+    public function needNotificationByLogLevel(LogLevel $logLevel): bool
+    {
+        switch ($logLevel) {
+
+            case LogLevel::DEBUG:
+                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+            case LogLevel::INFO:
+                return$this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+            case LogLevel::WARNING:
+                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+            case LogLevel::ERROR:
+                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+            case LogLevel::CRITICAL:
+                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+        }
+
+        return false;
     }
 }
 

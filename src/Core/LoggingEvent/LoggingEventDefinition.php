@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\EmailField;
 
 class LoggingEventDefinition extends EntityDefinition
 {
@@ -47,6 +48,9 @@ class LoggingEventDefinition extends EntityDefinition
             (new StringField('plugin', 'plugin')),
             (new StringField('loglevel', 'loglevel')),
             (new LongTextField('message', 'message'))->addFlags(new ApiAware(), new AllowHtml()),
+            (new IdField('notification_email_template_id', 'notificationEmailTemplateId'))->addFlags(new ApiAware(), new Required()),
+            (new EmailField('notification_email_receiver', 'notificationEmailReceiver'))->addFlags(new ApiAware(), new Required()),
+            (new EmailField('notification_email_sender', 'notificationEmailSender'))->addFlags(new ApiAware()),
             new CreatedAtField()
         ]);
     }

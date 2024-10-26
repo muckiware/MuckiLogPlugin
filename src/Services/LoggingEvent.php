@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * MuckiLogPlugin plugin
  *
@@ -13,6 +13,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Uuid\Uuid;
 
+use MuckiLogPlugin\Entity\LoggerSetup;
+
 class LoggingEvent
 {
     public function __construct(
@@ -20,15 +22,18 @@ class LoggingEvent
     )
     {}
 
-    public function saveEvent(string $loglevel, string $vendor, string $plugin, string $message): void
+    public function saveEvent(LoggerSetup $loggerSetup): void
     {
         $this->loggingEventRepository->create([
             [
                 'id' => Uuid::randomHex(),
-                'vendor' => $vendor,
-                'plugin' => $plugin,
-                'loglevel' => $loglevel,
-                'message' => $message,
+                'vendor' => $loggerSetup->getVendor(),
+                'plugin' => $loggerSetup->getPlugin(),
+                'loglevel' => $loggerSetup->getLoglevel(),
+                'message' => $loggerSetup->getMessage(),
+                'notificationEmailTemplateId' => $loggerSetup->getNotificationEmailTemplateId(),
+                'notificationEmailReceiver' => $loggerSetup->getNotificationEmailReceiver(),
+                'notificationEmailSender' => $loggerSetup->getNotificationEmailSender(),
                 'created_at' => new \DateTime('now', new \DateTimeZone('UTC'))
             ],
         ], Context::createDefaultContext());

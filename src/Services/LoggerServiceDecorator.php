@@ -15,7 +15,11 @@ namespace MuckiLogPlugin\Services;
 
 use http\Message;
 use Psr\Log\LoggerInterface;
-use MuckiLogPlugin\Services\SettingsInterface;
+
+use MuckiLogPlugin\Core\Defaults;
+use MuckiLogPlugin\Services\SettingsInterface as PluginSettings;
+use MuckiLogPlugin\Core\LogLevel;
+use MuckiLogPlugin\Entity\LoggerSetup;
 
 class LoggerServiceDecorator implements LoggerInterface
 {
@@ -28,7 +32,8 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function __construct(
         LoggerInterface $loggerService,
-        \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger
+        \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger,
+        protected PluginSettings $pluginSettings
     )
     {
         $this->originalLoggerService = $loggerService;
@@ -37,122 +42,84 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function emergency(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::CRITICAL, $message, $context));
     }
 
     public function alert(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::WARNING, $message, $context));
     }
 
     public function critical(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::CRITICAL, $message, $context));
     }
 
     public function error(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->errorItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->errorItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::ERROR, $message, $context));
     }
 
     public function warning(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::WARNING, $message, $context));
     }
 
     public function notice(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->warningItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::INFO, $message, $context));
     }
 
     public function info(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->infoItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->infoItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::INFO, $message, $context));
     }
 
     public function debug(mixed $message, array $context = array()): void
     {
-        if(!empty($context) && count($context) >= 2) {
-            $this->muckiLogger->debugItem($message, $context[0], $context[1]);
-        } else {
-            $this->muckiLogger->debugItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-        }
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::DEBUG, $message, $context));
     }
 
     public function log($level, mixed $message, array $context=[]): void
     {
-        switch($level) {
+        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::DEBUG, $message, $context));
+    }
 
-            case 'info':
-                if(!empty($context) && count($context) >= 2) {
-                    $this->muckiLogger->infoItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->infoItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
+    public function getLoggerSetup(LogLevel $logLevel, mixed $message, array $context=[]): LoggerSetup
+    {
+        $loggerSetup = new LoggerSetup();
+        $loggerSetup->setLogLevel($logLevel->value);
+        $loggerSetup->setMessage($this->inputMessageFilter($message));
 
-            case 'notice':
-            case'warning':
-            case 'alert':
-                if(!empty($context) && count($context) >= 2) {
-                    $this->muckiLogger->warningItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->warningItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
+        if(!empty($context) && count($context) >= 2) {
 
-            case 'error':
-                if(!empty($context) && count($context) >= 2) {
-                    $this->muckiLogger->errorItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->errorItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
+            $loggerSetup->setVendor($context[0]);
+            $loggerSetup->setPlugin($context[1]);
+        } else {
 
-            case 'critical':
-            case 'emergency':
-                if(!empty($context) && count($context) >= 2) {
-                    $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->criticalItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
-
-            default:
-                if(!empty($context) && count($context) >= 2) {
-                    $this->muckiLogger->debugItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->debugItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
+            $loggerSetup->setVendor(Defaults::DEFAULT_SW_CONTEXT);
+            $loggerSetup->setPlugin(Defaults::DEFAULT_SW_EXTENSION);
         }
+
+        $loggerSetup->setNotificationEmailTemplateId('0192b52625b073278270081899140df7');
+        $loggerSetup->setNotificationEmailSender('freyda@muster.com');
+        $loggerSetup->setNotificationEmailReceiver('torsten@muster.com');
+
+        $loggerSetup->setSendNotification($this->pluginSettings->needNotificationByLogLevel($logLevel));
+
+        return $loggerSetup;
+    }
+
+    public function inputMessageFilter(mixed $message): string
+    {
+        if(is_array($message) || is_object($message)) {
+            return print_r($message, true);
+        }
+
+        if(is_int($message) || is_float($message)) {
+            return strval($message);
+        }
+
+        return $message;
     }
 }

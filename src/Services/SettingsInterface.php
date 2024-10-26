@@ -13,6 +13,8 @@
 
 namespace MuckiLogPlugin\Services;
 
+use MuckiLogPlugin\Core\LogLevel;
+
 interface SettingsInterface
 {
     public function isEnabled();
@@ -41,5 +43,7 @@ interface SettingsInterface
     public function isWarningNotification(): bool;
     public function isErrorNotification(): bool;
     public function isCriticalNotification(): bool;
+
+    public function needNotificationByLogLevel(LogLevel $logLevel): bool;
 }
 
