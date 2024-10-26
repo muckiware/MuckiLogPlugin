@@ -12,6 +12,7 @@ namespace MuckiLogPlugin\Logging;
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Services\LoggingEvent;
+use MuckiLogPlugin\log4php\Logger as Log4phpLogger;
 
 /**
  * @package MuckiLogPlugin\Logging
@@ -20,9 +21,9 @@ use MuckiLogPlugin\Services\LoggingEvent;
 class Logger implements LoggerInterface
 {
     /**
-     * @var \MuckiLogPlugin\log4php\Logger
+     * @var Log4phpLogger
      */
-	protected \MuckiLogPlugin\log4php\Logger $logger;
+	protected Log4phpLogger $logger;
 
 	
 	public function __construct(
@@ -32,47 +33,81 @@ class Logger implements LoggerInterface
 	) {
 	    $this->logger = $this->logConfig->getLogger();
 	}
-	
-	/**
-	 * Log into debugging level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usually name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
+
+    public function executeLoggingByLogLevel(
+        string $logLevel,
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
+    {
+        $messageInput = $this->inputMessageFilter($message);
+
+        switch ($logLevel) {
+
+            default:
+                $this->logger->debug($messageInput);
+                break;
+            case 'info':
+                $this->logger->info($messageInput);
+                break;
+            case 'warning':
+                $this->logger->warning($messageInput);
+                break;
+            case 'error':
+                $this->logger->error($messageInput);
+                break;
+            case 'critical':
+                $this->logger->critical($messageInput);
+                break;
+        }
+
+        if($this->settings->isDebugNotification() || $notification) {
+            $this->loggingEvent->saveEvent($logLevel, $loggerContext, $extensionContext, $messageInput);
+        }
+    }
+
+    /**
+     * Log into debugging level
+     *
+     * @param string $message
+     * @param string $loggerContext , usually name of plugin
+     * @param string $extensionContext , like name of plugin vendor
+     * @param bool $notification
+     * @return void
+     */
 	public function debugItem(
         mixed $message,
-        string $loggerContext = '',
-        string $extensionContext = '',
-        bool $notififaction=false
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
     ): void
     {
 	    if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-
-            $messageInput = $this->inputMessageFilter($message);
-            $this->logger->debug($this->inputMessageFilter($messageInput));
-            if($this->settings->isDebugNotification() || $notififaction) {
-                $this->loggingEvent->saveEvent('debug', $loggerContext, $extensionContext, $message);
-            }
+            $this->executeLoggingByLogLevel('debug', $message, $loggerContext, $extensionContext);
 		}
 	}
 
-	/**
-	 * Log into critical level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usually name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function criticalItem($message, $loggerContext = '', $extensionContext = ''): void
+    /**
+     * Log into critical level
+     *
+     * @param string $message
+     * @param string $loggerContext , usually name of plugin
+     * @param string $extensionContext , like name of plugin vendor
+     * @param bool $notification
+     * @return void
+     */
+	public function criticalItem(
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->critical($this->inputMessageFilter($message));
-		}
+            $this->executeLoggingByLogLevel('critical', $message, $loggerContext, $extensionContext);
+        }
 	}
 	
 	/**
@@ -84,53 +119,73 @@ class Logger implements LoggerInterface
 	 *
 	 * @return void
 	 */
-	public function infoItem($message, $loggerContext = '', $extensionContext = ''): void
+	public function infoItem(
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->info($this->inputMessageFilter($message));
-		}
-	}
-	
-	/**
-	 * Log into error level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usually name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function errorItem(mixed $message, $loggerContext = '', $extensionContext = ''): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->error($this->inputMessageFilter($message));
-		}
-	}
-	
-	/**
-	 * Log into warning level
-	 *
-	 * @param string $message
-	 * @param string $loggerContext, usually name of plugin
-	 * @param string $extensionContext, like name of plugin vendor
-	 *
-	 * @return void
-	 */
-	public function warningItem(mixed $message, $loggerContext = '', $extensionContext = ''): void
-    {
-        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->warning($this->inputMessageFilter($message));
-		}
+            $this->executeLoggingByLogLevel('info', $message, $loggerContext, $extensionContext);
+        }
 	}
 
-    public function warnItem(mixed $message, $loggerContext = '', $extensionContext = ''): void
+    /**
+     * Log into error level
+     *
+     * @param string $message
+     * @param string $loggerContext , usually name of plugin
+     * @param string $extensionContext , like name of plugin vendor
+     * @param bool $notification
+     * @return void
+     */
+	public function errorItem(
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
     {
         if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
-            $this->logger->warning($this->inputMessageFilter($message));
+            $this->executeLoggingByLogLevel('error', $message, $loggerContext, $extensionContext);
+        }
+	}
+
+    /**
+     * Log into warning level
+     *
+     * @param string $message
+     * @param string $loggerContext , usually name of plugin
+     * @param string $extensionContext , like name of plugin vendor
+     * @param bool $notification
+     * @return void
+     */
+	public function warningItem(
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
+    {
+        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
+            $this->executeLoggingByLogLevel('warning', $message, $loggerContext, $extensionContext);
+        }
+	}
+
+    public function warnItem(
+        mixed $message,
+        string $loggerContext='',
+        string $extensionContext='',
+        bool $notification=false
+    ): void
+    {
+        if($this->settings->isEnabled() && $this->setLoggerConfig($loggerContext, $extensionContext)) {
+            $this->executeLoggingByLogLevel('warning', $message, $loggerContext, $extensionContext);
         }
     }
 
-    public function inputMessageFilter(mixed $message)
+    public function inputMessageFilter(mixed $message): string
     {
         if(is_array($message) || is_object($message)) {
             return print_r($message, true);

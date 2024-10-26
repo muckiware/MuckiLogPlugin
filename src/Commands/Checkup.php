@@ -131,7 +131,11 @@ class Checkup extends Command
             $loggingMethods = get_class_methods($this->muckilogLogger);
             foreach ($loggingMethods as $key => $loggingMethod) {
 
-                if($loggingMethod !== '__construct') {
+                if(
+                    $loggingMethod !== '__construct' &&
+                    $loggingMethod !== 'executeLoggingByLogLevel' &&
+                    $loggingMethod !== 'inputMessageFilter'
+                ) {
 
                     $output->writeln($key.' - Write '.$loggingMethod.'. Default muckilog');
                     $this->muckilogLogger->{$loggingMethod}($key.' - Test log item for -> '.$loggingMethod);

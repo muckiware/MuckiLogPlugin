@@ -35,12 +35,8 @@ class LoggerServiceDecorator implements LoggerInterface
         $this->muckiLogger = $muckiLogger;
     }
 
-    public function emergency(string|\Stringable $message, array $context = array()): void
+    public function emergency(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
@@ -48,12 +44,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function alert(string|\Stringable $message, array $context = array()): void
+    public function alert(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
@@ -61,12 +53,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function critical(string|\Stringable$message, array $context = array()): void
+    public function critical(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->criticalItem($message, $context[0], $context[1]);
         } else {
@@ -74,12 +62,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function error(string|\Stringable $message, array $context = array()): void
+    public function error(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->errorItem($message, $context[0], $context[1]);
         } else {
@@ -87,12 +71,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function warning(string|\Stringable $message, array $context = array()): void
+    public function warning(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
@@ -100,12 +80,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function notice(string|\Stringable $message, array $context = array()): void
+    public function notice(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->warningItem($message, $context[0], $context[1]);
         } else {
@@ -113,12 +89,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function info(string|\Stringable $message, array $context = array()): void
+    public function info(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->infoItem($message, $context[0], $context[1]);
         } else {
@@ -126,12 +98,8 @@ class LoggerServiceDecorator implements LoggerInterface
         }
     }
 
-    public function debug(string|\Stringable$message, array $context = array()): void
+    public function debug(mixed $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         if(!empty($context)) {
             $this->muckiLogger->debugItem($message, $context[0], $context[1]);
         } else {
@@ -141,19 +109,7 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function log($level, string|\Stringable $message, array $context = array()): void
     {
-        if(!is_string($message)) {
-            $message = serialize($message);
-        }
-
         switch($level) {
-
-            case 'debug':
-                if(!empty($context)) {
-                    $this->muckiLogger->debugItem($message, $context[0], $context[1]);
-                } else {
-                    $this->muckiLogger->debugItem($message, self::DEFAULT_SW_CONTEXT, self::DEFAULT_SW_EXTENSION);
-                }
-                break;
 
             case 'info':
                 if(!empty($context)) {
