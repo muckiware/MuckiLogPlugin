@@ -88,7 +88,7 @@ class LoggerServiceDecorator implements LoggerInterface
     public function getLoggerSetup(LogLevel $logLevel, mixed $message, array $context=[]): LoggerSetup
     {
         $loggerSetup = new LoggerSetup();
-        $loggerSetup->setLogLevel($logLevel->value);
+        $loggerSetup->setLogLevel($logLevel);
         $loggerSetup->setMessage($this->inputMessageFilter($message));
 
         if(!empty($context) && count($context) >= 2) {

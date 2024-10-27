@@ -27,7 +27,7 @@ class LoggerSetup
      * @var string
      */
     protected string $plugin;
-    protected string $logLevel;
+    protected LogLevel $logLevel;
     protected string $message;
     protected string $notificationEmailTemplateId;
     protected string $notificationEmailReceiver;
@@ -41,7 +41,7 @@ class LoggerSetup
     public function __construct()
     {
         $this->id = Uuid::randomHex();
-        $this->logLevel = LogLevel::DEBUG->value;
+        $this->logLevel = LogLevel::DEBUG;
         $this->sendNotification = false;
         $this->notificationEmailSender = null;
     }
@@ -76,12 +76,12 @@ class LoggerSetup
         $this->plugin = $plugin;
     }
 
-    public function getLogLevel(): string
+    public function getLogLevel(): LogLevel
     {
         return $this->logLevel;
     }
 
-    public function setLogLevel(string $logLevel): void
+    public function setLogLevel(LogLevel $logLevel): void
     {
         $this->logLevel = $logLevel;
     }

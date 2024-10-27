@@ -29,7 +29,7 @@ class LoggingEvent
                 'id' => Uuid::randomHex(),
                 'vendor' => $loggerSetup->getVendor(),
                 'plugin' => $loggerSetup->getPlugin(),
-                'loglevel' => $loggerSetup->getLoglevel(),
+                'loglevel' => $loggerSetup->getLoglevel()->value,
                 'message' => $loggerSetup->getMessage(),
                 'notificationEmailTemplateId' => $loggerSetup->getNotificationEmailTemplateId(),
                 'notificationEmailReceiver' => $loggerSetup->getNotificationEmailReceiver(),
