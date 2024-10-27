@@ -51,4 +51,13 @@ class LoggingEvent
 
         return $this->loggingEventRepository->search($criteria, Context::createDefaultContext());
     }
+
+    public function removeLoggerEventById(string $loggerEventById): void
+    {
+        $loggerEventByIds = array_map(
+            static fn ($id) => [ 'id' => $id ],
+            [$loggerEventById],
+        );
+        $this->loggingEventRepository->delete(array_values($loggerEventByIds), Context::createDefaultContext());
+    }
 }

@@ -46,6 +46,7 @@ class SendNotification
                 }
 
                 $this->serviceMailer->sendMailNotification($logEvent, $context);
+                $this->loggingEvent->removeLoggerEventById($logEvent->getId());
             }
 
             $progressBar->finish();
