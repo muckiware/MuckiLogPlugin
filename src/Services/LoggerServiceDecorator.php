@@ -15,11 +15,13 @@ namespace MuckiLogPlugin\Services;
 
 use http\Message;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 use MuckiLogPlugin\Core\Defaults;
 use MuckiLogPlugin\Services\SettingsInterface as PluginSettings;
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Entity\LoggerSetup;
+use MuckiLogPlugin\Services\Helper as PluginHelper;
 
 class LoggerServiceDecorator implements LoggerInterface
 {
@@ -33,7 +35,8 @@ class LoggerServiceDecorator implements LoggerInterface
     public function __construct(
         LoggerInterface $loggerService,
         \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger,
-        protected PluginSettings $pluginSettings
+        protected PluginSettings $pluginSettings,
+        protected PluginHelper $pluginHelper
     )
     {
         $this->originalLoggerService = $loggerService;
@@ -90,23 +93,77 @@ class LoggerServiceDecorator implements LoggerInterface
         $loggerSetup = new LoggerSetup();
         $loggerSetup->setLogLevel($logLevel);
         $loggerSetup->setMessage($this->inputMessageFilter($message));
+        $loggerSetup = $this->setupVendorPluginNames($context, $loggerSetup);
 
+        $needNotificationByLogLevel = $this->pluginSettings->needNotificationByLogLevel($logLevel);
+        if( $needNotificationByLogLevel) {
+
+            $loggerSetup = $this->setupNotificationEmailTemplateId($context, $loggerSetup);
+            $loggerSetup = $this->setupNotificationEmailReceiver($context, $loggerSetup);
+            $loggerSetup = $this->setupNotificationEmailSender($context, $loggerSetup);
+        }
+
+        $loggerSetup->setSendNotification($needNotificationByLogLevel);
+
+        return $loggerSetup;
+    }
+
+    public function setupNotificationEmailTemplateId(array $context, LoggerSetup $loggerSetup): LoggerSetup
+    {
+        if(
+            !empty($context) && count($context) === 3 &&
+            array_key_exists('setup', $context) &&
+            array_key_exists('notificationEmailTemplateId', $context['setup']) &&
+            Uuid::isValid(trim($context['setup']['notificationEmailTemplateId']))
+        ) {
+            $loggerSetup->setNotificationEmailTemplateId(trim($context['setup']['notificationEmailTemplateId']));
+        } else {
+            $loggerSetup->setNotificationEmailTemplateId($this->pluginSettings->getNotificationMailTemplateId());
+        }
+        return $loggerSetup;
+    }
+
+    public function setupNotificationEmailReceiver(array $context, LoggerSetup $loggerSetup): LoggerSetup
+    {
+        if(
+            !empty($context) && count($context) === 3 &&
+            array_key_exists('setup', $context) &&
+            array_key_exists('notificationEmailReceiver', $context['setup']) &&
+            $this->pluginHelper->isValidEmail(trim($context['setup']['notificationEmailReceiver']))
+        ) {
+            $loggerSetup->setNotificationEmailReceiver(trim($context['setup']['notificationEmailReceiver']));
+        } else {
+            $loggerSetup->setNotificationEmailReceiver($this->pluginSettings->getNotificationMailAddress());
+        }
+        return $loggerSetup;
+    }
+
+    public function setupNotificationEmailSender(array $context, LoggerSetup $loggerSetup): LoggerSetup
+    {
+        if(
+            !empty($context) && count($context) === 3 &&
+            array_key_exists('setup', $context) &&
+            array_key_exists('notificationEmailSender', $context['setup']) &&
+            $this->pluginHelper->isValidEmail(trim($context['setup']['notificationEmailSender']))
+        ) {
+            $loggerSetup->setNotificationEmailSender(trim($context['setup']['notificationEmailReceiver']));
+        } else {
+            $loggerSetup->setNotificationEmailSender($this->pluginSettings->getNotificationMailSender());
+        }
+        return $loggerSetup;
+    }
+
+    public function setupVendorPluginNames(array $context, LoggerSetup $loggerSetup): LoggerSetup
+    {
         if(!empty($context) && count($context) >= 2) {
 
-            $loggerSetup->setVendor($context[0]);
-            $loggerSetup->setPlugin($context[1]);
+            $loggerSetup->setVendor(trim($context[0]));
+            $loggerSetup->setPlugin(trim($context[1]));
         } else {
 
             $loggerSetup->setVendor(Defaults::DEFAULT_SW_CONTEXT);
             $loggerSetup->setPlugin(Defaults::DEFAULT_SW_EXTENSION);
         }
-
-        $loggerSetup->setNotificationEmailTemplateId('0192b52625b073278270081899140df7');
-        $loggerSetup->setNotificationEmailSender('freyda@muster.com');
-        $loggerSetup->setNotificationEmailReceiver('torsten@muster.com');
-
-        $loggerSetup->setSendNotification($this->pluginSettings->needNotificationByLogLevel($logLevel));
-
         return $loggerSetup;
     }
 

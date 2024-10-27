@@ -48,6 +48,9 @@ class Settings implements SettingsInterface
     const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING = 'MuckiLogPlugin.config.notificationMailActiveWarning';
     const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR = 'MuckiLogPlugin.config.notificationMailActiveError';
     const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL = 'MuckiLogPlugin.config.notificationMailActiveCritical';
+
+    const CONFIG_PATH_CORE_MAILER_SENDER = 'core.mailerSettings.senderAddress';
+    const CONFIG_PATH_CORE_BASIC_EMAIL = 'core.basicInformation.email';
     /**
      * Absolute path to folder of log config files
      * @var string
@@ -171,6 +174,19 @@ class Settings implements SettingsInterface
     {
         if($this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS) != '') {
             return $this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS);
+        }
+
+        return null;
+    }
+
+    public function getNotificationMailSender(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_CORE_MAILER_SENDER) != '') {
+            return $this->config->getString($this::CONFIG_PATH_CORE_MAILER_SENDER);
+        } else {
+            if($this->config->getString($this::CONFIG_PATH_CORE_BASIC_EMAIL) != '') {
+                return $this->config->getString($this::CONFIG_PATH_CORE_BASIC_EMAIL);
+            }
         }
 
         return null;

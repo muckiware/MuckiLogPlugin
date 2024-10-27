@@ -42,9 +42,11 @@
             <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator.inner" />
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Helper"/>
         </service>
         <service id="MuckiLogPlugin\Services\LoggingEvent" public="true">
             <argument type="service" id="muwa_logging_event.repository"/>
         </service>
+        <service id="MuckiLogPlugin\Services\Helper"/>
     </services>
 </container>

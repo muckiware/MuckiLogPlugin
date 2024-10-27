@@ -29,8 +29,8 @@ class LoggerSetup
     protected string $plugin;
     protected LogLevel $logLevel;
     protected string $message;
-    protected string $notificationEmailTemplateId;
-    protected string $notificationEmailReceiver;
+    protected ?string $notificationEmailTemplateId;
+    protected ?string $notificationEmailReceiver;
     protected ?string $notificationEmailSender;
 
     protected bool $sendNotification;
@@ -43,6 +43,8 @@ class LoggerSetup
         $this->id = Uuid::randomHex();
         $this->logLevel = LogLevel::DEBUG;
         $this->sendNotification = false;
+        $this->notificationEmailTemplateId = null;
+        $this->notificationEmailReceiver = null;
         $this->notificationEmailSender = null;
     }
 
@@ -96,7 +98,7 @@ class LoggerSetup
         $this->message = $message;
     }
 
-    public function getNotificationEmailTemplateId(): string
+    public function getNotificationEmailTemplateId(): ?string
     {
         return $this->notificationEmailTemplateId;
     }
@@ -106,7 +108,7 @@ class LoggerSetup
         $this->notificationEmailTemplateId = $notificationEmailTemplateId;
     }
 
-    public function getNotificationEmailReceiver(): string
+    public function getNotificationEmailReceiver(): ?string
     {
         return $this->notificationEmailReceiver;
     }
