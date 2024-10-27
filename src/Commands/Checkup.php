@@ -134,6 +134,17 @@ class Checkup extends Command
             $this->logger->{$loggingMethod->value}(
                 $key.' - Test log item for -> '.$loggingMethod->value, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION)
             );
+            $this->logger->{$loggingMethod->value}(
+                $key.' - Test log item for -> '.$loggingMethod->value, array(
+                    PluginDefaults::CONTEXT,
+                    PluginDefaults::EXTENSION,
+                    array('setup' => array(
+                        'notificationEmail' => true,
+                        'notificationEmailReceiver' => 'notificationEmailReceiver@example.com',
+                        'notificationEmailSender' => 'notificationEmailSender@example.com',
+                    ))
+                )
+            );
 
         }
 

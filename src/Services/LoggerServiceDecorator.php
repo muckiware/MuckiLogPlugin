@@ -95,28 +95,41 @@ class LoggerServiceDecorator implements LoggerInterface
         $loggerSetup->setMessage($this->inputMessageFilter($message));
         $loggerSetup = $this->setupVendorPluginNames($context, $loggerSetup);
 
-        $needNotificationByLogLevel = $this->pluginSettings->needNotificationByLogLevel($logLevel);
-        if( $needNotificationByLogLevel) {
+        $needNotification = $this->pluginSettings->needNotificationByLogLevel($logLevel) || $this->contextSetupNeedNotification($context);
+        if($needNotification) {
 
             $loggerSetup = $this->setupNotificationEmailTemplateId($context, $loggerSetup);
             $loggerSetup = $this->setupNotificationEmailReceiver($context, $loggerSetup);
             $loggerSetup = $this->setupNotificationEmailSender($context, $loggerSetup);
         }
 
-        $loggerSetup->setSendNotification($needNotificationByLogLevel);
+        $loggerSetup->setSendNotification($needNotification);
 
         return $loggerSetup;
+    }
+
+    public function contextSetupNeedNotification(array $context): bool
+    {
+        if(
+            !empty($context) && count($context) === 3 &&
+            array_key_exists('setup', $context[2]) &&
+            array_key_exists('notificationEmail', $context[2]['setup']) &&
+            is_bool($context[2]['setup']['notificationEmail'])
+        ) {
+            return true;
+        }
+        return false;
     }
 
     public function setupNotificationEmailTemplateId(array $context, LoggerSetup $loggerSetup): LoggerSetup
     {
         if(
             !empty($context) && count($context) === 3 &&
-            array_key_exists('setup', $context) &&
-            array_key_exists('notificationEmailTemplateId', $context['setup']) &&
-            Uuid::isValid(trim($context['setup']['notificationEmailTemplateId']))
+            array_key_exists('setup', $context[2]) &&
+            array_key_exists('notificationEmailTemplateId', $context[2]['setup']) &&
+            Uuid::isValid(trim($context[2]['setup']['notificationEmailTemplateId']))
         ) {
-            $loggerSetup->setNotificationEmailTemplateId(trim($context['setup']['notificationEmailTemplateId']));
+            $loggerSetup->setNotificationEmailTemplateId(trim($context[2]['setup']['notificationEmailTemplateId']));
         } else {
             $loggerSetup->setNotificationEmailTemplateId($this->pluginSettings->getNotificationMailTemplateId());
         }
@@ -127,11 +140,11 @@ class LoggerServiceDecorator implements LoggerInterface
     {
         if(
             !empty($context) && count($context) === 3 &&
-            array_key_exists('setup', $context) &&
-            array_key_exists('notificationEmailReceiver', $context['setup']) &&
-            $this->pluginHelper->isValidEmail(trim($context['setup']['notificationEmailReceiver']))
+            array_key_exists('setup', $context[2]) &&
+            array_key_exists('notificationEmailReceiver', $context[2]['setup']) &&
+            $this->pluginHelper->isValidEmail(trim($context[2]['setup']['notificationEmailReceiver']))
         ) {
-            $loggerSetup->setNotificationEmailReceiver(trim($context['setup']['notificationEmailReceiver']));
+            $loggerSetup->setNotificationEmailReceiver(trim($context[2]['setup']['notificationEmailReceiver']));
         } else {
             $loggerSetup->setNotificationEmailReceiver($this->pluginSettings->getNotificationMailAddress());
         }
@@ -142,11 +155,11 @@ class LoggerServiceDecorator implements LoggerInterface
     {
         if(
             !empty($context) && count($context) === 3 &&
-            array_key_exists('setup', $context) &&
-            array_key_exists('notificationEmailSender', $context['setup']) &&
-            $this->pluginHelper->isValidEmail(trim($context['setup']['notificationEmailSender']))
+            array_key_exists('setup', $context[2]) &&
+            array_key_exists('notificationEmailSender', $context[2]['setup']) &&
+            $this->pluginHelper->isValidEmail(trim($context[2]['setup']['notificationEmailSender']))
         ) {
-            $loggerSetup->setNotificationEmailSender(trim($context['setup']['notificationEmailReceiver']));
+            $loggerSetup->setNotificationEmailSender(trim($context[2]['setup']['notificationEmailReceiver']));
         } else {
             $loggerSetup->setNotificationEmailSender($this->pluginSettings->getNotificationMailSender());
         }
