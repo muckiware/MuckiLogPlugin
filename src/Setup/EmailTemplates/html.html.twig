@@ -2,7 +2,11 @@
     <p>
         Hello Shop admin,
         <br>
-        You get a message from a logging event
-        {{ logging.message }}
+    <p>You get a message from a logging event</p>
+    Vendor: {{ logEvent.vendor }}<br>
+    Plugin: {{ logEvent.plugin }}<br>
+    Loglevel: {{ logEvent.loglevel }}<br>
+    Created: {{ logEvent.createdAt|format_datetime('medium', 'long', locale='en-GB') }}<br>
+    Message: {{ logEvent.message }}<br>
     </p>
 </div>
