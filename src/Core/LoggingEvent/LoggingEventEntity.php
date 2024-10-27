@@ -30,10 +30,9 @@ class LoggingEventEntity extends Entity
 
     protected string $message;
 
-    public function __construct()
-    {
-
-    }
+    protected string $notificationEmailTemplateId;
+    protected string $notificationEmailReceiver;
+    protected string $notificationEmailSender;
 
     public function getVendor(): string
     {
@@ -73,5 +72,35 @@ class LoggingEventEntity extends Entity
     public function setMessage(string $message): void
     {
         $this->message = $message;
+    }
+
+    public function getNotificationEmailTemplateId(): string
+    {
+        return $this->notificationEmailTemplateId;
+    }
+
+    public function setNotificationEmailTemplateId(string $notificationEmailTemplateId): void
+    {
+        $this->notificationEmailTemplateId = $notificationEmailTemplateId;
+    }
+
+    public function getNotificationEmailReceiver(): string
+    {
+        return $this->notificationEmailReceiver;
+    }
+
+    public function setNotificationEmailReceiver(string $notificationEmailReceiver): void
+    {
+        $this->notificationEmailReceiver = $notificationEmailReceiver;
+    }
+
+    public function getNotificationEmailSender(): string
+    {
+        return $this->notificationEmailSender;
+    }
+
+    public function setNotificationEmailSender(string $notificationEmailSender): void
+    {
+        $this->notificationEmailSender = $notificationEmailSender;
     }
 }

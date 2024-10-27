@@ -27,12 +27,23 @@
         	<argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-        <service class="MuckiLogPlugin\Commands\Checkup" id="wwu.muckilog.commands.checkup" public="true">
+        <service class="MuckiLogPlugin\Commands\Checkup" id="muckilog.commands.checkup" public="true">
             <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
             <argument type="service" id="MuckiLogPlugin\Services\LogconfigInterface"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator"/>
+            <tag name="console.command"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+        <service class="MuckiLogPlugin\Commands\SendNotification" id="muckilog.commands.sendNotification" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiLogPlugin\Services\LogconfigInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\SendNotification"/>
             <tag name="console.command"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -48,5 +59,21 @@
             <argument type="service" id="muwa_logging_event.repository"/>
         </service>
         <service id="MuckiLogPlugin\Services\Helper"/>
+        <service id="MuckiLogPlugin\Services\SendNotification">
+            <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
+            <argument type="service" id="MuckiLogPlugin\Services\CliOutput"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Mailer"/>
+        </service>
+        <service id="MuckiLogPlugin\Services\CliOutput">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
+        <service id="MuckiLogPlugin\Services\Mailer" public="true">
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+            <argument type="service" id="mail_template_type.repository"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+            <argument type="service" id="Psr\Log\LoggerInterface" />
+        </service>
     </services>
 </container>

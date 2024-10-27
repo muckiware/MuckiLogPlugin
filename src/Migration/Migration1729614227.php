@@ -32,6 +32,7 @@ class Migration1729614227 extends MigrationStep
               `notification_email_receiver` varchar(255) NOT NULL,
               `notification_email_sender` varchar(255) DEFAULT NULL,
               `created_at` DATETIME(3) NOT NULL,
+              `updated_at` DATETIME(3) NOT NULL,
                PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');

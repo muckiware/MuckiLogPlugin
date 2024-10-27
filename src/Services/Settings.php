@@ -51,6 +51,8 @@ class Settings implements SettingsInterface
 
     const CONFIG_PATH_CORE_MAILER_SENDER = 'core.mailerSettings.senderAddress';
     const CONFIG_PATH_CORE_BASIC_EMAIL = 'core.basicInformation.email';
+
+    const CONFIG_PATH_SALES_CHANNEL_ID = 'MuckiLogPlugin.config.salesChannelId';
     /**
      * Absolute path to folder of log config files
      * @var string
@@ -243,6 +245,15 @@ class Settings implements SettingsInterface
         }
 
         return false;
+    }
+
+    public function getSalesChannelId(): ?string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SALES_CHANNEL_ID) != '') {
+            return $this->config->getString($this::CONFIG_PATH_SALES_CHANNEL_ID);
+        }
+
+        return null;
     }
 }
 

@@ -11,6 +11,7 @@ namespace MuckiLogPlugin\Core\LoggingEvent;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
@@ -20,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\AllowHtml;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\ApiAware;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\EmailField;
+use Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged\Updated;
 
 class LoggingEventDefinition extends EntityDefinition
 {
@@ -51,7 +53,8 @@ class LoggingEventDefinition extends EntityDefinition
             (new IdField('notification_email_template_id', 'notificationEmailTemplateId'))->addFlags(new ApiAware(), new Required()),
             (new EmailField('notification_email_receiver', 'notificationEmailReceiver'))->addFlags(new ApiAware(), new Required()),
             (new EmailField('notification_email_sender', 'notificationEmailSender'))->addFlags(new ApiAware()),
-            new CreatedAtField()
+            new CreatedAtField(),
+            new UpdatedAtField()
         ]);
     }
 }

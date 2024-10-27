@@ -52,6 +52,11 @@
     </card>
     <card>
         <title>Log event notification settings</title>
+        <component name="sw-entity-single-select">
+            <name>salesChannelId</name>
+            <entity>sales_channel</entity>
+            <label>SalesChannelId context</label>
+        </component>
         <input-field type="text">
             <name>notificationMailAddress</name>
             <label>Notification mail address</label>

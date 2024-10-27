@@ -45,5 +45,6 @@ interface SettingsInterface
     public function isCriticalNotification(): bool;
 
     public function needNotificationByLogLevel(LogLevel $logLevel): bool;
+    public function getSalesChannelId(): ?string;
 }
 

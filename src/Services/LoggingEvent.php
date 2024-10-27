@@ -11,7 +11,11 @@ namespace MuckiLogPlugin\Services;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 use MuckiLogPlugin\Entity\LoggerSetup;
 
@@ -37,5 +41,14 @@ class LoggingEvent
                 'created_at' => new \DateTime('now', new \DateTimeZone('UTC'))
             ],
         ], Context::createDefaultContext());
+    }
+
+    public function getLoggerEvents(): EntitySearchResult
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(5);
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+
+        return $this->loggingEventRepository->search($criteria, Context::createDefaultContext());
     }
 }

@@ -12,7 +12,6 @@
 
 namespace MuckiLogPlugin\Commands;
 
-use MuckiLogPlugin\Core\LogLevel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,6 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 use MuckiLogPlugin\Services\Settings as PluginSettings;
+use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
 use MuckiLogPlugin\Services\LoggerServiceDecorator;
@@ -72,7 +72,7 @@ class Checkup extends Command
      */
     public function configure()
     {
-        $this->setDescription('This command is just for testing logging method.');
+        $this->setDescription('This Muckilog plugin command is just for testing logging method.');
         parent::configure();
     }
 

@@ -10,7 +10,7 @@
 namespace MuckiLogPlugin\Services;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Content\Mail\Service\MailService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -19,8 +19,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-use LightsOnCustomizeSpecials\Service\Settings as PluginSettings;
-use LightsOnCustomizeSpecials\Core\Defaults as PluginDefaults;
+use MuckiLogPlugin\Services\Settings as PluginSettings;
+use MuckiLogPlugin\Core\Defaults as PluginDefaults;
+use MuckiLogPlugin\Core\LoggingEvent\LoggingEventEntity;
+
 class Mailer
 {
     public function __construct(
@@ -32,66 +34,42 @@ class Mailer
     )
     {}
 
-    public function sendNotification(array $emails, OrderEntity $order, Context $context): bool
+    public function sendMailNotification(LoggingEventEntity $logEvent, Context $context): bool
     {
-        foreach ($emails as $email) {
+        $data = $this->buildEmailParameter($logEvent, $context);
+        $this->mailService->send(
+            $data->all(),
+            Context::createDefaultContext(),
+            [
+                'logEvent' => $logEvent
+            ]
+        );
 
-            $data = $this->buildEmailParameter([$email], $order, $context);
-            $this->mailService->send(
-                $data->all(),
-                Context::createDefaultContext(),
-                [
-                    'thirdPartySupplierEMail' => $email,
-                    'order' => $order,
-                    'salesChannel' => $order->getSalesChannel(),
-                ]
-            );
-        }
-
+//        $logEvent->getCreatedAt()
         return true;
     }
 
-    private function getMailTemplate(Context $context)
+    private function getMailTemplate(string $mailTemplateId, Context $context): MailTemplateTypeEntity
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('id', $this->pluginSettings->mailTemplateId()));
+        $criteria->addFilter(new EqualsFilter('id', $mailTemplateId));
         $criteria->addAssociation('mailTemplates');
 
         $template = $this->templateRepository->search($criteria, $context);
-
-        if ($template->count() !== 0) {
-            $templates = $template->first()->getMailTemplates();
-            if ($templates->count()) {
-                foreach ($templates as $mailTemplate) {
-                    if ($mailTemplate->getDescription() == PluginDefaults::MAIL_TEMPLATE_DESC) {
-                        return $mailTemplate;
-                    }
-                }
-            }
-        } else {
-            $this->logger->warning('Missing valid mail template', array('lion', 'customizeSpecials'));
-        }
-
-        return null;
+        return $template->first();
     }
 
-    private function buildEmailParameter(array $emails, OrderEntity $order, Context $context): ParameterBag
+    private function buildEmailParameter(LoggingEventEntity $logEvent, Context $context): ParameterBag
     {
-        $template = $this->getMailTemplate($context);
+        $template = $this->getMailTemplate($logEvent->getNotificationEmailTemplateId(), $context);
+
         $data = new ParameterBag();
-        $recipientsArray = [];
-        foreach ($emails as $recipient) {
-            $recipientsArray[$recipient] = $recipient;
-        }
-        $data->set('recipients', $recipientsArray);
-        $data->set(
-            'senderName',
-            $this->systemConfigService->get('core.basicInformation.email', $order->getSalesChannel())
-        );
-        $data->set('salesChannelId', $order->getSalesChannelId());
-        $data->set('contentHtml', $template->getContentHtml());
-        $data->set('contentPlain', $template->getContentPlain());
-        $data->set('subject', $template->getSubject());
+        $data->set('recipients', array($logEvent->getNotificationEmailReceiver() => $logEvent->getNotificationEmailReceiver()));
+        $data->set('senderName',$logEvent->getNotificationEmailSender());
+        $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
+        $data->set('contentHtml', $template->getMailTemplates()->first()->getContentHtml());
+        $data->set('contentPlain', $template->getMailTemplates()->first()->getContentPlain());
+        $data->set('subject', $template->getMailTemplates()->first()->getSubject());
 
         return $data;
     }
