@@ -54,15 +54,15 @@ class SendNotification extends Command
     /**
      * @param ContainerInterface $container
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
     /**
-     * @return ContainerInterface
+     * @return ContainerInterface|null
      */
-    public function getContainer(): ContainerInterface
+    public function getContainer(): ?ContainerInterface
     {
         return $this->container;
     }

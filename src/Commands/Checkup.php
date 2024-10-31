@@ -54,7 +54,7 @@ class Checkup extends Command
     /**
      * @param ContainerInterface $container
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
@@ -62,7 +62,7 @@ class Checkup extends Command
     /**
      * @return ContainerInterface
      */
-    public function getContainer(): ContainerInterface
+    public function getContainer(): ?ContainerInterface
     {
         return $this->container;
     }
@@ -70,7 +70,7 @@ class Checkup extends Command
     /**
      * @internal
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This Muckilog plugin command is just for testing logging method.');
         parent::configure();
@@ -95,7 +95,7 @@ class Checkup extends Command
         return 0;
     }
 
-    protected function removeOldFiles($output)
+    protected function removeOldFiles(OutputInterface $output): void
     {
         $output->writeln('Remove log config files from '.$this->pluginSettings->getLogConfigPath());
         $this->logconfig->removeLogConfigFiles(
@@ -117,7 +117,7 @@ class Checkup extends Command
         }
     }
 
-    protected function writeTestLogFiles($output)
+    protected function writeTestLogFiles(OutputInterface $output): void
     {
         $output->writeln('Write into path: '.$this->pluginSettings->getLogPath());
 
