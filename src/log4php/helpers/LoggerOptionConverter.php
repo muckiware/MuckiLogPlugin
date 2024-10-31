@@ -31,7 +31,8 @@ namespace MuckiLogPlugin\log4php\helpers;
 use MuckiLogPlugin\log4php\LoggerException;
 use MuckiLogPlugin\log4php\LoggerLevel;
 
-class LoggerOptionConverter {
+class LoggerOptionConverter
+{
 	
 	/** String values which are converted to boolean TRUE. */
 	private static array $trueValues = array('1', 'true', 'yes', 'on');
@@ -58,7 +59,8 @@ class LoggerOptionConverter {
 	 * @return string	the string value of the system property, or the default
 	 *					value if there is no property with that key.
 	 */
-	public static function getSystemProperty($key, $def) {
+	public static function getSystemProperty($key, $def): string
+    {
 		if(defined($key)) {
 			return (string)constant($key);
 		} else if(isset($_SERVER[$key])) {
@@ -71,7 +73,8 @@ class LoggerOptionConverter {
 	}
 
 	/** Converts $value to boolean, or throws an exception if not possible. */
-	public static function toBooleanEx($value) {
+	public static function toBooleanEx(mixed $value): bool
+    {
 		if (isset($value)) {
 			if (is_bool($value)) {
 				return $value;
@@ -92,7 +95,8 @@ class LoggerOptionConverter {
 	 * Converts $value to integer, or throws an exception if not possible. 
 	 * Floats cannot be converted to integer.
 	 */
-	public static function toIntegerEx($value) {
+	public static function toIntegerEx(mixed $value): int
+    {
 		if (is_integer($value)) {
 			return $value;
 		}
@@ -107,7 +111,8 @@ class LoggerOptionConverter {
 	 * Converts $value to integer, or throws an exception if not possible.
 	 * Floats cannot be converted to integer.
 	 */
-	public static function toPositiveIntegerEx($value) {
+	public static function toPositiveIntegerEx(mixed $value): int
+    {
 		if (is_integer($value) && $value > 0) {
 			return $value;
 		}
@@ -119,7 +124,8 @@ class LoggerOptionConverter {
 	}
 
 	/** Converts the value to a level. Throws an exception if not possible. */
-	public static function toLevelEx($value) {
+	public static function toLevelEx(mixed $value): LoggerLevel
+    {
 		if ($value instanceof LoggerLevel) {
 			return $value;
 		}
@@ -146,7 +152,8 @@ class LoggerOptionConverter {
 	 * @param mixed $value File size (optionally with suffix).
 	 * @return integer Parsed file size.
 	 */
-	public static function toFileSizeEx($value) {
+	public static function toFileSizeEx(mixed $value): int
+    {
 		
 		if (empty($value)) {
 			throw new LoggerException("Empty value cannot be converted to a file size.");
@@ -164,13 +171,21 @@ class LoggerOptionConverter {
 		$count = preg_match('/^([0-9.]+)(KB|MB|GB)?$/', $str, $matches);
 		
 		if ($count > 0) {
-			$size = $matches[1];
+			$size = intval($matches[1]);
 			$unit = $matches[2];
 			
 			switch($unit) {
-				case 'KB': $size *= pow(1024, 1); break;
-				case 'MB': $size *= pow(1024, 2); break;
-				case 'GB': $size *= pow(1024, 3); break;
+				case 'KB':
+                    $size *= pow(1024, 1);
+                    break;
+				case 'MB':
+                    $size *= pow(1024, 2);
+                    break;
+				case 'GB':
+                    $size *= pow(1024, 3);
+                    break;
+                default:
+                    $size *= pow(1024, 1);
 			}
 			
 			return (integer) $size;
@@ -179,14 +194,15 @@ class LoggerOptionConverter {
 		throw new LoggerException("Given value [$value] cannot be converted to a file size.");
 	}
 
-	/** 
+	/**
 	 * Converts a value to string, or throws an exception if not possible. 
-	 * 
+	 *
 	 * Objects can be converted to string if they implement the magic 
 	 * __toString() method.
-	 * 
+	 *
 	 */
-	public static function toStringEx($value) {
+	public static function toStringEx(mixed $value): string
+    {
 		if (is_string($value)) {
 			return $value;
 		}
@@ -202,22 +218,23 @@ class LoggerOptionConverter {
 	
 	/**
 	 * Performs value substitution for string options.
-	 * 
+	 *
 	 * An option can contain PHP constants delimited by '${' and '}'.
-	 * 
+	 *
 	 * E.g. for input string "some ${FOO} value", the method will attempt 
 	 * to substitute ${FOO} with the value of constant FOO if it exists.
-	 * 
+	 *
 	 * Therefore, if FOO is a constant, and it has value "bar", the resulting 
 	 * string will be "some bar value". 
-	 * 
+	 *
 	 * If the constant is not defined, it will be replaced by an empty string, 
 	 * and the resulting string will be "some  value". 
-	 * 
+	 *
 	 * @param string $string String on which to perform substitution.
 	 * @return string
 	 */
-	public static function substConstants($string) {
+	public static function substConstants(string $string): string
+    {
 		preg_match_all('/\${([^}]+)}/', $string, $matches);
 		
 		foreach($matches[1] as $key => $match) {

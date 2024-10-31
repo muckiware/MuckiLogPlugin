@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\helpers;
 /**
@@ -54,19 +56,20 @@ class LoggerUtils {
 	
 	/**
 	 * Attempts to shorten the given class name to the desired length.
-	 * 
+	 *
 	 * This is done by separating the class name into fragments (delimited
 	 * by \ or .) and trimming individual fragments, starting with the left,
-	 * until desired length has been reached. 
-	 * 
-	 * The final fragment (i.e. class name) will never be shortened so the 
+	 * until desired length has been reached.
+	 *
+	 * The final fragment (i.e. class name) will never be shortened so the
 	 * result may still be longer than given length.
-	 * 
-	 * @param string $name The (qualified) class name.  
+	 *
+	 * @param string $name The (qualified) class name.
 	 * @param integer $length The length to shorten to. If null or 0 is given,
-	 * the name will be returned without shortening. 
+	 * the name will be returned without shortening.
 	 */
-	public static function shortenClassName($name, $length) {
+	public static function shortenClassName($name, $length): string
+    {
 		if ($length === null || $length < 0) {
 			return $name;
 		}

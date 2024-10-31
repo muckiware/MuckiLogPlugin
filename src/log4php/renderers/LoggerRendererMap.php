@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 
 namespace MuckiLogPlugin\log4php\renderers;
@@ -60,7 +62,8 @@ class LoggerRendererMap {
 	 * @param string $renderingClass The name of the class which will 
 	 * 		perform the rendering.
 	 */
-	public function addRenderer($renderedClass, $renderingClass) {
+	public function addRenderer($renderedClass, $renderingClass): void
+    {
 		// Check the rendering class exists
 		if (!class_exists($renderingClass)) {
 			trigger_error("log4php: Failed adding renderer. Rendering class [$renderingClass] not found.");
@@ -92,7 +95,8 @@ class LoggerRendererMap {
 	 * @param string $renderingClass The name of the class which will 
 	 * 		perform the rendering.
 	 */
-	public function setDefaultRenderer($renderingClass) {
+	public function setDefaultRenderer($renderingClass): void
+    {
 		// Check the class exists
 		if (!class_exists($renderingClass)) {
 			trigger_error("log4php: Failed setting default renderer. Rendering class [$renderingClass] not found.");
@@ -113,20 +117,22 @@ class LoggerRendererMap {
 	
 	/**
 	 * Returns the default renderer.
-	 * @var LoggerRenderer
+	 * @return LoggerRenderer
 	 */
-	public function getDefaultRenderer() {
+	public function getDefaultRenderer(): LoggerRenderer
+    {
 		return $this->defaultRenderer;
 	}
-	
-	/**
-	 * Finds the appropriate renderer for the given <var>input</var>, and 
-	 * renders it (i.e. converts it to a string). 
-	 *
-	 * @param mixed $input Input to render.
-	 * @return string The rendered contents.
-	 */
-	public function findAndRender($input) {
+
+    /**
+     * Finds the appropriate renderer for the given <var>input</var>, and
+     * renders it (i.e. converts it to a string).
+     *
+     * @param mixed $input Input to render.
+     * @return string|null The rendered contents.
+     */
+	public function findAndRender(mixed $input): ?string
+    {
 		if ($input === null) {
 			return null;
 		}
@@ -143,28 +149,30 @@ class LoggerRendererMap {
 		return $this->defaultRenderer->render($input);
 	}
 
-	/**
-	 * Returns the appropriate renderer for a given object.
-	 * 
-	 * @param mixed $object
-	 * @return LoggerRenderer Or null if none found.
-	 */
-	public function getByObject($object) {
+    /**
+     * Returns the appropriate renderer for a given object.
+     *
+     * @param mixed $object
+     * @return LoggerRenderer|null Or null if none found.
+     */
+	public function getByObject(mixed $object): LoggerRenderer|null
+    {
 		if (!is_object($object)) {
 			return null;
 		}
 		return $this->getByClassName(get_class($object));
 	}
-	
-	/**
-	 * Returns the appropriate renderer for a given class name.
-	 * 
-	 * If no renderer could be found, returns NULL.
-	 *
-	 * @param string $class
-	 * @return Object Or null if not found.
-	 */
-	public function getByClassName($class) {
+
+    /**
+     * Returns the appropriate renderer for a given class name.
+     *
+     * If no renderer could be found, returns NULL.
+     *
+     * @param string $class
+     * @return LoggerRenderer|null Or null if not found.
+     */
+	public function getByClassName(string $class): LoggerRenderer|null
+    {
 		for(; !empty($class); $class = get_parent_class($class)) {
 			$class = strtolower($class);
 			if(isset($this->map[$class])) {
@@ -175,12 +183,14 @@ class LoggerRendererMap {
 	}
 
 	/** Empties the renderer map. */
-	public function clear() {
+	public function clear(): void
+    {
 		$this->map = array();
 	}
 	
 	/** Resets the renderer map to it's default configuration. */
-	public function reset() {
+	public function reset(): void
+    {
 		$this->defaultRenderer = new LoggerRendererDefault();
 		$this->clear();
 		$this->addRenderer('Exception', 'MuckiLogPlugin\log4php\renderers\LoggerRendererException');

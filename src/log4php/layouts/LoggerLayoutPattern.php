@@ -126,9 +126,9 @@ class LoggerLayoutPattern extends LoggerLayout
 	
 	/**
 	 * Head of a chain of Converters.
-	 * @var LoggerPatternConverter
+	 * @var LoggerPatternConverter|null
 	 */
-	private LoggerPatternConverter $head;
+	private ?LoggerPatternConverter $head;
 
 	/** Returns the default converter map. */
 	public static function getDefaultConverterMap(): array
