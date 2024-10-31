@@ -30,6 +30,8 @@
  * @package log4php
  * @subpackage helpers
  * @since 0.3
+ *
+ * changed by muckiware (c)2024
  */
 
 namespace MuckiLogPlugin\log4php\pattern;
@@ -41,30 +43,20 @@ abstract class LoggerPatternConverter {
 	
 	/**
 	 * Next converter in the converter chain.
-	 * @var LoggerPatternConverter 
+	 * @var LoggerPatternConverter|null
 	 */
-	public $next = null;
-	
-	/**
-	 * Formatting information, parsed from pattern modifiers. 
-	 * @var LoggerFormattingInfo
-	 */
-	protected $formattingInfo;
-	
-	/**
-	 * Converter-specific formatting options.
-	 * @var array
-	 */
-	protected $option;
+	public ?LoggerPatternConverter $next = null;
 
-	/**
-	 * Constructor 
-	 * @param LoggerFormattingInfo $formattingInfo
-	 * @param array $option
-	 */
-	public function __construct(LoggerFormattingInfo $formattingInfo = null, $option = null) {  
-		$this->formattingInfo = $formattingInfo;
-		$this->option = $option;
+    /**
+     * Constructor
+     * @param LoggerFormattingInfo|null $formattingInfo
+     * @param string|null $option
+     */
+	public function __construct(
+        protected ?LoggerFormattingInfo $formattingInfo=null,
+        protected ?string $option=null
+    )
+    {
 		$this->activateOptions();
 	}
 	
@@ -72,7 +64,7 @@ abstract class LoggerPatternConverter {
 	 * Called in constructor. Converters which need to process the options 
 	 * can override this method. 
 	 */
-	public function activateOptions() { }
+	public function activateOptions(): void { }
   
 	/**
 	 * Converts the logging event to the desired format. Derived pattern 
@@ -80,7 +72,7 @@ abstract class LoggerPatternConverter {
 	 *
 	 * @param LoggerLoggingEvent $event
 	 */
-	abstract public function convert(LoggerLoggingEvent $event);
+	abstract public function convert(LoggerLoggingEvent $event): mixed;
 
 	/**
 	 * Converts the event and formats it according to setting in the 
@@ -89,12 +81,13 @@ abstract class LoggerPatternConverter {
 	 * @param string &$sbuf string buffer to write to
 	 * @param LoggerLoggingEvent $event Event to be formatted.
 	 */
-	public function format(&$sbuf, $event) {
+	public function format(string &$sbuf, LoggerLoggingEvent $event): void
+    {
 		$string = $this->convert($event);
 		
 		if (!isset($this->formattingInfo)) {
 			$sbuf .= $string;
-			return;	
+			return;
 		}
 		
 		$fi = $this->formattingInfo;
@@ -119,7 +112,7 @@ abstract class LoggerPatternConverter {
 		}
 		
 		// Add padding if needed
-		else if($len < $fi->min) {
+		elseif($len < $fi->min) {
 			if($fi->padLeft) {
 				$sbuf .= str_repeat(' ', $fi->min - $len);
 				$sbuf .= $string;

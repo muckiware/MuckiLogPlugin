@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -29,9 +31,10 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @version $Revision: 1379731 $
  * @since 2.3
  */
-class LoggerPatternConverterRelative extends LoggerPatternConverter {
-
-	public function convert(LoggerLoggingEvent $event) {
+class LoggerPatternConverterRelative extends LoggerPatternConverter
+{
+	public function convert(LoggerLoggingEvent $event): string
+    {
 		$ts = $event->getRelativeTime();
 		return number_format($ts, 4);
 	}

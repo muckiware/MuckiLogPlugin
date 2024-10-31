@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -29,14 +31,14 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @since 2.3
  */
 class LoggerPatternConverterLiteral extends LoggerPatternConverter {
-
-	private $literalValue;
 	
-	public function __construct($literalValue) {
-		$this->literalValue = $literalValue;
-	}
+	public function __construct(
+        private readonly string $literalValue
+    )
+    {}
 	
-	public function convert(LoggerLoggingEvent $event) {
+	public function convert(LoggerLoggingEvent $event): string
+    {
 		return $this->literalValue;
 	}
 }

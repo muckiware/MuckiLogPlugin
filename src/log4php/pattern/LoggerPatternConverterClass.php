@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -30,22 +32,24 @@ use MuckiLogPlugin\log4php\helpers\LoggerUtils;
  * @version $Revision: 1326626 $
  * @since 2.3
  */
-class LoggerPatternConverterClass extends LoggerPatternConverter {
-
+class LoggerPatternConverterClass extends LoggerPatternConverter
+{
 	/** Length to which to shorten the class name. */
 	private ?int $length = null;
 	
 	/** Holds processed class names. */
 	private array $cache = array();
 	
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		// Parse the option (desired output length)
 		if (isset($this->option) && is_numeric($this->option) && $this->option >= 0) {
 			$this->length = (integer) $this->option;
 		}
 	}
 
-	public function convert(LoggerLoggingEvent $event) {
+	public function convert(LoggerLoggingEvent $event): mixed
+    {
 		$name = $event->getLocationInformation()->getClassName();
 	
 		if (!isset($this->cache[$name])) {

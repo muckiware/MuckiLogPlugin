@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 /**
@@ -29,7 +31,9 @@ namespace MuckiLogPlugin\log4php\pattern;
  * @subpackage pattern
  * @version $Revision: 1326626 $
  * @since 2.3
+ *
  */
-class LoggerPatternConverterCookie extends LoggerPatternConverterSuperglobal {
-	protected $name = '_COOKIE';
+class LoggerPatternConverterCookie extends LoggerPatternConverterSuperglobal
+{
+    protected string $name = '_COOKIE';
 }

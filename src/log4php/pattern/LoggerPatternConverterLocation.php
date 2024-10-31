@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -31,8 +33,9 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  */
 class LoggerPatternConverterLocation extends LoggerPatternConverter {
 
-	public function convert(LoggerLoggingEvent $event) {
-		return 
+	public function convert(LoggerLoggingEvent $event): string
+    {
+		return
 			$event->getLocationInformation()->getClassName() . '.' .
 			$event->getLocationInformation()->getMethodName() . '(' .
 			$event->getLocationInformation()->getFileName() . ':' .

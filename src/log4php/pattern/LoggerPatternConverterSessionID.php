@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -28,8 +30,10 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @version $Revision: 1326626 $
  * @since 2.3
  */
-class LoggerPatternConverterSessionID extends LoggerPatternConverter {
-	public function convert(LoggerLoggingEvent $event) {
+class LoggerPatternConverterSessionID extends LoggerPatternConverter
+{
+	public function convert(LoggerLoggingEvent $event): bool|string
+    {
 		return session_id();
 	}
 }

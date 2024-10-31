@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\pattern;
 
@@ -34,15 +36,15 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @version $Revision: 1326626 $
  * @since 2.3
  */
-class LoggerPatternConverterDate extends LoggerPatternConverter {
-
+class LoggerPatternConverterDate extends LoggerPatternConverter
+{
 	const DATE_FORMAT_ISO8601 = 'c';
 	
 	const DATE_FORMAT_ABSOLUTE = 'H:i:s';
 	
 	const DATE_FORMAT_DATE = 'd M Y H:i:s.u';
 	
-	private $format = self::DATE_FORMAT_ISO8601;
+	private string $format = self::DATE_FORMAT_ISO8601;
 	
 	private array $specials = array(
 		'ISO8601' => self::DATE_FORMAT_ISO8601,
@@ -52,7 +54,8 @@ class LoggerPatternConverterDate extends LoggerPatternConverter {
 	
 	private bool $useLocalDate = false;
 	
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		
 		// Parse the option (date format)
 		if (!empty($this->option)) {
@@ -69,11 +72,12 @@ class LoggerPatternConverterDate extends LoggerPatternConverter {
 		}
 	}
 	
-	public function convert(LoggerLoggingEvent $event) {
+	public function convert(LoggerLoggingEvent $event): string
+    {
 		if ($this->useLocalDate) {
-			return $this->date($this->format, $event->getTimeStamp());
+			return $this->date($this->format, intval($event->getTimeStamp()));
 		}
-		return date($this->format, $event->getTimeStamp());
+		return date($this->format, intval($event->getTimeStamp()));
 	}
 	
 	/**
@@ -83,11 +87,12 @@ class LoggerPatternConverterDate extends LoggerPatternConverter {
 	 * 
 	 * It is slower than PHP date() so it should only be used if necessary. 
 	 */
-	private function date($format, $utimestamp) {
+	private function date(string $format, float|int $utimestamp): string
+    {
 		$timestamp = floor($utimestamp);
 		$ms = floor(($utimestamp - $timestamp) * 1000);
-		$ms = str_pad($ms, 3, '0', STR_PAD_LEFT);
-	
-		return date(preg_replace('`(?<!\\\\)u`', $ms, $format), $timestamp);
+		$ms = str_pad(strval($ms), 3, '0', STR_PAD_LEFT);
+
+		return date(strval(preg_replace('`(?<!\\\\)u`', $ms, $format)), intval($timestamp));
 	}
 }

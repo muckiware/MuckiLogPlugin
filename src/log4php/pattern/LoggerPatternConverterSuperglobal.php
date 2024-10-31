@@ -37,6 +37,8 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @subpackage pattern
  * @version $Revision: 1326626 $
  * @since 2.3
+ *
+ * changed by muckiware (c)2024
  */
 abstract class LoggerPatternConverterSuperglobal extends LoggerPatternConverter {
 
@@ -44,13 +46,14 @@ abstract class LoggerPatternConverterSuperglobal extends LoggerPatternConverter 
 	 * Name of the superglobal variable, to be defined by subclasses. 
 	 * For example: "_SERVER" or "_ENV". 
 	 */
-	protected $name;
+	protected string $name;
 	
-	protected $value = '';
+	protected string $value = '';
 	
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		// Read the key from options array
-		if (isset($this->option) && $this->option !== '') {
+		if ($this->option && !empty($this->option)) {
 			$key = $this->option;
 		}
 	
@@ -84,7 +87,7 @@ abstract class LoggerPatternConverterSuperglobal extends LoggerPatternConverter 
 		// When the key is set, display the matching value
 		if (isset($key)) {
 			if (isset($source[$key])) {
-				$this->value = $source[$key]; 
+				$this->value = $source[$key];
 			}
 		}
 		
@@ -94,11 +97,12 @@ abstract class LoggerPatternConverterSuperglobal extends LoggerPatternConverter 
 			foreach($source as $key => $value) {
 				$values[] = "$key=$value";
 			}
-			$this->value = implode(', ', $values);			
+			$this->value = implode(', ', $values);
 		}
 	}
 	
-	public function convert(LoggerLoggingEvent $event) {
+	public function convert(LoggerLoggingEvent $event): string
+    {
 		return $this->value;
 	}
 }
