@@ -1,0 +1,18 @@
+parameters:
+    level: 8
+    treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false
+    inferPrivatePropertyTypeFromConstructor: true
+    reportUnmatchedIgnoredErrors: false
+    # This can be useful from Shopware 6.4.15.0, but as long as we support lower versions we ignore it
+    checkGenericClassInNonGenericObjectType: false
+    tmpDir: var/cache/phpstan
+
+    featureToggles:
+    	disableCheckMissingIterableValueType: false
+
+    paths:
+        - src
+
+    bootstrapFiles:
+        - bin/static-analyze-autoloader.php

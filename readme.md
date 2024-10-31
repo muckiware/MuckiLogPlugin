@@ -102,4 +102,13 @@ $loggerContext = array(
 );
 $this->logger->critical('Call HeaderPageletLoadedEvent with mail notification', $loggerContext);
 ```
-
+# Testing
+if required
+```shell
+cd custom/plugin/MuckiLogPlugin
+composer install
+```
+execute phpstan test
+```shell
+composer run-script phpstan
+```
