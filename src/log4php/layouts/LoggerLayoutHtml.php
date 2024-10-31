@@ -51,7 +51,8 @@ use MuckiLogPlugin\log4php\LoggerLevel;
  * @package log4php
  * @subpackage layouts
  */
-class LoggerLayoutHtml extends LoggerLayout {
+class LoggerLayoutHtml extends LoggerLayout
+{
 	/**
 	 * The <b>LocationInfo</b> option takes a boolean value. By
 	 * default, it is set to false which means there will be no location
@@ -64,7 +65,7 @@ class LoggerLayoutHtml extends LoggerLayout {
 	 * <b>LocationInfo</b> option of that appender as well.
 	 * @var boolean
 	 */
-	protected $locationInfo = false;
+	protected bool $locationInfo = false;
 	
 	/**
 	 * The <b>Title</b> option takes a String value. This option sets the
@@ -72,7 +73,7 @@ class LoggerLayoutHtml extends LoggerLayout {
 	 * Defaults to 'Log4php Log Messages'.
 	 * @var string
 	 */
-	protected $title = "Log4php Log Messages";
+	protected string $title = "Log4php Log Messages";
 	
 	/**
 	 * The <b>LocationInfo</b> option takes a boolean value. By
@@ -85,14 +86,16 @@ class LoggerLayoutHtml extends LoggerLayout {
 	 * or a {@link LoggerAppenderMailEvent} then make sure to set the
 	 * <b>LocationInfo</b> option of that appender as well.
 	 */
-	public function setLocationInfo($flag) {
+	public function setLocationInfo(mixed $flag): void
+    {
 		$this->setBoolean('locationInfo', $flag);
 	}
 
 	/**
 	 * Returns the current value of the <b>LocationInfo</b> option.
 	 */
-	public function getLocationInfo() {
+	public function getLocationInfo(): bool
+    {
 		return $this->locationInfo;
 	}
 	
@@ -101,21 +104,24 @@ class LoggerLayoutHtml extends LoggerLayout {
 	 * document title of the generated HTML document.
 	 * Defaults to 'Log4php Log Messages'.
 	 */
-	public function setTitle($title) {
+	public function setTitle(string $title): void
+    {
 		$this->setString('title', $title);
 	}
 
 	/**
 	 * @return string Returns the current value of the <b>Title</b> option.
 	 */
-	public function getTitle() {
+	public function getTitle(): string
+    {
 		return $this->title;
 	}
 	
 	/**
 	 * @return string Returns the content type output by this layout, i.e "text/html".
 	 */
-	public function getContentType() {
+	public function getContentType(): string
+    {
 		return "text/html";
 	}
 	
@@ -123,7 +129,8 @@ class LoggerLayoutHtml extends LoggerLayout {
 	 * @param LoggerLoggingEvent $event
 	 * @return string
 	 */
-	public function format(LoggerLoggingEvent $event) {
+	public function format(LoggerLoggingEvent $event): string
+    {
 		$sbuf = PHP_EOL . "<tr>" . PHP_EOL;
 	
 		$sbuf .= "<td>";
@@ -140,7 +147,7 @@ class LoggerLayoutHtml extends LoggerLayout {
 		
 		if ($level->equals(LoggerLevel::getLevelDebug())) {
 			$sbuf .= "<font color=\"#339933\">$level</font>";
-		} else if ($level->equals(LoggerLevel::getLevelWarn())) {
+		} else if ($level->equals(LoggerLevel::getLevelWarning())) {
 			$sbuf .= "<font color=\"#993300\"><strong>$level</strong></font>";
 		} else {
 			$sbuf .= $level;
@@ -175,7 +182,8 @@ class LoggerLayoutHtml extends LoggerLayout {
 	/**
 	 * @return string Returns appropriate HTML headers.
 	 */
-	public function getHeader() {
+	public function getHeader(): string
+    {
 		$sbuf = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">" . PHP_EOL;
 		$sbuf .= "<html>" . PHP_EOL;
 		$sbuf .= "<head>" . PHP_EOL;
@@ -209,7 +217,8 @@ class LoggerLayoutHtml extends LoggerLayout {
 	/**
 	 * @return string Returns the appropriate HTML footers.
 	 */
-	public function getFooter() {
+	public function getFooter(): string
+    {
 		$sbuf = "</table>" . PHP_EOL;
 		$sbuf .= "<br>" . PHP_EOL;
 		$sbuf .= "</body></html>";

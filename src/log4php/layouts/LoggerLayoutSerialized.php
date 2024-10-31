@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\layouts;
 
@@ -23,32 +25,36 @@ use MuckiLogPlugin\log4php\LoggerLayout;
 use MuckiLogPlugin\log4php\LoggerLoggingEvent;
 /**
  * Layout which formats the events using PHP's serialize() function.
- * 
+ *
  * Available options:
  * - locationInfo - If set to true, the event's location information will also
  *                  be serialized (slow, defaults to false).
- * 
+ *
  * @version $Revision: 1334369 $
  * @package log4php
  * @subpackage layouts
  * @since 2.2
- */  
-class LoggerLayoutSerialized extends LoggerLayout {
+ */
+class LoggerLayoutSerialized extends LoggerLayout
+{
 	
 	/** Whether to include the event's location information (slow). */
-	protected $locationInfo = false;
+	protected bool $locationInfo = false;
 	
 	/** Sets the location information flag. */
-	public function setLocationInfo($value) {
+	public function setLocationInfo(mixed $value): void
+    {
 		$this->setBoolean('locationInfo', $value);
 	}
 	
 	/** Returns the location information flag. */
-	public function getLocationInfo() {
+	public function getLocationInfo(): bool
+    {
 		return $this->locationInfo;
 	}
 	
-	public function format(LoggerLoggingEvent $event) {
+	public function format(LoggerLoggingEvent $event): string
+    {
 		// If required, initialize the location data
 		if($this->locationInfo) {
 			$event->getLocationInformation();

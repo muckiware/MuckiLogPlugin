@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\layouts;
 
@@ -37,7 +39,8 @@ use MuckiLogPlugin\log4php\helpers\LoggerPatternParser;
  * @subpackage layouts
  * @version $Revision: 1395470 $
  */
-class LoggerLayoutPattern extends LoggerLayout {
+class LoggerLayoutPattern extends LoggerLayout
+{
 	
 	/** Default conversion pattern */
 	const DEFAULT_CONVERSION_PATTERN = '%date %-5level %logger %message%newline';
@@ -45,11 +48,11 @@ class LoggerLayoutPattern extends LoggerLayout {
 	/** Default conversion TTCC Pattern */
 	const TTCC_CONVERSION_PATTERN = '%d [%t] %p %c %x - %m%n';
 
-	/** The conversion pattern. */ 
-	protected $pattern = self::DEFAULT_CONVERSION_PATTERN;
+	/** The conversion pattern. */
+	protected mixed $pattern = self::DEFAULT_CONVERSION_PATTERN;
 	
 	/** Maps conversion keywords to the relevant converter (default implementation). */
-	protected static $defaultConverterMap = array(
+	protected static array $defaultConverterMap = array(
 		'c' => 'MuckiLogPlugin\log4php\pattern\LoggerPatternConverterLogger',
 		'lo' => 'MuckiLogPlugin\log4php\pattern\LoggerPatternConverterLogger',
 		'logger' => 'MuckiLogPlugin\log4php\pattern\LoggerPatternConverterLogger',
@@ -119,16 +122,17 @@ class LoggerLayoutPattern extends LoggerLayout {
 	);
 
 	/** Maps conversion keywords to the relevant converter. */
-	protected $converterMap = array();
+	protected array $converterMap = array();
 	
-	/** 
+	/**
 	 * Head of a chain of Converters.
-	 * @var LoggerPatternConverter 
+	 * @var LoggerPatternConverter
 	 */
-	private $head;
+	private LoggerPatternConverter $head;
 
 	/** Returns the default converter map. */
-	public static function getDefaultConverterMap() {
+	public static function getDefaultConverterMap(): array
+    {
 		return self::$defaultConverterMap;
 	}
 	
@@ -143,7 +147,8 @@ class LoggerLayoutPattern extends LoggerLayout {
 	 * conversion specifiers.
 	 * @param array $conversionPattern
 	 */
-	public function setConversionPattern($conversionPattern) {
+	public function setConversionPattern(array $conversionPattern): void
+    {
 		$this->pattern = $conversionPattern;
 	}
 	
@@ -151,7 +156,8 @@ class LoggerLayoutPattern extends LoggerLayout {
 	 * Processes the conversion pattern and creates a corresponding chain of 
 	 * pattern converters which will be used to format logging events. 
 	 */
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		if (!isset($this->pattern)) {
 			throw new LoggerException("Mandatory parameter 'conversionPattern' is not set.");
 		}
@@ -166,7 +172,8 @@ class LoggerLayoutPattern extends LoggerLayout {
 	 * @param LoggerLoggingEvent $event
 	 * @return string
 	 */
-	public function format(LoggerLoggingEvent $event) {
+	public function format(LoggerLoggingEvent $event): string
+    {
 		$sbuf = '';
 		$converter = $this->head;
 		while ($converter !== null) {

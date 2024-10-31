@@ -16,6 +16,8 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\layouts;
 
@@ -50,48 +52,48 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @version $Revision: 1302503 $
  * @package log4php
  * @subpackage layouts
- * 
- * @deprecated LoggerLayout TTCC is deprecated and will be removed in a future release. Please use 
- *   LoggerLayoutPattern instead. 
+ *
  */
-class LoggerLayoutTTCC extends LoggerLayout {
-
+class LoggerLayoutTTCC extends LoggerLayout
+{
 	// Internal representation of options
-	protected $threadPrinting    = true;
-	protected $categoryPrefixing = true;
-	protected $contextPrinting   = true;
-	protected $microSecondsPrinting = true;
+	protected bool $threadPrinting = true;
+	protected bool $categoryPrefixing = true;
+	protected bool $contextPrinting = true;
+	protected bool $microSecondsPrinting = true;
 	
 	/**
 	 * @var string date format. See {@link PHP_MANUAL#strftime} for details
 	 */
-	protected $dateFormat = '%c';
+	protected mixed $dateFormat = '%c';
 
 	/**
 	 * Constructor
 	 *
-	 * @param string date format
+	 * @param string $dateFormat date format
 	 */
-	public function __construct($dateFormat = '') {
+	public function __construct(string $dateFormat = '')
+    {
 		$this->warn("LoggerLayout TTCC is deprecated and will be removed in a future release. Please use LoggerLayoutPattern instead.");
 		if (!empty($dateFormat)) {
 			$this->dateFormat = $dateFormat;
 		}
-		return;
-	}
+    }
 
 	/**
 	 * The <b>ThreadPrinting</b> option specifies whether the name of the
 	 * current thread is part of log output or not. This is true by default.
 	 */
-	public function setThreadPrinting($threadPrinting) {
+	public function setThreadPrinting(mixed $threadPrinting): void
+    {
 		$this->setBoolean('threadPrinting', $threadPrinting);
 	}
 
 	/**
 	 * @return boolean Returns value of the <b>ThreadPrinting</b> option.
 	 */
-	public function getThreadPrinting() {
+	public function getThreadPrinting(): bool
+    {
 		return $this->threadPrinting;
 	}
 
@@ -99,14 +101,16 @@ class LoggerLayoutTTCC extends LoggerLayout {
 	 * The <b>CategoryPrefixing</b> option specifies whether {@link Category}
 	 * name is part of log output or not. This is true by default.
 	 */
-	public function setCategoryPrefixing($categoryPrefixing) {
+	public function setCategoryPrefixing(mixed $categoryPrefixing): void
+    {
 		$this->setBoolean('categoryPrefixing', $categoryPrefixing);
 	}
 
 	/**
 	 * @return boolean Returns value of the <b>CategoryPrefixing</b> option.
 	 */
-	public function getCategoryPrefixing() {
+	public function getCategoryPrefixing(): bool
+    {
 		return $this->categoryPrefixing;
 	}
 
@@ -115,14 +119,16 @@ class LoggerLayoutTTCC extends LoggerLayout {
 	 * the nested context information belonging to the current thread.
 	 * This is true by default.
 	 */
-	public function setContextPrinting($contextPrinting) {
+	public function setContextPrinting(mixed $contextPrinting): void
+    {
 		$this->setBoolean('contextPrinting', $contextPrinting);
 	}
 
 	/**
 	 * @return boolean Returns value of the <b>ContextPrinting</b> option.
 	 */
-	public function getContextPrinting() {
+	public function getContextPrinting(): bool
+    {
 		return $this->contextPrinting;
 	}
 	
@@ -131,26 +137,30 @@ class LoggerLayoutTTCC extends LoggerLayout {
 	 * should be printed at the end of timestamp.
 	 * This is true by default.
 	 */
-	public function setMicroSecondsPrinting($microSecondsPrinting) {
+	public function setMicroSecondsPrinting(mixed $microSecondsPrinting): void
+    {
 		$this->setBoolean('microSecondsPrinting', $microSecondsPrinting);
 	}
 
 	/**
 	 * @return boolean Returns value of the <b>MicroSecondsPrinting</b> option.
 	 */
-	public function getMicroSecondsPrinting() {
+	public function getMicroSecondsPrinting(): bool
+    {
 		return $this->microSecondsPrinting;
 	}
 	
 	
-	public function setDateFormat($dateFormat) {
+	public function setDateFormat(string $dateFormat): void
+    {
 		$this->setString('dateFormat', $dateFormat);
 	}
 	
 	/**
 	 * @return string
 	 */
-	public function getDateFormat() {
+	public function getDateFormat(): string
+    {
 		return $this->dateFormat;
 	}
 
@@ -162,7 +172,8 @@ class LoggerLayoutTTCC extends LoggerLayout {
 	 * @param LoggerLoggingEvent $event
 	 * @return string
 	 */
-	public function format(LoggerLoggingEvent $event) {
+	public function format(LoggerLoggingEvent $event): string
+    {
 		$timeStamp = (float)$event->getTimeStamp();
 		$format = strftime($this->dateFormat, (int)$timeStamp);
 		
@@ -197,7 +208,8 @@ class LoggerLayoutTTCC extends LoggerLayout {
 		return $format;
 	}
 
-	public function ignoresThrowable() {
+	public function ignoresThrowable(): bool
+    {
 		return true;
 	}
 }

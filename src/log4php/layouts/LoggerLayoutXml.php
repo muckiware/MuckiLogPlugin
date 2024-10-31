@@ -16,33 +16,35 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
  */
 namespace MuckiLogPlugin\log4php\layouts;
 
 use MuckiLogPlugin\log4php\LoggerLayout;
 use MuckiLogPlugin\log4php\LoggerLoggingEvent;
 /**
- * The output of the LoggerXmlLayout consists of a series of log4php:event elements. 
- * 
+ * The output of the LoggerXmlLayout consists of a series of log4php:event elements.
+ *
  * Configurable parameters: 
- * - {@link $locationInfo} - If set to true then the file name and line number 
+ * - {@link $locationInfo} - If set to true then the file name and line number
  *   of the origin of the log statement will be included in output.
  * - {@link $log4jNamespace} - If set to true then log4j namespace will be used
- *   instead of log4php namespace. This can be usefull when using log viewers 
- *   which can only parse the log4j namespace such as Apache Chainsaw. 
- * 
- * <p>It does not output a complete well-formed XML file. 
+ *   instead of log4php namespace. This can be usefull when using log viewers
+ *   which can only parse the log4j namespace such as Apache Chainsaw.
+ *
+ * <p>It does not output a complete well-formed XML file.
  * The output is designed to be included as an external entity in a separate file to form
  * a correct XML file.</p>
- * 
+ *
  * Example:
- * 
+ *
  * {@example ../../examples/php/layout_xml.php 19}<br>
- * 
+ *
  * {@example ../../examples/resources/layout_xml.properties 18}<br>
  *
  * The above would print:
- * 
+ *
  * <pre>
  * <log4php:eventSet xmlns:log4php="http://logging.apache.org/log4php/" version="0.3" includesLocationInfo="true">
  * 	<log4php:event logger="root" level="INFO" thread="13802" timestamp="1252456226491">
@@ -56,7 +58,8 @@ use MuckiLogPlugin\log4php\LoggerLoggingEvent;
  * @package log4php
  * @subpackage layouts
  */
-class LoggerLayoutXml extends LoggerLayout {
+class LoggerLayoutXml extends LoggerLayout
+{
 	const LOG4J_NS_PREFIX ='log4j';
 	const LOG4J_NS = 'http://jakarta.apache.org/log4j/';
 	
@@ -73,22 +76,23 @@ class LoggerLayoutXml extends LoggerLayout {
 	 * log statement will be output.
 	 * @var boolean
 	 */
-	protected $locationInfo = true;
+	protected bool $locationInfo = true;
   
 	/**
-	 * If set to true, log4j namespace will be used instead of the log4php 
+	 * If set to true, log4j namespace will be used instead of the log4php
 	 * namespace.
-	 * @var boolean 
+	 * @var boolean
 	 */
-	protected $log4jNamespace = false;
+	protected bool $log4jNamespace = false;
 	
 	/** The namespace in use. */
-	protected $namespace = self::LOG4PHP_NS;
+	protected string $namespace = self::LOG4PHP_NS;
 	
 	/** The namespace prefix in use */
-	protected $namespacePrefix = self::LOG4PHP_NS_PREFIX;
+	protected string $namespacePrefix = self::LOG4PHP_NS_PREFIX;
 	 
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		if ($this->getLog4jNamespace()) {
 			$this->namespace        = self::LOG4J_NS;
 			$this->namespacePrefix  = self::LOG4J_NS_PREFIX;
@@ -101,7 +105,8 @@ class LoggerLayoutXml extends LoggerLayout {
 	/**
 	 * @return string
 	 */
-	public function getHeader() {
+	public function getHeader(): string
+    {
 		return "<{$this->namespacePrefix}:eventSet ".
 			"xmlns:{$this->namespacePrefix}=\"{$this->namespace}\" ".
 			"version=\"0.3\" ".
@@ -115,7 +120,8 @@ class LoggerLayoutXml extends LoggerLayout {
 	 * @param LoggerLoggingEvent $event
 	 * @return string
 	 */
-	public function format(LoggerLoggingEvent $event) {
+	public function format(LoggerLoggingEvent $event): string
+    {
 		$ns = $this->namespacePrefix;
 		
 		$loggerName = $event->getLoggerName();
@@ -124,8 +130,8 @@ class LoggerLayoutXml extends LoggerLayout {
 		$level = $event->getLevel()->toString();
 
 		$buf  = "<$ns:event logger=\"{$loggerName}\" level=\"{$level}\" thread=\"{$thread}\" timestamp=\"{$timeStamp}\">".PHP_EOL;
-		$buf .= "<$ns:message>"; 
-		$buf .= $this->encodeCDATA($event->getRenderedMessage()); 
+		$buf .= "<$ns:message>";
+		$buf .= $this->encodeCDATA($event->getRenderedMessage());
 		$buf .= "</$ns:message>".PHP_EOL;
 
 		$ndc = $event->getNDC();
@@ -146,7 +152,7 @@ class LoggerLayoutXml extends LoggerLayout {
 
 		if ($this->getLocationInfo()) {
 			$locationInfo = $event->getLocationInformation();
-			$buf .= "<$ns:locationInfo ". 
+			$buf .= "<$ns:locationInfo ".
 					"class=\"" . $locationInfo->getClassName() . "\" ".
 					"file=\"" .  htmlentities($locationInfo->getFileName(), ENT_QUOTES) . "\" ".
 					"line=\"" .  $locationInfo->getLineNumber() . "\" ".
@@ -162,16 +168,18 @@ class LoggerLayoutXml extends LoggerLayout {
 	/**
 	 * @return string
 	 */
-	public function getFooter() {
+	public function getFooter(): string
+    {
 		return "</{$this->namespacePrefix}:eventSet>" . PHP_EOL;
 	}
 	
 	
-	/** 
+	/**
 	 * Whether or not file name and line number will be included in the output.
 	 * @return boolean
 	 */
-	public function getLocationInfo() {
+	public function getLocationInfo(): bool
+    {
 		return $this->locationInfo;
 	}
   
@@ -182,32 +190,35 @@ class LoggerLayoutXml extends LoggerLayout {
 	 * true, then the file name and line number of the statement at the
 	 * origin of the log statement will be output.
 	 */
-	public function setLocationInfo($flag) {
+	public function setLocationInfo(mixed $flag): void
+    {
 		$this->setBoolean('locationInfo', $flag);
 	}
   
 	/**
 	 * @return boolean
 	 */
-	 public function getLog4jNamespace() {
+	 public function getLog4jNamespace(): bool
+     {
 	 	return $this->log4jNamespace;
 	 }
 
 	/**
-	 * @param boolean
-	 */
-	public function setLog4jNamespace($flag) {
+	 * @param mixed $flag
+     */
+	public function setLog4jNamespace(mixed $flag): void
+    {
 		$this->setBoolean('log4jNamespace', $flag);
 	}
 	
-	/** 
-	 * Encases a string in CDATA tags, and escapes any existing CDATA end 
+	/**
+	 * Encases a string in CDATA tags, and escapes any existing CDATA end
 	 * tags already present in the string.
-	 * @param string $string 
+	 * @param string $string
 	 */
-	private function encodeCDATA($string) {
+	private function encodeCDATA(string $string): string
+    {
 		$string = str_replace(self::CDATA_END, self::CDATA_EMBEDDED_END, $string);
 		return self::CDATA_START . $string . self::CDATA_END;
 	}
 }
-
