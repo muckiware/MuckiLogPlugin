@@ -38,7 +38,7 @@ class SendNotification
             /** @var LoggingEventEntity $logEvent */
             foreach ($logEvents as $logEvent) {
 
-                if ($progress->getOffset() >= $progress->getTotal()) {
+                if ($progress->getTotal() && $progress->getOffset() >= $progress->getTotal()) {
                     $progressBar->setProgress($progress->getTotal());
                 } else {
                     $progressBar->advance();

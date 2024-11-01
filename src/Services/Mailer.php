@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 use MuckiLogPlugin\Services\Settings as PluginSettings;
@@ -37,40 +38,58 @@ class Mailer
     public function sendMailNotification(LoggingEventEntity $logEvent, Context $context): bool
     {
         $data = $this->buildEmailParameter($logEvent, $context);
-        $this->mailService->send(
-            $data->all(),
-            Context::createDefaultContext(),
-            [
-                'logEvent' => $logEvent
-            ]
-        );
+        if($data) {
+            $this->mailService->send(
+                $data->all(),
+                Context::createDefaultContext(),
+                [
+                    'logEvent' => $logEvent
+                ]
+            );
 
-//        $logEvent->getCreatedAt()
-        return true;
+            return true;
+        }
+
+        return false;
     }
 
-    private function getMailTemplate(string $mailTemplateId, Context $context): MailTemplateTypeEntity
+    private function getMailTemplate(string $mailTemplateId, Context $context): ?MailTemplateTypeEntity
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('id', $mailTemplateId));
         $criteria->addAssociation('mailTemplates');
 
         $template = $this->templateRepository->search($criteria, $context);
-        return $template->first();
+        if($template->first()) {
+
+            /** @var MailTemplateTypeEntity $mailTemplateTypeEntity */
+            $mailTemplateTypeEntity = $template->first();
+            return $mailTemplateTypeEntity;
+        }
+        return null;
     }
 
-    private function buildEmailParameter(LoggingEventEntity $logEvent, Context $context): ParameterBag
+    private function buildEmailParameter(LoggingEventEntity $logEvent, Context $context): ?ParameterBag
     {
         $template = $this->getMailTemplate($logEvent->getNotificationEmailTemplateId(), $context);
+        if($template) {
 
-        $data = new ParameterBag();
-        $data->set('recipients', array($logEvent->getNotificationEmailReceiver() => $logEvent->getNotificationEmailReceiver()));
-        $data->set('senderName',$logEvent->getNotificationEmailSender());
-        $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
-        $data->set('contentHtml', $template->getMailTemplates()->first()->getContentHtml());
-        $data->set('contentPlain', $template->getMailTemplates()->first()->getContentPlain());
-        $data->set('subject', $template->getMailTemplates()->first()->getSubject());
+            /** @var MailTemplateCollection $mailTemplates */
+            $mailTemplates = $template->getMailTemplates();
+            if($mailTemplates && $mailTemplates->first()) {
 
-        return $data;
+                $data = new ParameterBag();
+                $data->set('recipients', array($logEvent->getNotificationEmailReceiver() => $logEvent->getNotificationEmailReceiver()));
+                $data->set('senderName',$logEvent->getNotificationEmailSender());
+                $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
+                $data->set('contentHtml', $mailTemplates->first()->getContentHtml());
+                $data->set('contentPlain', $mailTemplates->first()->getContentPlain());
+                $data->set('subject', $mailTemplates->first()->getSubject());
+
+                return $data;
+            }
+        }
+
+        return null;
     }
 }
