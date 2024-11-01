@@ -69,8 +69,7 @@ class ResponseHeaderListener implements EventSubscriberInterface
             try {
                 $requestContent = json_decode($event->getRequest()->getContent(), true);
             } catch (\Exception $e) {
-                $this->logger->errorItem('The JSON payload is malformed.');
-                $this->logger->errorItem($e->getMessage());
+                throw new BadRequestHttpException('The JSON payload is malformed. Error: '.$e->getMessage());
             }
 
             if(
