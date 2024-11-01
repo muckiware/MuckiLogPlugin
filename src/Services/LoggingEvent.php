@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
 use MuckiLogPlugin\Core\SendMailMode;
+use MuckiLogPlugin\Core\EmailNotification\EmailNotificationEntity;
 use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\Settings as PluginSettings;
 
@@ -52,6 +53,13 @@ class LoggingEvent
             $this->getCriteriaBySendMailMode($this->pluginSettings->getSendMailMode(), $loglevel),
             Context::createDefaultContext()
         );
+    }
+
+    public function removeLoggerEventByIds(EmailNotificationEntity $emailNotification): void
+    {
+        foreach ($emailNotification->getLoggingEventCollection()->getElements() as $logEvent) {
+            $this->removeLoggerEventById($logEvent->getId());
+        }
     }
 
     public function removeLoggerEventById(string $loggerEventById): void
