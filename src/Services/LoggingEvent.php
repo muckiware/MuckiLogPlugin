@@ -17,12 +17,15 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 
+use MuckiLogPlugin\Core\SendMailMode;
 use MuckiLogPlugin\Entity\LoggerSetup;
+use MuckiLogPlugin\Services\Settings as PluginSettings;
 
 class LoggingEvent
 {
     public function __construct(
-        protected EntityRepository $loggingEventRepository
+        protected EntityRepository $loggingEventRepository,
+        protected PluginSettings $pluginSettings
     )
     {}
 
@@ -43,13 +46,12 @@ class LoggingEvent
         ], Context::createDefaultContext());
     }
 
-    public function getLoggerEvents(): EntitySearchResult
+    public function getLoggerEvents(?string $loglevel=null): EntitySearchResult
     {
-        $criteria = new Criteria();
-        $criteria->setLimit(5);
-        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
-
-        return $this->loggingEventRepository->search($criteria, Context::createDefaultContext());
+        return $this->loggingEventRepository->search(
+            $this->getCriteriaBySendMailMode($this->pluginSettings->getSendMailMode(), $loglevel),
+            Context::createDefaultContext()
+        );
     }
 
     public function removeLoggerEventById(string $loggerEventById): void
@@ -59,5 +61,47 @@ class LoggingEvent
             [$loggerEventById],
         );
         $this->loggingEventRepository->delete(array_values($loggerEventByIds), Context::createDefaultContext());
+    }
+
+    public function getCriteriaBySendMailMode(string $sendMailMode, string $loglevel=null): Criteria
+    {
+        $criteria = new Criteria();
+        switch ($sendMailMode) {
+
+            case SendMailMode::EventMail->value:
+                $criteria = $this->getCriteriaEventMail();
+                break;
+            case SendMailMode::LogLevelMail->value:
+                $criteria = $this->getCriteriaLogLevelMail($loglevel);
+                break;
+            default:
+                //TODO throw error
+                break;
+        }
+
+        return $criteria;
+    }
+
+    public function getCriteriaEventMail(): Criteria
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(5);
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+        $criteria->addSorting(new FieldSorting('vendor', FieldSorting::ASCENDING));
+        $criteria->addSorting(new FieldSorting('plugin', FieldSorting::ASCENDING));
+
+        return $criteria;
+    }
+
+    public function getCriteriaLogLevelMail(string $logLevel): Criteria
+    {
+        $criteria = new Criteria();
+        $criteria->setLimit(100);
+        $criteria->addFilter(new EqualsFilter('loglevel', $logLevel));
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::ASCENDING));
+        $criteria->addSorting(new FieldSorting('vendor', FieldSorting::ASCENDING));
+        $criteria->addSorting(new FieldSorting('plugin', FieldSorting::ASCENDING));
+
+        return $criteria;
     }
 }

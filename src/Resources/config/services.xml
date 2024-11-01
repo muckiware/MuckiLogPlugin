@@ -57,12 +57,14 @@
         </service>
         <service id="MuckiLogPlugin\Services\LoggingEvent" public="true">
             <argument type="service" id="muwa_logging_event.repository"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
         <service id="MuckiLogPlugin\Services\Helper"/>
         <service id="MuckiLogPlugin\Services\SendNotification">
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
             <argument type="service" id="MuckiLogPlugin\Services\CliOutput"/>
             <argument type="service" id="MuckiLogPlugin\Services\Mailer"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
         <service id="MuckiLogPlugin\Services\CliOutput">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

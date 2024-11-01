@@ -24,4 +24,6 @@ class Defaults
 
     const DEFAULT_SW_CONTEXT = 'sw';
     const DEFAULT_SW_EXTENSION = 'dev';
+
+    const DEFAULT_SEND_MAIL_MODE = 'eachLogLevelOneMail';
 }

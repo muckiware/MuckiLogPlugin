@@ -51,7 +51,22 @@
         </input-field>
     </card>
     <card>
-        <title>Log event notification settings</title>
+        <title>Log event email notification settings</title>
+        <input-field type="single-select">
+            <name>sendMailMode</name>
+            <options>
+                <option>
+                    <id>eachEventOneMail</id>
+                    <name>For each event one mail</name>
+                </option>
+                <option>
+                    <id>eachLogLevelOneMail</id>
+                    <name>For each Log Level only one mail</name>
+                </option>
+            </options>
+            <defaultValue>eachLogLevelOneMail</defaultValue>
+            <label>Send email mode</label>
+        </input-field>
         <component name="sw-entity-single-select">
             <name>salesChannelId</name>
             <entity>sales_channel</entity>

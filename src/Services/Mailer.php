@@ -23,6 +23,8 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 use MuckiLogPlugin\Core\LoggingEvent\LoggingEventEntity;
+use MuckiLogPlugin\Core\EmailNotification\EmailNotificationEntity;
+use MuckiLogPlugin\Core\SendMailMode;
 
 class Mailer
 {
@@ -35,22 +37,15 @@ class Mailer
     )
     {}
 
-    public function sendMailNotification(LoggingEventEntity $logEvent, Context $context): bool
+    public function sendMailNotification(EmailNotificationEntity $emailNotification): void
     {
-        $data = $this->buildEmailParameter($logEvent, $context);
-        if($data) {
-            $this->mailService->send(
-                $data->all(),
-                Context::createDefaultContext(),
-                [
-                    'logEvent' => $logEvent
-                ]
-            );
-
-            return true;
-        }
-
-        return false;
+        $this->mailService->send(
+            $emailNotification->getEmailParameter()->all(),
+            $emailNotification->getContext(),
+            [
+                'logEvents' => $emailNotification->getLoggingEventCollection()->getElements()
+            ]
+        );
     }
 
     private function getMailTemplate(string $mailTemplateId, Context $context): ?MailTemplateTypeEntity
@@ -69,7 +64,7 @@ class Mailer
         return null;
     }
 
-    private function buildEmailParameter(LoggingEventEntity $logEvent, Context $context): ?ParameterBag
+    public function buildEmailParameterByEvent(LoggingEventEntity $logEvent, Context $context): ?ParameterBag
     {
         $template = $this->getMailTemplate($logEvent->getNotificationEmailTemplateId(), $context);
         if($template) {
@@ -81,6 +76,31 @@ class Mailer
                 $data = new ParameterBag();
                 $data->set('recipients', array($logEvent->getNotificationEmailReceiver() => $logEvent->getNotificationEmailReceiver()));
                 $data->set('senderName',$logEvent->getNotificationEmailSender());
+                $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
+                $data->set('contentHtml', $mailTemplates->first()->getContentHtml());
+                $data->set('contentPlain', $mailTemplates->first()->getContentPlain());
+                $data->set('subject', $mailTemplates->first()->getSubject());
+
+                return $data;
+            }
+        }
+
+        return null;
+    }
+
+    public function buildEmailParameterByLoglevel(Context $context): ?ParameterBag
+    {
+        $template = $this->getMailTemplate($this->pluginSettings->getNotificationMailTemplateId(), $context);
+        if($template) {
+
+            /** @var MailTemplateCollection $mailTemplates */
+            $mailTemplates = $template->getMailTemplates();
+            if($mailTemplates && $mailTemplates->first()) {
+
+                $notificationEmailReceiver = $this->pluginSettings->getNotificationMailAddress();
+                $data = new ParameterBag();
+                $data->set('recipients', array($notificationEmailReceiver => $notificationEmailReceiver));
+                $data->set('senderName',$this->pluginSettings->getNotificationMailSender());
                 $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
                 $data->set('contentHtml', $mailTemplates->first()->getContentHtml());
                 $data->set('contentPlain', $mailTemplates->first()->getContentPlain());

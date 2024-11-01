@@ -16,8 +16,8 @@ namespace MuckiLogPlugin\Services;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 use MuckiLogPlugin\Core\LogLevel;
-use function Symfony\Component\String\b;
 
 class Settings implements SettingsInterface
 {
@@ -54,9 +54,10 @@ class Settings implements SettingsInterface
     const CONFIG_PATH_CORE_BASIC_EMAIL = 'core.basicInformation.email';
 
     const CONFIG_PATH_SALES_CHANNEL_ID = 'MuckiLogPlugin.config.salesChannelId';
+    const CONFIG_PATH_SEND_MAIL_MODE = 'MuckiLogPlugin.config.sendMailMode';
     /**
      * Absolute path to folder of log config files
-     * @var string
+     * @var string|null
      */
     protected ?string $logConfigPath;
 
@@ -254,6 +255,15 @@ class Settings implements SettingsInterface
         }
 
         return $needNotificationByLogLevel;
+    }
+
+    public function getSendMailMode(): string
+    {
+        if($this->config->getString($this::CONFIG_PATH_SEND_MAIL_MODE) != '') {
+            return $this->config->getString($this::CONFIG_PATH_SEND_MAIL_MODE);
+        }
+
+        return PluginDefaults::DEFAULT_SEND_MAIL_MODE;
     }
 
     public function getSalesChannelId(): ?string
