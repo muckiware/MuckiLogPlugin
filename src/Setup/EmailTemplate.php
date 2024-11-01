@@ -30,18 +30,26 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 class EmailTemplate
 {
-    protected EntityRepository $mailTemplateTypeRepository;
+    protected ?EntityRepository $mailTemplateTypeRepository;
 
-    protected EntityRepository $mailTemplateRepository;
+    protected ?EntityRepository $mailTemplateRepository;
 
     public function __construct(
-        ContainerInterface $container,
+        ?ContainerInterface $container,
     ) {
-        /** @var EntityRepository mailTemplateTypeRepository */
-        $this->mailTemplateTypeRepository = $container->get('mail_template_type.repository');
+        $this->mailTemplateTypeRepository = null;
+        $this->mailTemplateRepository = null;
 
-        /** @var EntityRepository mailTemplateRepository */
-        $this->mailTemplateRepository = $container->get('mail_template.repository');
+        if($container) {
+
+            /** @var EntityRepository $mailTemplateTypeRepository */
+            $mailTemplateTypeRepository = $container->get('mail_template_type.repository');
+            /** @var EntityRepository $mailTemplateRepository */
+            $mailTemplateRepository = $container->get('mail_template.repository');
+
+            $this->mailTemplateTypeRepository = $mailTemplateTypeRepository;
+            $this->mailTemplateRepository = $mailTemplateRepository;
+        }
     }
 
     public function getMailTemplateTypeIdByTechnicalName(string $technicalName, Context $context): ?string
@@ -49,10 +57,14 @@ class EmailTemplate
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('technicalName', $technicalName));
 
-        $mailTemplateTypeId = $this->mailTemplateTypeRepository->searchIds($criteria, $context);
-        if(!empty($mailTemplateTypeId->getIds())) {
-            return $mailTemplateTypeId->firstId();
+        if($this->mailTemplateTypeRepository && method_exists($this->mailTemplateTypeRepository, 'searchIds')) {
+
+            $mailTemplateTypeId = $this->mailTemplateTypeRepository->searchIds($criteria, $context);
+            if(!empty($mailTemplateTypeId->getIds())) {
+                return $mailTemplateTypeId->firstId();
+            }
         }
+
         return null;
     }
     public function getMailTemplateIdsByTemplateTypeId(string $mailTemplateTypeId, Context $context): ?array
@@ -60,17 +72,21 @@ class EmailTemplate
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('mailTemplateTypeId', $mailTemplateTypeId));
 
-        $mailTemplateTypeIds = $this->mailTemplateRepository->searchIds($criteria, $context);
-        if(!empty($mailTemplateTypeIds->getIds())) {
-            return $mailTemplateTypeIds->getIds();
+        if($this->mailTemplateRepository && method_exists($this->mailTemplateRepository, 'searchIds')) {
+
+            $mailTemplateTypeIds = $this->mailTemplateRepository->searchIds($criteria, $context);
+            if(!empty($mailTemplateTypeIds->getIds())) {
+                return $mailTemplateTypeIds->getIds();
+            }
         }
+
         return null;
     }
 
     public function createEmailTemplate(Context $context): void
     {
         $mailTemplateTypeId = $this->getMailTemplateTypeId($context);
-        if($mailTemplateTypeId['isNew']) {
+        if($mailTemplateTypeId['isNew'] && $this->mailTemplateTypeRepository) {
 
             $this->mailTemplateTypeRepository->create(array([
                 'id' => $mailTemplateTypeId['id'],
@@ -83,7 +99,7 @@ class EmailTemplate
         }
 
         $templateIds = $this->getMailTemplateIdsByTemplateTypeId($mailTemplateTypeId['id'], $context);
-        if(empty($templateIds)) {
+        if(empty($templateIds) && $this->mailTemplateRepository) {
 
             $this->mailTemplateRepository->create(array([
                 'id' => Uuid::randomHex(),
@@ -121,7 +137,11 @@ class EmailTemplate
         $filename = __DIR__.'/EmailTemplates/'.$type;
 
         if (is_file($filename)) {
-            return file_get_contents($filename);
+
+            $fileContents = file_get_contents($filename);
+            if($fileContents) {
+                return $fileContents;
+            }
         }
 
         return 'Missing template content';

@@ -32,15 +32,18 @@ class UninstallEmailTemplate extends EmailTemplate
 
     public function removeEmailTemplateType(string $mailTemplateTypeId, Context $context): void
     {
-        $this->mailTemplateTypeRepository->delete(
-            array_values(array(array('id' => $mailTemplateTypeId))), $context
-        );
+        if($this->mailTemplateTypeRepository) {
+
+            $this->mailTemplateTypeRepository->delete(
+                array_values(array(array('id' => $mailTemplateTypeId))), $context
+            );
+        }
     }
 
     public function removeEmailTemplate(string $mailTemplateTypeId, Context $context): void
     {
         $templateIds = $this->getMailTemplateIdsByTemplateTypeId($mailTemplateTypeId, $context);
-        if(!empty($templateIds)) {
+        if(!empty($templateIds) && $this->mailTemplateRepository) {
 
             $templateIds = array_map(
                 static fn ($id) => [ 'id' => $id ],
