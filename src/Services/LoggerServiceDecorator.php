@@ -22,25 +22,22 @@ use MuckiLogPlugin\Services\SettingsInterface as PluginSettings;
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\Helper as PluginHelper;
+use MuckiLogPlugin\Logging\LoggerInterface as MuckiLogger;
 
 class LoggerServiceDecorator implements LoggerInterface
 {
     const DEFAULT_SW_CONTEXT = 'sw';
     const DEFAULT_SW_EXTENSION = 'dev';
-
-    private LoggerInterface $originalLoggerService;
-
-    protected $muckiLogger;
+    protected LoggerInterface $originalLoggerService;
 
     public function __construct(
         LoggerInterface $loggerService,
-        \MuckiLogPlugin\Logging\LoggerInterface $muckiLogger,
+        protected MuckiLogger $muckiLogger,
         protected PluginSettings $pluginSettings,
         protected PluginHelper $pluginHelper
     )
     {
         $this->originalLoggerService = $loggerService;
-        $this->muckiLogger = $muckiLogger;
     }
 
     public function emergency(mixed $message, array $context = array()): void
@@ -131,7 +128,11 @@ class LoggerServiceDecorator implements LoggerInterface
         ) {
             $loggerSetup->setNotificationEmailTemplateId(trim($context[2]['setup']['notificationEmailTemplateId']));
         } else {
-            $loggerSetup->setNotificationEmailTemplateId($this->pluginSettings->getNotificationMailTemplateId());
+
+            $notificationMailTemplateId = $this->pluginSettings->getNotificationMailTemplateId();
+            if($notificationMailTemplateId) {
+                $loggerSetup->setNotificationEmailTemplateId($notificationMailTemplateId);
+            }
         }
         return $loggerSetup;
     }
@@ -146,7 +147,11 @@ class LoggerServiceDecorator implements LoggerInterface
         ) {
             $loggerSetup->setNotificationEmailReceiver(trim($context[2]['setup']['notificationEmailReceiver']));
         } else {
-            $loggerSetup->setNotificationEmailReceiver($this->pluginSettings->getNotificationMailAddress());
+
+            $notificationMailAddress = $this->pluginSettings->getNotificationMailAddress();
+            if($notificationMailAddress) {
+                $loggerSetup->setNotificationEmailReceiver($notificationMailAddress);
+            }
         }
         return $loggerSetup;
     }

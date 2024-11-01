@@ -35,9 +35,6 @@ class LoggerSetup
 
     protected bool $sendNotification;
 
-    /**
-     * @param bool $sendNotification
-     */
     public function __construct()
     {
         $this->id = Uuid::randomHex();

@@ -16,3 +16,7 @@ parameters:
 
     bootstrapFiles:
         - bin/static-analyze-autoloader.php
+
+    excludePaths:
+        analyseAndScan:
+            - src/log4php
