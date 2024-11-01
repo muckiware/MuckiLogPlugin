@@ -65,14 +65,14 @@ class SendNotification
 
     public function getEmailNotificationCollection(Context $context): EmailNotificationCollection
     {
-        $emailNotificationCollection = null;
+        $emailNotificationCollection = new EmailNotificationCollection();
         switch ($this->pluginSettings->getSendMailMode()) {
 
             case SendMailMode::EventMail->value:
-                $emailNotificationCollection = $this->getMailSetupCollectionByEvent($context);
+                $emailNotificationCollection = $this->getMailSetupCollectionByEvent($emailNotificationCollection, $context);
                 break;
             case SendMailMode::LogLevelMail->value:
-                $emailNotificationCollection = $this->getMailSetupCollectionByLoglevel($context);
+                $emailNotificationCollection = $this->getMailSetupCollectionByLoglevel($emailNotificationCollection, $context);
                 break;
             default:
                 //TODO throw error
@@ -81,48 +81,61 @@ class SendNotification
 
         return $emailNotificationCollection;
     }
-    public function getMailSetupCollectionByEvent(Context $context): EmailNotificationCollection
+    public function getMailSetupCollectionByEvent(
+        EmailNotificationCollection $emailNotificationCollection,
+        Context $context
+    ): EmailNotificationCollection
     {
-        $mailNotificationCollection = new EmailNotificationCollection();
         $logEvents = $this->loggingEvent->getLoggerEvents();
         /** @var LoggingEventEntity $logEvent */
         foreach ($logEvents as $logEvent) {
 
-            $mailNotification = new EmailNotificationEntity();
-            $mailNotification->setId(Uuid::randomHex());
-            $mailNotification->setLoglevel($logEvent->getLoglevel());
-            $mailNotification->setCreatedAt(new \DateTime('now', new \DateTimeZone('UTC')));
-            $mailNotification->setContext($context);
-            $mailNotification->setEmailParameter($this->serviceMailer->buildEmailParameterByEvent($logEvent, $context));
+            $emailParameterByEvent = $this->serviceMailer->buildEmailParameterByEvent($logEvent, $context);
+            if($emailParameterByEvent) {
 
-            $loggingEventCollection = new LoggingEventCollection();
-            $loggingEventCollection->add($logEvent);
-            $mailNotification->setLoggingEventCollection($loggingEventCollection);
+                $mailNotification = new EmailNotificationEntity();
+                $mailNotification->setId(Uuid::randomHex());
+                $mailNotification->setLoglevel($logEvent->getLoglevel());
+                $mailNotification->setCreatedAt(new \DateTime('now', new \DateTimeZone('UTC')));
+                $mailNotification->setContext($context);
+                $mailNotification->setEmailParameter($emailParameterByEvent);
 
-            $mailNotificationCollection->add($mailNotification);
+                $loggingEventCollection = new LoggingEventCollection();
+                $loggingEventCollection->add($logEvent);
+                $mailNotification->setLoggingEventCollection($loggingEventCollection);
+
+                $emailNotificationCollection->add($mailNotification);
+            }
         }
 
-        return $mailNotificationCollection;
+        return $emailNotificationCollection;
     }
 
-    public function getMailSetupCollectionByLoglevel(Context $context): EmailNotificationCollection
+    public function getMailSetupCollectionByLoglevel(
+        EmailNotificationCollection $emailNotificationCollection,
+        Context $context
+    ): EmailNotificationCollection
     {
-        $mailNotificationCollection = new EmailNotificationCollection();
         foreach (LogLevel::cases() as $loggingMethod) {
 
             $logEvents = $this->loggingEvent->getLoggerEvents($loggingMethod->value);
+            /** @var LoggingEventCollection $loggingEventCollection */
+            $loggingEventCollection = $logEvents->getEntities();
+            $emailParameterByLoglevel = $this->serviceMailer->buildEmailParameterByLoglevel($context);
+            if($emailParameterByLoglevel) {
 
-            $mailNotification = new EmailNotificationEntity();
-            $mailNotification->setId(Uuid::randomHex());
-            $mailNotification->setLoglevel($loggingMethod->value);
-            $mailNotification->setCreatedAt(new \DateTime('now', new \DateTimeZone('UTC')));
-            $mailNotification->setContext($context);
-            $mailNotification->setEmailParameter($this->serviceMailer->buildEmailParameterByLoglevel($context));
-            $mailNotification->setLoggingEventCollection($logEvents->getEntities());
+                $mailNotification = new EmailNotificationEntity();
+                $mailNotification->setId(Uuid::randomHex());
+                $mailNotification->setLoglevel($loggingMethod->value);
+                $mailNotification->setCreatedAt(new \DateTime('now', new \DateTimeZone('UTC')));
+                $mailNotification->setContext($context);
+                $mailNotification->setEmailParameter($emailParameterByLoglevel);
+                $mailNotification->setLoggingEventCollection($loggingEventCollection);
 
-            $mailNotificationCollection->add($mailNotification);
+                $emailNotificationCollection->add($mailNotification);
+            }
         }
 
-        return $mailNotificationCollection;
+        return $emailNotificationCollection;
     }
 }

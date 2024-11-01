@@ -72,7 +72,9 @@ class LoggingEvent
                 $criteria = $this->getCriteriaEventMail();
                 break;
             case SendMailMode::LogLevelMail->value:
-                $criteria = $this->getCriteriaLogLevelMail($loglevel);
+                if($loglevel) {
+                    $criteria = $this->getCriteriaLogLevelMail($loglevel);
+                }
                 break;
             default:
                 //TODO throw error

@@ -16,9 +16,11 @@ use Shopware\Core\Content\Mail\Service\MailService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Content\MailTemplate\MailTemplateCollection;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
@@ -90,23 +92,29 @@ class Mailer
 
     public function buildEmailParameterByLoglevel(Context $context): ?ParameterBag
     {
-        $template = $this->getMailTemplate($this->pluginSettings->getNotificationMailTemplateId(), $context);
-        if($template) {
+        $notificationMailTemplateId = $this->pluginSettings->getNotificationMailTemplateId();
+        if(!$notificationMailTemplateId || !Uuid::isValid($notificationMailTemplateId)) {
+            throw new InvalidConfigurationException('Missing template id for notification emails');
+        } else {
 
-            /** @var MailTemplateCollection $mailTemplates */
-            $mailTemplates = $template->getMailTemplates();
-            if($mailTemplates && $mailTemplates->first()) {
+            $template = $this->getMailTemplate($notificationMailTemplateId, $context);
+            if($template) {
 
-                $notificationEmailReceiver = $this->pluginSettings->getNotificationMailAddress();
-                $data = new ParameterBag();
-                $data->set('recipients', array($notificationEmailReceiver => $notificationEmailReceiver));
-                $data->set('senderName',$this->pluginSettings->getNotificationMailSender());
-                $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
-                $data->set('contentHtml', $mailTemplates->first()->getContentHtml());
-                $data->set('contentPlain', $mailTemplates->first()->getContentPlain());
-                $data->set('subject', $mailTemplates->first()->getSubject());
+                /** @var MailTemplateCollection $mailTemplates */
+                $mailTemplates = $template->getMailTemplates();
+                if($mailTemplates && $mailTemplates->first()) {
 
-                return $data;
+                    $notificationEmailReceiver = $this->pluginSettings->getNotificationMailAddress();
+                    $data = new ParameterBag();
+                    $data->set('recipients', array($notificationEmailReceiver => $notificationEmailReceiver));
+                    $data->set('senderName',$this->pluginSettings->getNotificationMailSender());
+                    $data->set('salesChannelId', $this->pluginSettings->getSalesChannelId());
+                    $data->set('contentHtml', $mailTemplates->first()->getContentHtml());
+                    $data->set('contentPlain', $mailTemplates->first()->getContentPlain());
+                    $data->set('subject', $mailTemplates->first()->getSubject());
+
+                    return $data;
+                }
             }
         }
 
