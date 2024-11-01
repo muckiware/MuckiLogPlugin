@@ -13,27 +13,30 @@
 
 namespace MuckiLogPlugin\Services;
 
+use MuckiLogPlugin\log4php\Logger;
+
 interface LogconfigInterface
 {
     /**
      * Method for to get an php4log logger object
-     * 
+     *
      */
-    public function getLogger();
+    public function getLogger(): Logger;
 
     /**
      * Method for to load a xml config file, if it already exists.
      *
      * @param string $loggerContext
+     * @param string $extensionContext
      * @return boolean
      */
-    public function checkConfigPath($loggerContext = '', $extensionContext = ''): bool;
+    public function checkConfigPath(string $loggerContext='', string $extensionContext=''): bool;
     
     /**
      * Method for to remove obsolete logger config files
-     * 
+     *
      * @param string $path
      */
-    public function removeLogConfigFiles($path);
+    public function removeLogConfigFiles(string $path): void;
 }
 

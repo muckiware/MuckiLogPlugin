@@ -21,29 +21,15 @@ class Logconfig implements LogconfigInterface
 {
     /**
      *
-     * @var KernelInterface
-     */
-    protected KernelInterface $kernel;
-    
-    /**
-     *
-     * @var PluginSettings
-     */
-    protected PluginSettings $pluginSettings;
-    
-    /**
-     *
-     * @var Logger
+     * @var Logger|null
      */
     protected ?Logger $logger;
     
     public function __construct(
-        KernelInterface $kernel,
-        PluginSettings $pluginSettings
+        protected KernelInterface $kernel,
+        protected PluginSettings $pluginSettings
     )
     {
-        $this->kernel = $kernel;
-        $this->pluginSettings = $pluginSettings;
         $this->logger = null;
     }
     
@@ -73,7 +59,7 @@ class Logconfig implements LogconfigInterface
         }
     }
     
-    protected function _checkConfigFile($path, $loggerContext = '', $extensionContext = '')
+    protected function _checkConfigFile(string $path, string $loggerContext='', string $extensionContext=''): bool
     {
         if(file_exists($path)) {
             return true;
@@ -88,13 +74,14 @@ class Logconfig implements LogconfigInterface
             }
         }
     }
-    
+
     /**
      * Method to create a new log4php xml config file
      * @param string $loggerContext
      * @return void
+     * @throws \DOMException
      */
-    protected function _createConfigXML($configFilePath, $loggerContext = '', $extensionContext = '')
+    protected function _createConfigXML(string $configFilePath, string $loggerContext='', string $extensionContext=''): void
     {
         $dom = new \DomDocument('1.0', 'UTF-8');
         
@@ -215,12 +202,15 @@ class Logconfig implements LogconfigInterface
         }
     }
     
-    public function removeLogConfigFiles($path)
+    public function removeLogConfigFiles(string $path): void
     {
-        foreach(glob($path.'/logconfig.*') as $file) {
+        $filesLogconfig = glob($path.'/logconfig.*');
+        if($filesLogconfig) {
+            foreach($filesLogconfig as $file) {
 
-            if(is_file($file)) {
-                unlink($file);
+                if(is_file($file)) {
+                    unlink($file);
+                }
             }
         }
     }
