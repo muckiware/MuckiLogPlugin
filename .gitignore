@@ -1,3 +1,4 @@
 *.DS_Store
 src/Resources/config/logconfig.*
 var/cache/*
+/composer.lock
