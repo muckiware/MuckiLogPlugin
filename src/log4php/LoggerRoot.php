@@ -25,35 +25,39 @@ namespace MuckiLogPlugin\log4php;
  * @package log4php
  * @see Logger
  */
-class LoggerRoot extends Logger {
-	/**
-	 * Constructor
-	 *
-	 * @param integer $level initial log level
-	 */
-	public function __construct(LoggerLevel $level = null) {
+class LoggerRoot extends Logger
+{
+    /**
+     * Constructor
+     *
+     * @param LoggerLevel|null $level initial log level
+     */
+	public function __construct(LoggerLevel $level = null)
+    {
 		parent::__construct('root');
 
 		if($level == null) {
 			$level = LoggerLevel::getLevelAll();
 		}
 		$this->setLevel($level);
-	} 
-	
-	/**
-	 * @return LoggerLevel the level
-	 */
-	public function getEffectiveLevel() {
+	}
+
+    /**
+     * @return LoggerLevel|null the level
+     */
+	public function getEffectiveLevel(): ?LoggerLevel
+    {
 		return $this->getLevel();
 	}
-	
-	/**
-	 * Override level setter to prevent setting the root logger's level to 
-	 * null. Root logger must always have a level.
-	 * 
-	 * @param LoggerLevel $level
-	 */
-	public function setLevel(LoggerLevel $level = null) {
+
+    /**
+     * Override level setter to prevent setting the root logger's level to
+     * null. Root logger must always have a level.
+     *
+     * @param LoggerLevel|null $level
+     */
+	public function setLevel(LoggerLevel $level = null): void
+    {
 		if (isset($level)) {
 			parent::setLevel($level);
 		} else {
@@ -65,7 +69,8 @@ class LoggerRoot extends Logger {
 	 * Override parent setter. Root logger cannot have a parent.
 	 * @param Logger $parent
 	 */
-	public function setParent(Logger $parent) {
+	public function setParent(Logger $parent): void
+    {
 		trigger_error("log4php: LoggerRoot cannot have a parent.", E_USER_WARNING);
 	}
 }

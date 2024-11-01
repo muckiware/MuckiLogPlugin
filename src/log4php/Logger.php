@@ -6,15 +6,15 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- * 
+ *
  *		http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @package log4php
  */
 
@@ -26,9 +26,9 @@ require_once dirname(__FILE__) . '/LoggerAutoloader.php';
 use MuckiLogPlugin\log4php\LoggerLevel;
 use MuckiLogPlugin\log4php\configurators\LoggerConfiguratorDefault;
 /**
- * This is the central class in the log4php package. All logging operations 
+ * This is the central class in the log4php package. All logging operations
  * are done through this class.
- * 
+ *
  * The main logging methods are:
  * 	<ul>
  * 		<li>{@link trace()}</li>
@@ -38,13 +38,14 @@ use MuckiLogPlugin\log4php\configurators\LoggerConfiguratorDefault;
  * 		<li>{@link error()}</li>
  * 		<li>{@link critical()}</li>
  * 	</ul>
- * 
+ *
  * @package    log4php
  * @license	   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @version	   SVN: $Id: Logger.php 1395241 2012-10-07 08:28:53Z ihabunek $
  * @link	   http://logging.apache.org/log4php
  */
-class Logger {
+class Logger
+{
 	
 	/**
   * Logger additivity. If set to true then child loggers will inherit
@@ -52,7 +53,7 @@ class Logger {
   */
  private bool $additive = true;
 	
-	/** 
+	/**
 	 * The Logger's fully qualified class name.
 	 * TODO: Determine if this is useful. 
 	 */
@@ -62,7 +63,7 @@ class Logger {
 	private ?LoggerLevel $level = null;
 	
 	/** The name of this Logger instance. */
-	private $name;
+	private string $name;
 	
 	/** The parent logger. Set to null if this is the root logger. */
 	private ?\MuckiLogPlugin\log4php\Logger $parent = null;
@@ -72,25 +73,28 @@ class Logger {
 
 	/**
 	 * Constructor.
-	 * @param string $name Name of the logger.	  
+	 * @param string $name Name of the logger.
 	 */
-	public function __construct($name) {
-		$this->name = $name;
+	public function __construct(string $name)
+    {
+        $this->name = $name;
 	}
 	
 	/**
 	 * Returns the logger name.
 	 * @return string
 	 */
-	public function getName() {
+	public function getName(): string
+    {
 		return $this->name;
-	} 
+	}
 
 	/**
 	 * Returns the parent Logger. Can be null if this is the root logger.
-	 * @return Logger
+	 * @return Logger|null
 	 */
-	public function getParent() {
+	public function getParent(): ?Logger
+    {
 		return $this->parent;
 	}
 	
@@ -102,32 +106,35 @@ class Logger {
 	 * Log a message object with the TRACE level.
 	 *
 	 * @param mixed $message message
- 	 * @param \Exception $throwable Optional throwable information to include 
+ 	 * @param \Exception $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function trace($message, $throwable = null) {
+	public function trace($message, $throwable = null): void
+    {
 	    $this->log(LoggerLevel::getLevelTrace(), $message, $throwable);
-	} 		
+	}
 	
 	/**
 	 * Log a message object with the DEBUG level.
 	 *
 	 * @param mixed $message message
- 	 * @param \Exception $throwable Optional throwable information to include 
+ 	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function debug($message, $throwable = null) {
+	public function debug(mixed $message, \Exception $throwable = null): void
+    {
 	    $this->log(LoggerLevel::getLevelDebug(), $message, $throwable);
-	} 
+	}
 
 	/**
 	 * Log a message object with the INFO Level.
 	 *
 	 * @param mixed $message message
- 	 * @param \Exception $throwable Optional throwable information to include 
+ 	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function info($message, $throwable = null) {
+	public function info(mixed $message, \Exception $throwable = null): void
+    {
 	    $this->log(LoggerLevel::getLevelInfo(), $message, $throwable);
 	}
 
@@ -135,10 +142,11 @@ class Logger {
 	 * Log a message with the WARN level.
 	 *
 	 * @param mixed $message message
-  	 * @param \Exception $throwable Optional throwable information to include 
+  	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function warning($message, $throwable = null) {
+	public function warning(mixed $message, \Exception $throwable = null): void
+    {
 	    $this->log(LoggerLevel::getLevelWarning(), $message, $throwable);
 	}
 	
@@ -146,10 +154,11 @@ class Logger {
 	 * Log a message object with the ERROR level.
 	 *
 	 * @param mixed $message message
-	 * @param  \Exception $throwable Optional throwable information to include
+	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function error($message, $throwable = null) {
+	public function error(mixed $message, \Exception $throwable = null): void
+    {
 		$this->log(LoggerLevel::getLevelError(), $message, $throwable);
 	}
 	
@@ -157,10 +166,11 @@ class Logger {
 	 * Log a message object with the CRITICAL level.
 	 *
 	 * @param mixed $message message
-	 * @param \Exception $throwable Optional throwable information to include
+	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function critical($message, $throwable = null) {
+	public function critical(mixed $message, \Exception $throwable = null): void
+    {
 		$this->log(LoggerLevel::getLevelCritical(), $message, $throwable);
 	}
 
@@ -169,10 +179,11 @@ class Logger {
 	 *
 	 * @param LoggerLevel $level The logging level.
 	 * @param mixed $message Message to log.
- 	 * @param \Exception $throwable Optional throwable information to include 
+ 	 * @param \Exception|null $throwable Optional throwable information to include
 	 *   in the logging event.
 	 */
-	public function log(LoggerLevel $level, $message, $throwable = null) {
+	public function log(LoggerLevel $level, mixed $message, \Exception $throwable = null): void
+    {
 		if($this->isEnabledFor($level)) {
 			$event = new LoggerLoggingEvent($this->fqcn, $this, $level, $message, null, $throwable);
 			$this->callAppenders($event);
@@ -191,10 +202,11 @@ class Logger {
 	}
 	
 	/**
-	 * Logs an already prepared logging event object. 
+	 * Logs an already prepared logging event object.
 	 * @param LoggerLoggingEvent $event
 	 */
-	public function logEvent(LoggerLoggingEvent $event) {
+	public function logEvent(LoggerLoggingEvent $event): void
+    {
 		if($this->isEnabledFor($event->getLevel())) {
 			$this->callAppenders($event);
 		}
@@ -206,14 +218,15 @@ class Logger {
 	}
 	
 	/**
-	 * If assertion parameter evaluates as false, then logs the message 
+	 * If assertion parameter evaluates as false, then logs the message
 	 * using the ERROR level.
 	 *
 	 * @param bool $assertion
 	 * @param string $msg message to log
 	 */
-	public function assertLog($assertion = true, $msg = '') {
-		if($assertion == false) {
+	public function assertLog(bool $assertion = true, string $msg = ''): void
+    {
+		if(!$assertion) {
 			$this->error($msg);
 		}
 	}
@@ -232,7 +245,7 @@ class Logger {
 	 * @param LoggerLevel $level log level
 	 * @param mixed $message message to log
 	 */
-	public function forcedLog($fqcn, $throwable, LoggerLevel $level, $message)
+	public function forcedLog(string $fqcn, \Exception $throwable, LoggerLevel $level, mixed $message): void
     {
 		$event = new LoggerLoggingEvent($fqcn, $this, $level, $message, null, $throwable);
 		$this->callAppenders($event);
@@ -247,7 +260,7 @@ class Logger {
 	 * Forwards the given logging event to all linked appenders.
 	 * @param LoggerLoggingEvent $event
 	 */
-	public function callAppenders($event)
+	public function callAppenders(LoggerLoggingEvent $event): void
     {
 		foreach($this->appenders as $appender) {
 			$appender->doAppend($event);
@@ -261,10 +274,11 @@ class Logger {
 	/**
 	 * Check whether this Logger is enabled for a given Level passed as parameter.
 	 *
-	 * @param LoggerLevel level
+	 * @param LoggerLevel $level level
 	 * @return boolean
 	 */
-	public function isEnabledFor(LoggerLevel $level) {
+	public function isEnabledFor(LoggerLevel $level): bool
+    {
 		return $level->isGreaterOrEqual($this->getEffectiveLevel());
 	}
 	
@@ -272,7 +286,8 @@ class Logger {
 	 * Check whether this Logger is enabled for the TRACE Level.
 	 * @return boolean
 	 */
-	public function isTraceEnabled() {
+	public function isTraceEnabled(): bool
+    {
 		return $this->isEnabledFor(LoggerLevel::getLevelTrace());
 	}
 	
@@ -280,7 +295,8 @@ class Logger {
 	 * Check whether this Logger is enabled for the DEBUG Level.
 	 * @return boolean
 	 */
-	public function isDebugEnabled() {
+	public function isDebugEnabled(): bool
+    {
 		return $this->isEnabledFor(LoggerLevel::getLevelDebug());
 	}
 
@@ -288,7 +304,8 @@ class Logger {
 	 * Check whether this Logger is enabled for the INFO Level.
 	 * @return boolean
 	 */
-	public function isInfoEnabled() {
+	public function isInfoEnabled(): bool
+    {
 		return $this->isEnabledFor(LoggerLevel::getLevelInfo());
 	}
 	
@@ -296,7 +313,7 @@ class Logger {
 	 * Check whether this Logger is enabled for the WARN Level.
 	 * @return boolean
 	 */
-	public function isWarnEnabled()
+	public function isWarnEnabled(): bool
     {
 		return $this->isEnabledFor(LoggerLevel::getLevelWarning());
 	}
@@ -305,7 +322,7 @@ class Logger {
 	 * Check whether this Logger is enabled for the ERROR Level.
 	 * @return boolean
 	 */
-	public function isErrorEnabled()
+	public function isErrorEnabled(): bool
     {
 		return $this->isEnabledFor(LoggerLevel::getLevelError());
 	}
@@ -314,7 +331,7 @@ class Logger {
 	 * Check whether this Logger is enabled for the FATAL Level.
 	 * @return boolean
 	 */
-	public function isFatalEnabled()
+	public function isFatalEnabled(): bool
     {
 		return $this->isEnabledFor(LoggerLevel::getLevelCritical());
 	}
@@ -327,27 +344,30 @@ class Logger {
 	 * Adds a new appender to the Logger.
 	 * @param LoggerAppender $appender The appender to add.
 	 */
-	public function addAppender($appender) {
+	public function addAppender(LoggerAppender $appender): void
+    {
 		$appenderName = $appender->getName();
 		$this->appenders[$appenderName] = $appender;
 	}
 	
 	/** Removes all appenders from the Logger. */
-	public function removeAllAppenders() {
+	public function removeAllAppenders(): void
+    {
 		foreach($this->appenders as $name => $appender) {
 			$this->removeAppender($name);
 		}
-	} 
+	}
 			
 	/**
 	 * Remove the appender passed as parameter form the Logger.
 	 * @param mixed $appender an appender name or a {@link LoggerAppender} instance.
 	 */
-	public function removeAppender($appender) {
+	public function removeAppender(mixed $appender): void
+    {
 		if($appender instanceof LoggerAppender) {
 			$appender->close();
 			unset($this->appenders[$appender->getName()]);
-		} else if (is_string($appender) and isset($this->appenders[$appender])) {
+		} elseif (is_string($appender) && isset($this->appenders[$appender])) {
 			$this->appenders[$appender]->close();
 			unset($this->appenders[$appender]);
 		}
@@ -357,15 +377,18 @@ class Logger {
 	 * Returns the appenders linked to this logger as an array.
 	 * @return array collection of appender names
 	 */
-	public function getAllAppenders() {
+	public function getAllAppenders(): array
+    {
 		return $this->appenders;
 	}
-	
-	/**
-	 * Returns a linked appender by name.
-	 * @return LoggerAppender
-	 */
-	public function getAppender($name) {
+
+    /**
+     * Returns a linked appender by name.
+     * @param string $name
+     * @return LoggerAppender
+     */
+	public function getAppender(string $name): LoggerAppender
+    {
 		return $this->appenders[$name];
 	}
 
@@ -373,7 +396,8 @@ class Logger {
 	 * Sets the additivity flag.
 	 * @param boolean $additive
 	 */
-	public function setAdditivity($additive) {
+	public function setAdditivity(bool $additive): void
+    {
 		$this->additive = (bool)$additive;
 	}
 	
@@ -381,40 +405,46 @@ class Logger {
 	 * Returns the additivity flag.
 	 * @return boolean
 	 */
-	public function getAdditivity() {
+	public function getAdditivity(): bool
+    {
 		return $this->additive;
 	}
- 
-	/**
-	 * Starting from this Logger, search the Logger hierarchy for a non-null level and return it.
-	 * @see LoggerLevel
-	 * @return LoggerLevel or null
-	 */
-	public function getEffectiveLevel() {
+
+    /**
+     * Starting from this Logger, search the Logger hierarchy for a non-null level and return it.
+     * @return LoggerLevel|null or null
+     * @see LoggerLevel
+     */
+	public function getEffectiveLevel(): ?\MuckiLogPlugin\log4php\LoggerLevel
+    {
 		for($logger = $this; $logger !== null; $logger = $logger->getParent()) {
 			if($logger->getLevel() !== null) {
 				return $logger->getLevel();
 			}
 		}
+
+        return null;
 	}
-  
-	/**
-	 * Get the assigned Logger level.
-	 * @return LoggerLevel The assigned level or null if none is assigned. 
-	 */
-	public function getLevel() {
+
+    /**
+     * Get the assigned Logger level.
+     * @return LoggerLevel|null The assigned level or null if none is assigned.
+     */
+	public function getLevel(): ?\MuckiLogPlugin\log4php\LoggerLevel
+    {
 		return $this->level;
 	}
-	
-	/**
-	 * Set the Logger level.
-	 *
-	 * Use LoggerLevel::getLevelXXX() methods to get a LoggerLevel object, e.g.
-	 * <code>$logger->setLevel(LoggerLevel::getLevelInfo());</code>
-	 *
-	 * @param LoggerLevel $level The level to set, or NULL to clear the logger level.
-	 */
-	public function setLevel(LoggerLevel $level = null) {
+
+    /**
+     * Set the Logger level.
+     *
+     * Use LoggerLevel::getLevelXXX() methods to get a LoggerLevel object, e.g.
+     * <code>$logger->setLevel(LoggerLevel::getLevelInfo());</code>
+     *
+     * @param LoggerLevel|null $level The level to set, or NULL to clear the logger level.
+     */
+	public function setLevel(?LoggerLevel $level = null): void
+    {
 		$this->level = $level;
 	}
 	
@@ -424,7 +454,8 @@ class Logger {
 	 * @param LoggerAppender $appender
 	 * @return boolean
 	 */
-	public function isAttached(LoggerAppender $appender) {
+	public function isAttached(LoggerAppender $appender): bool
+    {
 		return isset($this->appenders[$appender->getName()]);
 	}
 	
@@ -432,9 +463,10 @@ class Logger {
 	 * Sets the parent logger.
 	 * @param Logger $logger
 	 */
-	public function setParent(Logger $logger) {
+	public function setParent(Logger $logger): void
+    {
 		$this->parent = $logger;
-	} 
+	}
 	
 	// ******************************************
 	// *** Static methods and properties      ***
@@ -445,17 +477,18 @@ class Logger {
 	
 	/** Inidicates if log4php has been initialized */
 	private static bool $initialized = false;
-	
-	/**
-	 * Returns the hierarchy used by this Logger.
-	 *
-	 * Caution: do not use this hierarchy unless you have called initialize().
-	 * To get Loggers, use the Logger::getLogger and Logger::getRootLogger
-	 * methods instead of operating on on the hierarchy directly.
-	 *
-	 * @return LoggerHierarchy
-	 */
-	public static function getHierarchy() {
+
+    /**
+     * Returns the hierarchy used by this Logger.
+     *
+     * Caution: do not use this hierarchy unless you have called initialize().
+     * To get Loggers, use the Logger::getLogger and Logger::getRootLogger
+     * methods instead of operating on on the hierarchy directly.
+     *
+     * @return LoggerHierarchy|null
+     */
+	public static function getHierarchy(): ?LoggerHierarchy
+    {
 		if(!isset(self::$hierarchy)) {
 			self::$hierarchy = new LoggerHierarchy(new LoggerRoot());
 		}
@@ -468,7 +501,8 @@ class Logger {
 	 * @param string $name The logger name
 	 * @return Logger
 	 */
-	public static function getLogger($name) {
+	public static function getLogger(string $name): Logger
+    {
 		if(!self::isInitialized()) {
 			self::configure();
 		}
@@ -479,27 +513,30 @@ class Logger {
 	 * Returns the Root Logger.
 	 * @return LoggerRoot
 	 */
-	public static function getRootLogger() {
+	public static function getRootLogger(): LoggerRoot
+    {
 		if(!self::isInitialized()) {
 			self::configure();
 		}
 		return self::getHierarchy()->getRootLogger();
 	}
-	
-	/**
-	 * Clears all Logger definitions from the logger hierarchy.
-	 * @return boolean
-	 */
-	public static function clear() {
-		return self::getHierarchy()->clear();
+
+    /**
+     * Clears all Logger definitions from the logger hierarchy.
+     * @return void
+     */
+	public static function clear(): void
+    {
+		self::getHierarchy()->clear();
 	}
 	
 	/**
 	 * Destroy configurations for logger definitions
 	 */
-	public static function resetConfiguration() {
+	public static function resetConfiguration(): void
+    {
 		self::getHierarchy()->resetConfiguration();
-		self::getHierarchy()->clear(); // TODO: clear or not?
+		self::getHierarchy()->clear();
 		self::$initialized = false;
 	}
 	
@@ -508,8 +545,9 @@ class Logger {
 	 * @deprecated This is no longer necessary due the appenders shutdown via
 	 * destructors.
 	 */
-	public static function shutdown() {
-		return self::getHierarchy()->shutdown();
+	public static function shutdown(): void
+    {
+		self::getHierarchy()->shutdown();
 	}
 	
 	/**
@@ -518,7 +556,8 @@ class Logger {
 	 * @param string $name logger name
 	 * @return boolean
 	 */
-	public static function exists($name) {
+	public static function exists($name): bool
+    {
 		return self::getHierarchy()->exists($name);
 	}
 	
@@ -527,26 +566,28 @@ class Logger {
 	 * @see Logger
 	 * @return array
 	 */
-	public static function getCurrentLoggers() {
+	public static function getCurrentLoggers(): array
+    {
 		return self::getHierarchy()->getCurrentLoggers();
 	}
 	
 	/**
 	 * Configures log4php.
-	 * 
-	 * This method needs to be called before the first logging event has 
+	 *
+	 * This method needs to be called before the first logging event has
 	 * occured. If this method is not called before then the default
 	 * configuration will be used.
 	 *
-	 * @param string|array $configuration Either a path to the configuration
+	 * @param array|string|null $configuration Either a path to the configuration
 	 *   file, or a configuration array.
-	 *   
-	 * @param string|LoggerConfigurator $configurator A custom 
-	 * configurator class: either a class name (string), or an object which 
+	 *
+	 * @param string|LoggerConfigurator|null $configurator A custom
+	 * configurator class: either a class name (string), or an object which
 	 * implements the LoggerConfigurator interface. If left empty, the default
-	 * configurator implementation will be used. 
+	 * configurator implementation will be used.
 	 */
-	public static function configure($configuration = null, $configurator = null) {
+	public static function configure(array|string $configuration = null, LoggerConfigurator|string $configurator = null): void
+    {
 		self::resetConfiguration();
 		$configurator = self::getConfigurator($configurator);
 		$configurator->configure(self::getHierarchy(), $configuration);
@@ -554,14 +595,17 @@ class Logger {
 	}
 	
 	/**
-	 * Creates a logger configurator instance based on the provided 
+	 * Creates a logger configurator instance based on the provided
 	 * configurator class. If no class is given, returns an instance of
 	 * the default configurator.
-	 * 
-	 * @param string|LoggerConfigurator $configurator The configurator class 
+	 *
+	 * @param string|LoggerConfigurator|null $configurator The configurator class
 	 * or LoggerConfigurator instance.
 	 */
-	private static function getConfigurator($configurator = null) {
+	private static function getConfigurator(
+        LoggerConfigurator|string $configurator = null
+    ): LoggerConfiguratorDefault|LoggerConfigurator|string
+    {
 		if ($configurator === null) {
 			return new LoggerConfiguratorDefault();
 		}
@@ -597,9 +641,10 @@ class Logger {
 	
 	/**
 	 * Returns true if the log4php framework has been initialized.
-	 * @return boolean 
+	 * @return boolean
 	 */
-	private static function isInitialized() {
+	private static function isInitialized(): bool
+    {
 		return self::$initialized;
 	}
 }
