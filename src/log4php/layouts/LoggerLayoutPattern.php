@@ -147,7 +147,7 @@ class LoggerLayoutPattern extends LoggerLayout
 	 * conversion specifiers.
 	 * @param array $conversionPattern
 	 */
-	public function setConversionPattern(array $conversionPattern): void
+	public function setConversionPattern(mixed $conversionPattern): void
     {
 		$this->pattern = $conversionPattern;
 	}
