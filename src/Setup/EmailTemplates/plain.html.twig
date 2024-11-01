@@ -2,8 +2,10 @@ Hello Shop admin,
 
 You get a message from a logging event
 
-Vendor: {{ logEvent.vendor }}
-Plugin: {{ logEvent.plugin }}
-Loglevel: {{ logEvent.loglevel }}
-Created: {{ logEvent.createdAt|format_datetime('medium', 'long', locale='en-GB') }}
-Message: {{ logEvent.message }}
+{% for logEvent in logEvents %}
+    Vendor: {{ logEvent.vendor }}
+    Plugin: {{ logEvent.plugin }}
+    Loglevel: {{ logEvent.loglevel }}
+    Created: {{ logEvent.createdAt|format_datetime('medium', 'long', locale='en-GB') }}
+    Message: {{ logEvent.message }}
+{% endfor %}

@@ -3,10 +3,15 @@
         Hello Shop admin,
         <br>
     <p>You get a message from a logging event</p>
-    Vendor: {{ logEvent.vendor }}<br>
-    Plugin: {{ logEvent.plugin }}<br>
-    Loglevel: {{ logEvent.loglevel }}<br>
-    Created: {{ logEvent.createdAt|format_datetime('medium', 'long', locale='en-GB') }}<br>
-    Message: {{ logEvent.message }}<br>
+    {% for logEvent in logEvents %}
+        <p>
+            Vendor: {{ logEvent.vendor }}<br>
+            Plugin: {{ logEvent.plugin }}<br>
+            Loglevel: {{ logEvent.loglevel }}<br>
+            Created: {{ logEvent.createdAt|format_datetime('medium', 'long', locale='en-GB') }}<br>
+            Message: {{ logEvent.message }}<br>
+        <hr>
+        </p>
+    {% endfor %}
     </p>
 </div>
