@@ -13,19 +13,21 @@
 
 namespace MuckiLogPlugin\Services;
 
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+
 use MuckiLogPlugin\Core\LogLevel;
 
 interface SettingsInterface
 {
-    public function isEnabled();
+    public function isEnabled(): bool;
 
-    public function getPluginConfig();
+    public function getPluginConfig(): SystemConfigService;
 
     public function getLogPath(): string;
     
     public function getLogConfigPath(): string;
     
-    public function getConfigPath($loggerContext = '', $extensionContext = ''): string;
+    public function getConfigPath(string $loggerContext='', string $extensionContext=''): string;
     
     public function getMaxBackupIndex(): string;
     
@@ -33,7 +35,7 @@ interface SettingsInterface
     
     public function getLoglevel(): string;
     
-    public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string;
+    public function getLoggerFileName(string $loggerContext='', string $extensionContext=''): string;
 
     public function getConversionPattern(): string;
     public function getNotificationMailTemplateId(): ?string;

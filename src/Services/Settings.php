@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use MuckiLogPlugin\Core\LogLevel;
+use function Symfony\Component\String\b;
 
 class Settings implements SettingsInterface
 {
@@ -57,7 +58,7 @@ class Settings implements SettingsInterface
      * Absolute path to folder of log config files
      * @var string
      */
-    protected string $logConfigPath;
+    protected ?string $logConfigPath;
 
     protected SystemConfigService $config;
 
@@ -71,7 +72,7 @@ class Settings implements SettingsInterface
         $this->config = $config;
         $this->kernel = $kernel;
 
-        $this->logConfigPath = false;
+        $this->logConfigPath = null;
     }
     
     public function isEnabled(): bool
@@ -79,7 +80,7 @@ class Settings implements SettingsInterface
         return $this->config->getBool($this::CONFIG_PATH_ACTIVE);
     }
 
-    public function getPluginConfig()
+    public function getPluginConfig(): SystemConfigService
     {
         return $this->config;
     }
@@ -108,7 +109,7 @@ class Settings implements SettingsInterface
         return $this->logConfigPath;
     }
     
-    public function getConfigPath($loggerContext = '', $extensionContext = ''): string
+    public function getConfigPath(string $loggerContext='', string $extensionContext=''): string
     {
         switch (true) {
             case ($loggerContext !== '' && $extensionContext !== ''):
@@ -124,8 +125,8 @@ class Settings implements SettingsInterface
     
     public function getMaxBackupIndex(): string {
 
-        if($this->config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX) != '') {
-            return $this->config->get($this::CONFIG_PATH_MAX_BACKUP_INDEX);
+        if($this->config->getString($this::CONFIG_PATH_MAX_BACKUP_INDEX) != '') {
+            return $this->config->getString($this::CONFIG_PATH_MAX_BACKUP_INDEX);
         } else {
             return $this::CONFIG_PATH_MAX_BACKUP_INDEX_DEFAULT;
         }
@@ -133,8 +134,8 @@ class Settings implements SettingsInterface
     
     public function getMaxFileSize(): string {
         
-        if($this->config->get($this::CONFIG_PATH_MAX_FILESIZE) != '') {
-            return $this->config->get($this::CONFIG_PATH_MAX_FILESIZE).'MB';
+        if($this->config->getString($this::CONFIG_PATH_MAX_FILESIZE) != '') {
+            return $this->config->getString($this::CONFIG_PATH_MAX_FILESIZE).'MB';
         } else {
             return $this::CONFIG_PATH_MAX_FILESIZE_DEFAULT;
         }
@@ -142,8 +143,8 @@ class Settings implements SettingsInterface
     
     public function getLoglevel(): string {
         
-        if($this->config->get($this::CONFIG_PATH_LOG_LEVEL) != '') {
-            return $this->config->get($this::CONFIG_PATH_LOG_LEVEL);
+        if($this->config->getString($this::CONFIG_PATH_LOG_LEVEL) != '') {
+            return $this->config->getString($this::CONFIG_PATH_LOG_LEVEL);
         } else {
             return $this::CONFIG_PATH_LOG_LEVEL_DEFAULT;
         }
@@ -151,14 +152,14 @@ class Settings implements SettingsInterface
 
     public function getConversionPattern(): string
     {
-        if($this->config->get($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
-            return $this->config->get($this::CONFIG_PATH_CONVERSIONPATTERN);
+        if($this->config->getString($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
+            return $this->config->getString($this::CONFIG_PATH_CONVERSIONPATTERN);
         } else {
             return $this::CONFIG_PATH_CONVERSIONPATTERN_DEFAULT;
         }
     }
     
-    public function getLoggerFileName($loggerContext = '', $extensionContext = ''): string
+    public function getLoggerFileName(string $loggerContext='', string $extensionContext=''): string
     {
         switch (true) {
             case ($loggerContext !== '' && $extensionContext !== ''):
@@ -233,18 +234,26 @@ class Settings implements SettingsInterface
         switch ($logLevel) {
 
             case LogLevel::DEBUG:
-                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+                break;
             case LogLevel::INFO:
-                return$this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+                break;
             case LogLevel::WARNING:
-                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+                break;
             case LogLevel::ERROR:
-                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+                break;
             case LogLevel::CRITICAL:
-                return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+                break;
+            default:
+                $needNotificationByLogLevel = false;
+                break;
         }
 
-        return false;
+        return $needNotificationByLogLevel;
     }
 
     public function getSalesChannelId(): ?string
