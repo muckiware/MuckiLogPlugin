@@ -102,6 +102,16 @@ $loggerContext = array(
 );
 $this->logger->critical('Call HeaderPageletLoadedEvent with mail notification', $loggerContext);
 ```
+## CLIs
+```shell
+bin/console muckiware:logger:send
+```
+This command execute the sending of open logger events by email. Regular will this execution runs by Shopware schedules all 600 seconds.
+```shell
+bin/console muckiware:logger:check
+```
+This command is just for testing logging methods.
+
 # Testing
 ## phpstan
 ### Install
@@ -118,7 +128,7 @@ composer run-script phpstan
 ## Unit test
 ### Execute first time
 ```shell
-./vendor/bin/phpunit --configuration="custom/plugins/MuckiLogPlugin" --testsuite "migration
+./vendor/bin/phpunit --configuration="custom/plugins/MuckiLogPlugin" --testsuite "migration"
 ```
 
 ### Execute regular run
