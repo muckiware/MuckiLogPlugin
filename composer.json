@@ -28,6 +28,11 @@
 			"MuckiLogPlugin\\" : "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"MuckiLogPlugin\\": "tests/"
+		}
+	},
 	"config": {
 		"allow-plugins": {
 			"symfony/runtime": true,
