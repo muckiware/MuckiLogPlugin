@@ -31,6 +31,7 @@
                 </option>
             </options>
             <label>Log Level</label>
+            <defaultValue>info</defaultValue>
         </input-field>
         <input-field type="text">
             <name>logpattern</name>
@@ -44,10 +45,12 @@
         <input-field type="text">
             <name>maxbackupindex</name>
             <label>Max Numbers of Logfiles</label>
+            <defaultValue>6</defaultValue>
         </input-field>
         <input-field type="text">
             <name>maxfilesize</name>
             <label>Max Logfile Size</label>
+            <defaultValue>6</defaultValue>
         </input-field>
     </card>
     <card>
