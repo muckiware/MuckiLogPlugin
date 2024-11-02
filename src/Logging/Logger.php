@@ -57,7 +57,7 @@ class Logger implements LoggerInterface
                 break;
         }
 
-        if($loggerSetup->isSendNotification()) {
+        if($this->settings->isNotificationMailEnabled() && $loggerSetup->isSendNotification()) {
             $this->loggingEvent->saveEvent($loggerSetup);
         }
     }

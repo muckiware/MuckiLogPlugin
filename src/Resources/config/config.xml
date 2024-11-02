@@ -52,6 +52,10 @@
     </card>
     <card>
         <title>Log event email notification settings</title>
+        <input-field type="bool">
+            <name>activeNotificationMail</name>
+            <label>General active notification emails</label>
+        </input-field>
         <input-field type="single-select">
             <name>sendMailMode</name>
             <options>

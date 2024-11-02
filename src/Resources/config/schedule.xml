@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="MuckiLogPlugin\Schedules\SendNotificationLogsTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="MuckiLogPlugin\Schedules\SendNotificationLogsTaskHandler">
+            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+            <tag name="messenger.message_handler" />
+        </service>
+    </services>
+</container>

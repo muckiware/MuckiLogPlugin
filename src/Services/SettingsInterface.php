@@ -39,5 +39,6 @@ interface SettingsInterface
     public function needNotificationByLogLevel(LogLevel $logLevel): bool;
     public function getSalesChannelId(): ?string;
     public function getNotificationMailSender(): ?string;
+    public function isNotificationMailEnabled(): bool;
 }
 

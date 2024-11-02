@@ -26,4 +26,5 @@ class Defaults
     const DEFAULT_SW_EXTENSION = 'dev';
 
     const DEFAULT_SEND_MAIL_MODE = 'eachLogLevelOneMail';
+    public const DEFAULT_TASK_INTERVAL_IN_SECONDS = 300;
 }

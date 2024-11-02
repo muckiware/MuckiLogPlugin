@@ -55,6 +55,7 @@ class Settings implements SettingsInterface
 
     const CONFIG_PATH_SALES_CHANNEL_ID = 'MuckiLogPlugin.config.salesChannelId';
     const CONFIG_PATH_SEND_MAIL_MODE = 'MuckiLogPlugin.config.sendMailMode';
+    const CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL = 'MuckiLogPlugin.config.activeNotificationMail';
     /**
      * Absolute path to folder of log config files
      * @var string|null
@@ -273,6 +274,11 @@ class Settings implements SettingsInterface
         }
 
         return null;
+    }
+
+    public function isNotificationMailEnabled(): bool
+    {
+        return $this->config->getBool($this::CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL);
     }
 }
 

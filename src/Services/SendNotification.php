@@ -13,6 +13,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Content\ImportExport\Struct\Progress;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 use MuckiLogPlugin\Services\LoggingEvent;
 use MuckiLogPlugin\Services\CliOutput;
@@ -35,7 +37,7 @@ class SendNotification
     )
     {}
 
-    public function sendNotification(OutputInterface $cliOutput, Context $context): void
+    public function sendNotificationViaCli(OutputInterface $cliOutput, Context $context): void
     {
         $emailNotificationCollection = $this->getEmailNotificationCollection($context);
         $totalCounter = $emailNotificationCollection->count();
@@ -44,8 +46,27 @@ class SendNotification
         $progressBar = $this->cliOutput->prepareSendProgressBar($progress, $totalCounter, $cliOutput);
 
         if($totalCounter >= 1) {
+            $this->executeNotificationProcess($emailNotificationCollection, $progress, $progressBar);
+        }
 
-            foreach ($emailNotificationCollection->getElements() as $emailNotification) {
+        $progressBar->finish();
+        $cliOutput->writeln('');
+    }
+
+    public function sendNotificationViaSchedule(Context $context): void
+    {
+        $this->executeNotificationProcess($this->getEmailNotificationCollection($context));
+    }
+
+    public function executeNotificationProcess(
+        EmailNotificationCollection $emailNotificationCollection,
+        Progress $progress=null,
+        ProgressBar $progressBar=null
+    ): void
+    {
+        foreach ($emailNotificationCollection->getElements() as $emailNotification) {
+
+            if($progress && $progressBar) {
 
                 if ($progress->getTotal() && $progress->getOffset() >= $progress->getTotal()) {
                     $progressBar->setProgress($progress->getTotal());
@@ -53,13 +74,10 @@ class SendNotification
                     $progressBar->advance();
                     $progressBar->display();
                 }
-
-                $this->serviceMailer->sendMailNotification($emailNotification);
-                $this->loggingEvent->removeLoggerEventByIds($emailNotification);
             }
 
-            $progressBar->finish();
-            $cliOutput->writeln('');
+            $this->serviceMailer->sendMailNotification($emailNotification);
+            $this->loggingEvent->removeLoggerEventByIds($emailNotification);
         }
     }
 

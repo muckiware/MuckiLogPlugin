@@ -70,7 +70,7 @@ class SendNotification extends Command
     /**
      * @internal
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('This Muckilog plugin command for to send logger events by email');
         parent::configure();
@@ -85,8 +85,9 @@ class SendNotification extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Start to send logger events');
-
-        $this->serviceSendNotification->sendNotification($output, Context::createDefaultContext());
+        if($this->pluginSettings->isNotificationMailEnabled()) {
+            $this->serviceSendNotification->sendNotificationViaCli($output, Context::createDefaultContext());
+        }
         $output->writeln('Send logger events is done');
 
         return 0;
