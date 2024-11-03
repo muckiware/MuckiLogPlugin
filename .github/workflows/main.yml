@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - dev
-      - master65
+      - main65
   pull_request:
     branches:
       - dev
-      - master65
+      - main65
   workflow_dispatch:
 
 env:
