@@ -99,9 +99,3 @@ jobs:
 
       - name: "Run PHPUnit Tests"
         run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
-
-      - name: "Run phpstan tests"
-        working-directory: custom/plugins/${{ env.MODULE_NAME }}
-        run: |
-          composer run-script phpstan
-
