@@ -10,6 +10,7 @@
 namespace MuckiLogPlugin\Migration;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1729614227 extends MigrationStep
@@ -36,5 +37,10 @@ class Migration1729614227 extends MigrationStep
                PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
+    }
+
+    public function updateDestructive(Connection $connection): void
+    {
+        // implement update destructive
     }
 }
