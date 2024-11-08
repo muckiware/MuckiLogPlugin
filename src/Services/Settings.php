@@ -18,44 +18,16 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 use MuckiLogPlugin\Core\Defaults as PluginDefaults;
 use MuckiLogPlugin\Core\LogLevel;
+use MuckiLogPlugin\Core\ConfigPath;
 
 class Settings implements SettingsInterface
 {
-    const LOGGER_PATH = '/log4php/Logger.php';
-
-    const LOG_PATH = '/var/log';
-    const LOGGER_CONFIG_PATH = '/Resources/config';
-    
     const MAXBACKUPINDEX = 10;
-
-    const CONFIG_PATH_ACTIVE = 'MuckiLogPlugin.config.active';
-    const CONFIG_PATH_LOG_LEVEL = 'MuckiLogPlugin.config.level';
-    const CONFIG_PATH_MAX_BACKUP_INDEX = 'MuckiLogPlugin.config.maxbackupindex';
-    const CONFIG_PATH_MAX_FILESIZE = 'MuckiLogPlugin.config.maxfilesize';
-    const CONFIG_PATH_CONVERSIONPATTERN = 'MuckiLogPlugin.config.logpattern';
-    
     //Default values
     const CONFIG_PATH_LOG_LEVEL_DEFAULT = 'info';
     const CONFIG_PATH_MAX_BACKUP_INDEX_DEFAULT = '10';
     const CONFIG_PATH_MAX_FILESIZE_DEFAULT = '10MB';
     const CONFIG_PATH_CONVERSIONPATTERN_DEFAULT = '%date{Y-m-d H:i:s,u} [%t] %-5p: %m%n%ex';
-    
-    const PLUGIN_ROOT_PATH = '/custom/plugins/MuckiLogPlugin/src';
-
-    const CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS = 'MuckiLogPlugin.config.notificationMailAddress';
-    const CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID = 'MuckiLogPlugin.config.notificationMailTemplateId';
-    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG = 'MuckiLogPlugin.config.notificationMailActiveDebug';
-    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO = 'MuckiLogPlugin.config.notificationMailActiveInfo';
-    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING = 'MuckiLogPlugin.config.notificationMailActiveWarning';
-    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR = 'MuckiLogPlugin.config.notificationMailActiveError';
-    const CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL = 'MuckiLogPlugin.config.notificationMailActiveCritical';
-
-    const CONFIG_PATH_CORE_MAILER_SENDER = 'core.mailerSettings.senderAddress';
-    const CONFIG_PATH_CORE_BASIC_EMAIL = 'core.basicInformation.email';
-
-    const CONFIG_PATH_SALES_CHANNEL_ID = 'MuckiLogPlugin.config.salesChannelId';
-    const CONFIG_PATH_SEND_MAIL_MODE = 'MuckiLogPlugin.config.sendMailMode';
-    const CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL = 'MuckiLogPlugin.config.activeNotificationMail';
     /**
      * Absolute path to folder of log config files
      * @var string|null
@@ -79,7 +51,7 @@ class Settings implements SettingsInterface
     
     public function isEnabled(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_ACTIVE);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE->value);
     }
 
     public function getPluginConfig(): SystemConfigService
@@ -89,12 +61,12 @@ class Settings implements SettingsInterface
 
     public function getLogPath(): string
     {
-        return $this->kernel->getProjectDir().$this::LOG_PATH;
+        return $this->kernel->getProjectDir().PluginDefaults::LOG_PATH;
     }
 
     public function getLoggerPath(): string
     {
-        return dirname(__DIR__).$this::LOGGER_PATH;
+        return dirname(__DIR__).PluginDefaults::LOGGER_PATH;
     }
 
     public function getPluginInstallPath(): string
@@ -105,7 +77,7 @@ class Settings implements SettingsInterface
     public function getLogConfigPath(): string
     {
         if(!$this->logConfigPath) {
-            $this->logConfigPath = dirname(__DIR__).$this::LOGGER_CONFIG_PATH;
+            $this->logConfigPath = dirname(__DIR__).PluginDefaults::LOGGER_CONFIG_PATH;
         }
 
         return $this->logConfigPath;
@@ -127,8 +99,8 @@ class Settings implements SettingsInterface
     
     public function getMaxBackupIndex(): string {
 
-        if($this->config->getString($this::CONFIG_PATH_MAX_BACKUP_INDEX) != '') {
-            return $this->config->getString($this::CONFIG_PATH_MAX_BACKUP_INDEX);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_MAX_BACKUP_INDEX->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_MAX_BACKUP_INDEX->value);
         } else {
             return $this::CONFIG_PATH_MAX_BACKUP_INDEX_DEFAULT;
         }
@@ -136,8 +108,8 @@ class Settings implements SettingsInterface
     
     public function getMaxFileSize(): string {
         
-        if($this->config->getString($this::CONFIG_PATH_MAX_FILESIZE) != '') {
-            return $this->config->getString($this::CONFIG_PATH_MAX_FILESIZE).'MB';
+        if($this->config->getString(ConfigPath::CONFIG_PATH_MAX_FILESIZE->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_MAX_FILESIZE->value).'MB';
         } else {
             return $this::CONFIG_PATH_MAX_FILESIZE_DEFAULT;
         }
@@ -145,8 +117,8 @@ class Settings implements SettingsInterface
     
     public function getLoglevel(): string {
         
-        if($this->config->getString($this::CONFIG_PATH_LOG_LEVEL) != '') {
-            return $this->config->getString($this::CONFIG_PATH_LOG_LEVEL);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_LOG_LEVEL->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_LOG_LEVEL->value);
         } else {
             return $this::CONFIG_PATH_LOG_LEVEL_DEFAULT;
         }
@@ -154,8 +126,8 @@ class Settings implements SettingsInterface
 
     public function getConversionPattern(): string
     {
-        if($this->config->getString($this::CONFIG_PATH_CONVERSIONPATTERN) != '') {
-            return $this->config->getString($this::CONFIG_PATH_CONVERSIONPATTERN);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_CONVERSIONPATTERN->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_CONVERSIONPATTERN->value);
         } else {
             return $this::CONFIG_PATH_CONVERSIONPATTERN_DEFAULT;
         }
@@ -177,8 +149,8 @@ class Settings implements SettingsInterface
 
     public function getNotificationMailAddress(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS) != '') {
-            return $this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ADDRESS->value);
         }
 
         return null;
@@ -186,11 +158,11 @@ class Settings implements SettingsInterface
 
     public function getNotificationMailSender(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_CORE_MAILER_SENDER) != '') {
-            return $this->config->getString($this::CONFIG_PATH_CORE_MAILER_SENDER);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_CORE_MAILER_SENDER->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_CORE_MAILER_SENDER->value);
         } else {
-            if($this->config->getString($this::CONFIG_PATH_CORE_BASIC_EMAIL) != '') {
-                return $this->config->getString($this::CONFIG_PATH_CORE_BASIC_EMAIL);
+            if($this->config->getString(ConfigPath::CONFIG_PATH_CORE_BASIC_EMAIL->value) != '') {
+                return $this->config->getString(ConfigPath::CONFIG_PATH_CORE_BASIC_EMAIL->value);
             }
         }
 
@@ -199,8 +171,8 @@ class Settings implements SettingsInterface
 
     public function getNotificationMailTemplateId(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID) != '') {
-            return $this->config->getString($this::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_TEMPLATE_ID->value);
         }
 
         return null;
@@ -208,27 +180,27 @@ class Settings implements SettingsInterface
 
     public function isDebugNotification(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG->value);
     }
 
     public function isInfoNotification(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO->value);
     }
 
     public function isWarningNotification(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING->value);
     }
 
     public function isErrorNotification(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR->value);
     }
 
     public function isCriticalNotification(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL->value);
     }
 
     public function needNotificationByLogLevel(LogLevel $logLevel): bool
@@ -236,19 +208,19 @@ class Settings implements SettingsInterface
         switch ($logLevel) {
 
             case LogLevel::DEBUG:
-                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG);
+                $needNotificationByLogLevel = $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_DEBUG->value);
                 break;
             case LogLevel::INFO:
-                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO);
+                $needNotificationByLogLevel = $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_INFO->value);
                 break;
             case LogLevel::WARNING:
-                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING);
+                $needNotificationByLogLevel = $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_WARNING->value);
                 break;
             case LogLevel::ERROR:
-                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR);
+                $needNotificationByLogLevel = $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_ERROR->value);
                 break;
             case LogLevel::CRITICAL:
-                $needNotificationByLogLevel = $this->config->getBool($this::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL);
+                $needNotificationByLogLevel = $this->config->getBool(ConfigPath::CONFIG_PATH_NOTIFICATION_MAIL_ACTIVE_CRITICAL->value);
                 break;
             default:
                 $needNotificationByLogLevel = false;
@@ -260,8 +232,8 @@ class Settings implements SettingsInterface
 
     public function getSendMailMode(): string
     {
-        if($this->config->getString($this::CONFIG_PATH_SEND_MAIL_MODE) != '') {
-            return $this->config->getString($this::CONFIG_PATH_SEND_MAIL_MODE);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_SEND_MAIL_MODE->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_SEND_MAIL_MODE->value);
         }
 
         return PluginDefaults::DEFAULT_SEND_MAIL_MODE;
@@ -269,8 +241,8 @@ class Settings implements SettingsInterface
 
     public function getSalesChannelId(): ?string
     {
-        if($this->config->getString($this::CONFIG_PATH_SALES_CHANNEL_ID) != '') {
-            return $this->config->getString($this::CONFIG_PATH_SALES_CHANNEL_ID);
+        if($this->config->getString(ConfigPath::CONFIG_PATH_SALES_CHANNEL_ID->value) != '') {
+            return $this->config->getString(ConfigPath::CONFIG_PATH_SALES_CHANNEL_ID->value);
         }
 
         return null;
@@ -278,7 +250,6 @@ class Settings implements SettingsInterface
 
     public function isNotificationMailEnabled(): bool
     {
-        return $this->config->getBool($this::CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL);
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL->value);
     }
 }
-
