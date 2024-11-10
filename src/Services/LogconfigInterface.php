@@ -13,7 +13,7 @@
 
 namespace MuckiLogPlugin\Services;
 
-use MuckiLogPlugin\log4php\Logger;
+use MuckiLogPlugin\Log4php\Logger;
 
 interface LogconfigInterface
 {

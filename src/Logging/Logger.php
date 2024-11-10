@@ -14,7 +14,7 @@ use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Services\LoggingEvent;
-use MuckiLogPlugin\log4php\Logger as Log4phpLogger;
+use MuckiLogPlugin\Log4php\Logger as Log4phpLogger;
 
 /**
  * @package MuckiLogPlugin\Logging
