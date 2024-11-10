@@ -54,10 +54,10 @@ class LoggerPatternParser
 	private ?LoggerPatternConverter $tail = null;
 	
 	public function __construct(
-        protected mixed $pattern,
-        protected mixed $converterMap)
+        protected string $pattern,
+        protected array $converterMap
+    )
     {
-		
 		// Construct the regex pattern
 		$this->regex =
 			'/' .                       // Starting regex pattern delimiter
@@ -77,7 +77,6 @@ class LoggerPatternParser
      */
 	public function parse(): ?LoggerPatternConverter
     {
-		
 		// Skip parsing if the pattern is empty
 		if (empty($this->pattern)) {
 			$this->addLiteral('');
@@ -92,7 +91,7 @@ class LoggerPatternParser
 		}
 		
 		$prevEnd = 0;
-        $end = null;
+        $end = 0;
 		
 		foreach($matches[0] as $key => $item) {
 			
@@ -119,7 +118,7 @@ class LoggerPatternParser
 		}
 
 		// Add any trailing literals
-		if ($end && $end < strlen($this->pattern)) {
+		if ($end < strlen($this->pattern)) {
 			$literal = substr($this->pattern, $end);
 			$this->addLiteral($literal);
 		}
@@ -140,40 +139,39 @@ class LoggerPatternParser
     /**
      * Adds a non-literal converter to the converter chain.
      *
-     * @param string|null $word The conversion word, used to determine which
+     * @param string $word The conversion word, used to determine which
      *  converter will be used.
-     * @param string|null $modifiers Formatting modifiers.
-     * @param string|null $option Option to pass to the converter.
+     * @param string $modifiers Formatting modifiers.
+     * @param string $option Option to pass to the converter.
      * @throws LoggerException
      */
-	private function addConverter(?string $word, ?string $modifiers, ?string $option): void
+	private function addConverter(string $word, string $modifiers, string $option): void
     {
  		$formattingInfo = $this->parseModifiers($modifiers);
-         if($option) {
-             $option = trim($option, "{} ");
-
-             if (isset($this->converterMap[$word])) {
-                 $converter = $this->getConverter($word, $formattingInfo, $option);
-                 $this->addToChain($converter);
-             } else {
-                 trigger_error("log4php: Invalid keyword '%$word' in converison pattern. Ignoring keyword.", E_USER_WARNING);
-             }
-         }
+		$option = trim($option, "{} ");
+		
+		if (isset($this->converterMap[$word])) {
+			$converter = $this->getConverter($word, $formattingInfo, $option);
+			$this->addToChain($converter);
+		} else {
+			trigger_error("log4php: Invalid keyword '%$word' in converison pattern. Ignoring keyword.", E_USER_WARNING);
+		}
 	}
-
-    /**
-     * Determines which converter to use based on the conversion word. Creates
-     * an instance of the converter using the provided formatting info and
-     * option and returns it.
-     *
-     * @param string|null $word The conversion word.
-     * @param LoggerFormattingInfo $info Formatting info.
-     * @param string $option Converter option.
-     *
-     * @return LoggerPatternConverter
-     * @throws LoggerException
-     */
-	private function getConverter(?string $word, LoggerFormattingInfo $info, string $option): LoggerPatternConverter
+	
+	/**
+	 * Determines which converter to use based on the conversion word. Creates
+	 * an instance of the converter using the provided formatting info and
+	 * option and returns it.
+	 *
+	 * @param string $word The conversion word.
+	 * @param LoggerFormattingInfo $info Formatting info.
+	 * @param string $option Converter option.
+	 *
+	 * @return LoggerPatternConverter
+	 *@throws LoggerException
+	 *
+	 */
+	private function getConverter(string $word, LoggerFormattingInfo $info, string $option): LoggerPatternConverter
     {
 		if (!isset($this->converterMap[$word])) {
 			throw new LoggerException("Invalid keyword '%$word' in converison pattern. Ignoring keyword.");
@@ -193,28 +191,26 @@ class LoggerPatternParser
 	}
 	
 	/** Adds a converter to the chain and updates $head and $tail pointers. */
-	private function addToChain(?LoggerPatternConverter $converter): void
+	private function addToChain(LoggerPatternConverter $converter): void
     {
-        if($converter) {
-
-            if (!isset($this->head)) {
-                $this->head = $converter;
-                $this->tail = $this->head;
-            } else {
-                $this->tail->next = $converter;
-                $this->tail = $this->tail->next;
-            }
-        }
+		if (!isset($this->head)) {
+			$this->head = $converter;
+			$this->tail = $this->head;
+		} else {
+			$this->tail->next = $converter;
+			$this->tail = $this->tail->next;
+		}
 	}
-
-    /**
-     * Parses the formatting modifiers and produces the corresponding
-     * LoggerFormattingInfo object.
-     *
-     * @param string|null $modifiers
-     * @return LoggerFormattingInfo
-     */
-	private function parseModifiers(?string $modifiers): LoggerFormattingInfo
+	
+	/**
+	 * Parses the formatting modifiers and produces the corresponding 
+	 * LoggerFormattingInfo object.
+	 *
+	 * @param string $modifier
+	 * @return LoggerFormattingInfo
+	 * @throws LoggerException
+	 */
+	private function parseModifiers(string $modifiers): LoggerFormattingInfo
     {
 		$info = new LoggerFormattingInfo();
 	
