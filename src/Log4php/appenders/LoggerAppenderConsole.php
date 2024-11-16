@@ -14,21 +14,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * changed by muckiware (c)2024
  */
-namespace MuckiLogPlugin\Log4php\appenders;
+namespace MuckiLogPlugin\Log4php\Appenders;
 /**
- * LoggerAppenderConsole appends log events either to the standard output 
+ * LoggerAppenderConsole appends log events either to the standard output
  * stream (php://stdout) or the standard error stream (php://stderr).
- * 
- * **Note**: Use this Appender with command-line php scripts. On web scripts 
+ *
+ * **Note**: Use this Appender with command-line php scripts. On web scripts
  * this appender has no effects.
  *
  * This appender uses a layout.
  *
  * ## Configurable parameters: ##
- * 
+ *
  * - **target** - the target stream: "stdout" or "stderr"
- * 
+ *
  * @version $Revision: 1343601 $
  * @package log4php
  * @subpackage appenders
@@ -39,8 +41,8 @@ namespace MuckiLogPlugin\Log4php\appenders;
 use MuckiLogPlugin\Log4php\LoggerAppender;
 use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 
- class LoggerAppenderConsole extends LoggerAppender {
-
+ class LoggerAppenderConsole extends LoggerAppender
+ {
 	/** The standard otuput stream.  */
 	const STDOUT = 'php://stdout';
 	
@@ -48,7 +50,7 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 	const STDERR = 'php://stderr';
 
 	/** The 'target' parameter. */
-	protected $target = self::STDOUT;
+	protected string $target = self::STDOUT;
 	
 	/**
 	 * Stream resource for the target stream.
@@ -56,7 +58,8 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 	 */
 	protected $fp = null;
 
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		$this->fp = fopen($this->target, 'w');
 		if(is_resource($this->fp) && $this->layout !== null) {
 			fwrite($this->fp, $this->layout->getHeader());
@@ -64,9 +67,9 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 		$this->closed = (bool)is_resource($this->fp) === false;
 	}
 	
-	
-	public function close() {
-		if($this->closed != true) {
+	public function close(): void
+    {
+		if(!$this->closed) {
 			if (is_resource($this->fp) && $this->layout !== null) {
 				fwrite($this->fp, $this->layout->getFooter());
 				fclose($this->fp);
@@ -75,7 +78,8 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 		}
 	}
 
-	public function append(LoggerLoggingEvent $event) {
+	public function append(LoggerLoggingEvent $event): void
+    {
 		if (is_resource($this->fp) && $this->layout !== null) {
 			fwrite($this->fp, $this->layout->format($event));
 		}
@@ -85,7 +89,8 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 	 * Sets the 'target' parameter.
 	 * @param string $target
 	 */
-	public function setTarget($target) {
+	public function setTarget(string $target): void
+    {
 		$value = trim($target);
 		if ($value == self::STDOUT || strtoupper($value) == 'STDOUT') {
 			$this->target = self::STDOUT;
@@ -101,7 +106,8 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 	 * Returns the value of the 'target' parameter.
 	 * @return string
 	 */
-	public function getTarget() {
+	public function getTarget(): string
+    {
 		return $this->target;
 	}
 }

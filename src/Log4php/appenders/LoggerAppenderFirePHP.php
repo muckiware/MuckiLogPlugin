@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MuckiLogPlugin\Log4php\appenders;
+namespace MuckiLogPlugin\Log4php\Appenders;
 /**
  * Logs messages as HTTP headers using the FirePHP Insight API.
  * 

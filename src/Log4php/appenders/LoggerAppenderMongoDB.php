@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace MuckiLogPlugin\Log4php\appenders;
+namespace MuckiLogPlugin\Log4php\Appenders;
 
 use MuckiLogPlugin\Log4php\LoggerAppender;
 use MuckiLogPlugin\Log4php\LoggerLoggingEvent;

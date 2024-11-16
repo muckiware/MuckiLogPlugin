@@ -127,7 +127,7 @@ class Logconfig implements LogconfigInterface
         $nodeAppender->appendChild($attr);
         
         $attr = $dom->createAttribute('class');
-        $attr->appendChild($dom->createTextNode('MuckiLogPlugin\Log4php\appenders\LoggerAppenderRollingFile'));
+        $attr->appendChild($dom->createTextNode('MuckiLogPlugin\Log4php\Appenders\LoggerAppenderRollingFile'));
         $nodeAppender->appendChild($attr);
         
         $attr = $dom->createAttribute('name');

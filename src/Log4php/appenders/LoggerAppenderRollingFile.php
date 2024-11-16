@@ -17,7 +17,7 @@
  *
  * @package log4php
  */
-namespace MuckiLogPlugin\Log4php\appenders;
+namespace MuckiLogPlugin\Log4php\Appenders;
 
 use MuckiLogPlugin\Log4php\LoggerException;
 /**

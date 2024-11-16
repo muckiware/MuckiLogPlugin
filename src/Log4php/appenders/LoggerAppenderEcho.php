@@ -14,19 +14,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * changed by muckiware (c)2024
  */
-namespace MuckiLogPlugin\Log4php\appenders;
+namespace MuckiLogPlugin\Log4php\Appenders;
 
 use MuckiLogPlugin\Log4php\LoggerAppender;
 use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 /**
- * LoggerAppenderEcho uses the PHP echo() function to output events. 
- * 
+ * LoggerAppenderEcho uses the PHP echo() function to output events.
+ *
  * This appender uses a layout.
- * 
+ *
  * ## Configurable parameters: ##
- * 
- * - **htmlLineBreaks** - If set to true, a <br /> element will be inserted 
+ *
+ * - **htmlLineBreaks** - If set to true, a <br /> element will be inserted
  *     before each line break in the logged message. Default is false.
  *
  * @version $Revision: 1337820 $
@@ -35,30 +37,32 @@ use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @link http://logging.apache.org/log4php/docs/appenders/echo.html Appender documentation
  */
-class LoggerAppenderEcho extends LoggerAppender {
-	/** 
+class LoggerAppenderEcho extends LoggerAppender
+{
+	/**
 	 * Used to mark first append. Set to false after first append.
-	 * @var boolean 
+	 * @var boolean
 	 */
-	protected $firstAppend = true;
+	protected bool $firstAppend = true;
 	
-	/** 
+	/**
 	 * If set to true, a <br /> element will be inserted before each line
-	 * break in the logged message. Default value is false. @var boolean 
+	 * break in the logged message. Default value is false. @var boolean
 	 */
-	protected $htmlLineBreaks = false;
+	protected bool $htmlLineBreaks = false;
 	
-	public function close() {
-		if($this->closed != true) {
-			if(!$this->firstAppend) {
-				echo $this->layout->getFooter();
-			}
+	public function close(): void
+    {
+		if(!$this->closed && !$this->firstAppend) {
+            echo $this->layout->getFooter();
 		}
 		$this->closed = true;
 	}
 
-	public function append(LoggerLoggingEvent $event) {
-		if($this->layout !== null) {
+	public function append(LoggerLoggingEvent $event): void
+    {
+		if(!$this->layout) {
+
 			if($this->firstAppend) {
 				echo $this->layout->getHeader();
 				$this->firstAppend = false;
@@ -69,14 +73,15 @@ class LoggerAppenderEcho extends LoggerAppender {
 				$text = nl2br($text);
 			}
 			echo $text;
-		} 
+		}
 	}
 	
 	/**
 	 * Sets the 'htmlLineBreaks' parameter.
 	 * @param boolean $value
 	 */
-	public function setHtmlLineBreaks($value) {
+	public function setHtmlLineBreaks(bool $value): void
+    {
 		$this->setBoolean('htmlLineBreaks', $value);
 	}
 	
@@ -84,8 +89,8 @@ class LoggerAppenderEcho extends LoggerAppender {
 	 * Returns the 'htmlLineBreaks' parameter.
 	 * @returns boolean
 	 */
-	public function getHtmlLineBreaks() {
+	public function getHtmlLineBreaks(): bool
+    {
 		return $this->htmlLineBreaks;
 	}
 }
-

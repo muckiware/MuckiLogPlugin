@@ -65,7 +65,7 @@ class LoggerConfiguratorDefault implements LoggerConfigurator
         ),
         'appenders' => array(
             'default' => array(
-                'class' => 'MuckiLogPlugin\Log4php\appenders\LoggerAppenderEcho'
+                'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho'
             ),
         ),
 	);
