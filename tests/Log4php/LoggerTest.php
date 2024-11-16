@@ -20,6 +20,8 @@
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @version    $Revision$
  * @link       http://logging.apache.org/log4php
+ *
+ * changed by muckiware (c)2024
  */
 
 namespace MuckiLogPlugin\Log4php;
@@ -112,18 +114,6 @@ class LoggerTest extends TestCase
 			),
 		),
 	);
-	
-	protected function setUp(): void
-    {
-		Logger::clear();
-		Logger::resetConfiguration();
-	}
-	
-	protected function tearDown(): void
-    {
-		Logger::clear();
-		Logger::resetConfiguration();
-	}
 	
 	public function testLoggerExist()
     {
