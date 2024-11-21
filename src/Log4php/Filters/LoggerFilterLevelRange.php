@@ -17,7 +17,7 @@
  *
  * @package log4php
  */
-namespace MuckiLogPlugin\Log4php\filters;
+namespace MuckiLogPlugin\Log4php\Filters;
 
 use MuckiLogPlugin\Log4php\LoggerFilter;
 use MuckiLogPlugin\Log4php\LoggerLevel;

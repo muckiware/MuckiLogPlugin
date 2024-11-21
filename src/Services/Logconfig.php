@@ -160,7 +160,7 @@ class Logconfig implements LogconfigInterface
         $nodeLayout->appendChild($attr);
         
         $attr = $dom->createAttribute('class');
-        $attr->appendChild($dom->createTextNode('MuckiLogPlugin\Log4php\filters\LoggerFilterLevelRange'));
+        $attr->appendChild($dom->createTextNode('MuckiLogPlugin\Log4php\Filters\LoggerFilterLevelRange'));
         $nodeFilter->appendChild($attr);
         
         $attr = $dom->createAttribute('name');

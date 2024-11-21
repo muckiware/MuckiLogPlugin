@@ -33,8 +33,8 @@ use MuckiLogPlugin\Log4php\Appenders\LoggerAppenderNull;
 use MuckiLogPlugin\Log4php\Layouts\LoggerLayoutSimple;
 use MuckiLogPlugin\Log4php\LoggerLevel;
 use MuckiLogPlugin\Log4php\Logger;
-use MuckiLogPlugin\Log4php\filters\LoggerFilterDenyAll;
-use MuckiLogPlugin\Log4php\filters\LoggerFilterLevelMatch;
+use MuckiLogPlugin\Log4php\Filters\LoggerFilterDenyAll;
+use MuckiLogPlugin\Log4php\Filters\LoggerFilterLevelMatch;
 /**
  * @group appenders
  */
