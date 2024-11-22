@@ -21,6 +21,9 @@
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @version    $Revision$
  * @link       http://logging.apache.org/log4php
+ *
+ * changed by muckiware (c)2024
+ * @link https://github.com/muckiware/MuckiLogPlugin
  */
 namespace MuckiLogPlugin\Log4php;
 
@@ -159,25 +162,40 @@ use MuckiLogPlugin\Log4php\LoggerLevel;
  		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_not_existing_filter_class.xml');
         $this->assertTrue(true);
  	}
-//
-// 	public function testInvalidAppenderFilterParameter()
-//    {
-// 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_invalid_filter_parameters.xml');
-//        $this->assertTrue(true);
-// 	}
-//
-// 	public function testInvalidAppenderFilterClassSet()
-//    {
-// 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_invalid_filter_class.xml');
-//        $this->assertTrue(true);
-// 	}
-//
-// 	public function testNotExistingAppenderLayoutClassSet()
-//    {
-// 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_not_existing_layout_class.xml');
-//        $this->assertTrue(true);
-// 	}
-//
+
+ 	public function testInvalidAppenderFilterParameter()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Nonexistant option [fooParameter] specified on [MuckiLogPlugin\Log4php\Filters\LoggerFilterStringMatch]. Skipping.'
+        );
+
+ 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_invalid_filter_parameters.xml');
+        $this->assertTrue(true);
+ 	}
+
+ 	public function testInvalidAppenderFilterClassSet()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid filter class [stdClass] sepcified on appender [foo]. Skipping filter definition.'
+        );
+
+ 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_invalid_filter_class.xml');
+        $this->assertTrue(true);
+ 	}
+
+ 	public function testNotExistingAppenderLayoutClassSet()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Nonexistant layout class [Foo] specified for appender [foo]. Reverting to default layout.'
+        );
+
+ 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/appenders/config_not_existing_layout_class.xml');
+        $this->assertTrue(true);
+ 	}
+
  	public function testInvalidAppenderLayoutClassSet()
     {
         $this->expectException(\ErrorException::class);
@@ -230,84 +248,96 @@ use MuckiLogPlugin\Log4php\LoggerLevel;
         $this->assertTrue(true);
  	}
 
-// 	public function testInvalidLoggerAddivity()
-//    {
-// 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/loggers/config_invalid_additivity.xml');
-//
-////        $this->expectExceptionCode(E_USER_WARNING);
-//////        $this->expectException(\Exception::class);
-////        $this->expectExceptionMessage(
-////            'log4php: Invalid additivity value [4711] specified for logger [myLogger]. Ignoring additivity setting.'
-////        );
-//        $this->assertTrue(true);
-////
-////        echo print_r($this->getResult(), true);
-// 	}
+ 	public function testInvalidLoggerAddivity()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid additivity value [4711] specified for logger [myLogger]. Ignoring additivity setting.'
+        );
 
-// 	public function testNotExistingLoggerAppendersClass()
-//    {
-// 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/loggers/config_not_existing_appenders.xml');
-//        $this->assertTrue(true);
-// 	}
-//
-// 	public function testNonexistentFile()
-//    {
-// 		Logger::configure('hopefully/this/path/doesnt/exist/config.xml');
-//        $this->assertTrue(true);
-// 	}
-//
-// 	/** Test correct fallback to the default configuration. */
-// 	public function testNonexistentFileFallback()
-//    {
-// 		@Logger::configure('hopefully/this/path/doesnt/exist/config.xml');
-// 		$this->testDefaultConfig();
-// 	}
- 	
-// 	public function testAppendersWithLayout()
-//    {
-// 		ob_start();
-// 		Logger::getRootLogger()->info('info');
-// 		$actual = ob_get_contents();
-// 		ob_end_clean();
-//
-// 		$expected = "INFO - info";
-//  		$this->assertSame($expected, $actual);
-// 	}
- 	
-//  	public function testThreshold()
-// 	{
-// 		Logger::configure(array(
-// 			'threshold' => 'WARNING',
-// 			'rootLogger' => array(
-// 				'appenders' => array('default')
-// 			),
-// 			'appenders' => array(
-// 				'default' => array(
-// 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
-// 				),
-// 			)
-// 		));
-//
-// 		$actual = Logger::getHierarchy()->getThreshold();
-// 		$expected = LoggerLevel::getLevelWarning();
-//
-// 		self::assertSame($expected, $actual);
-// 	}
+ 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/loggers/config_invalid_additivity.xml');
+        $this->assertTrue(true);
+ 	}
 
-//  	public function testInvalidThreshold()
-// 	{
-// 		Logger::configure(array(
-// 			'threshold' => 'FOO',
-// 			'rootLogger' => array(
-// 				'appenders' => array('default')
-// 			),
-// 			'appenders' => array(
-// 				'default' => array(
-// 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
-// 				),
-// 			)
-// 		));
-// 	}
+ 	public function testNotExistingLoggerAppendersClass()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Nonexistnant appender [unknownAppender] linked to logger [myLogger].'
+        );
+
+ 		Logger::configure(self::PHPUNIT_CONFIG_DIR . '/loggers/config_not_existing_appenders.xml');
+        $this->assertTrue(true);
+ 	}
+
+ 	public function testNonexistentFile()
+    {
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Configuration failed. File not found at [hopefully/this/path/doesnt/exist/config.xml]. Using default configuration.'
+        );
+
+ 		Logger::configure('hopefully/this/path/doesnt/exist/config.xml');
+        $this->assertTrue(true);
+ 	}
+
+ 	/** Test correct fallback to the default configuration. */
+ 	public function testNonexistentFileFallback()
+    {
+ 		@Logger::configure('hopefully/this/path/doesnt/exist/config.xml');
+ 		$this->testDefaultConfig();
+ 	}
+ 	
+ 	public function testAppendersWithLayout()
+    {
+ 		ob_start();
+ 		Logger::getRootLogger()->info('info');
+ 		$actual = ob_get_contents();
+ 		ob_end_clean();
+
+ 		$expected = "INFO - info";
+  		$this->assertSame(trim($expected), trim($actual));
+ 	}
+ 	
+  	public function testThreshold()
+ 	{
+ 		Logger::configure(array(
+ 			'threshold' => 'WARNING',
+ 			'rootLogger' => array(
+ 				'appenders' => array('default')
+ 			),
+ 			'appenders' => array(
+ 				'default' => array(
+ 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
+ 				),
+ 			)
+ 		));
+
+ 		$actual = Logger::getHierarchy()->getThreshold();
+ 		$expected = LoggerLevel::getLevelWarning();
+
+ 		self::assertSame($expected, $actual);
+ 	}
+
+  	public function testInvalidThreshold()
+ 	{
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid threshold value [FOO] specified. Ignoring threshold definition.'
+        );
+
+ 		Logger::configure(array(
+ 			'threshold' => 'FOO',
+ 			'rootLogger' => array(
+ 				'appenders' => array('default')
+ 			),
+ 			'appenders' => array(
+ 				'default' => array(
+ 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
+ 				),
+ 			)
+ 		));
+ 	}
  	
  	public function testAppenderThreshold()
  	{
@@ -329,20 +359,25 @@ use MuckiLogPlugin\Log4php\LoggerLevel;
  		self::assertSame($expected, $actual);
  	}
 
-// 	public function testAppenderInvalidThreshold()
-// 	{
-// 		Logger::configure(array(
-// 			'rootLogger' => array(
-// 				'appenders' => array('default')
-// 			),
-// 			'appenders' => array(
-// 				'default' => array(
-// 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
-// 					'threshold' => 'FOO'
-// 				),
-// 			)
-// 		));
-// 	}
+ 	public function testAppenderInvalidThreshold()
+ 	{
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid threshold value [FOO] specified for appender [default]. Ignoring threshold definition.'
+        );
+
+ 		Logger::configure(array(
+ 			'rootLogger' => array(
+ 				'appenders' => array('default')
+ 			),
+ 			'appenders' => array(
+ 				'default' => array(
+ 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
+ 					'threshold' => 'FOO'
+ 				),
+ 			)
+ 		));
+ 	}
  	
  	public function testLoggerThreshold()
  	{
@@ -375,35 +410,45 @@ use MuckiLogPlugin\Log4php\LoggerLevel;
  		self::assertSame($expected, $actual);
  	}
 
-// 	public function testInvalidLoggerThreshold()
-// 	{
-// 		Logger::configure(array(
-// 			'loggers' => array(
-// 				'default' => array(
-// 					'appenders' => array('default'),
-// 		 			'level' => 'FOO'
-// 				)
-// 			),
-// 			'appenders' => array(
-// 				'default' => array(
-// 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
-// 				),
-// 			)
-// 		));
-// 	}
+ 	public function testInvalidLoggerThreshold()
+ 	{
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid level value [FOO] specified for logger [default]. Ignoring level definition.'
+        );
 
-//  	public function testInvalidRootLoggerThreshold()
-// 	{
-// 		Logger::configure(array(
-// 			'rootLogger' => array(
-// 				'appenders' => array('default'),
-// 				'level' => 'FOO'
-// 			),
-// 			'appenders' => array(
-// 				'default' => array(
-// 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
-// 				),
-// 			)
-// 		));
-// 	}
+ 		Logger::configure(array(
+ 			'loggers' => array(
+ 				'default' => array(
+ 					'appenders' => array('default'),
+ 		 			'level' => 'FOO'
+ 				)
+ 			),
+ 			'appenders' => array(
+ 				'default' => array(
+ 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
+ 				),
+ 			)
+ 		));
+ 	}
+
+  	public function testInvalidRootLoggerThreshold()
+ 	{
+        $this->expectException(\ErrorException::class);
+        $this->expectExceptionMessage(
+            'Invalid level value [FOO] specified for logger [root]. Ignoring level definition.'
+        );
+
+ 		Logger::configure(array(
+ 			'rootLogger' => array(
+ 				'appenders' => array('default'),
+ 				'level' => 'FOO'
+ 			),
+ 			'appenders' => array(
+ 				'default' => array(
+ 					'class' => 'MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho',
+ 				),
+ 			)
+ 		));
+ 	}
  }
