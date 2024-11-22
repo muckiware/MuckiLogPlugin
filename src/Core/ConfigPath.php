@@ -32,4 +32,5 @@ enum ConfigPath: string
     case CONFIG_PATH_SALES_CHANNEL_ID = 'MuckiLogPlugin.config.salesChannelId';
     case CONFIG_PATH_SEND_MAIL_MODE = 'MuckiLogPlugin.config.sendMailMode';
     case CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL = 'MuckiLogPlugin.config.activeNotificationMail';
+    case CONFIG_PATH_ACTIVE_COMPRESS = 'MuckiLogPlugin.config.activeCompress';
 }

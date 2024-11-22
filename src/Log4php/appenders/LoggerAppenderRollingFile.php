@@ -61,7 +61,7 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile
 	 *
 	 * @var integer
 	 */
-	protected $maxFileSize = 10_485_760;
+	protected int $maxFileSize = 10_485_760;
 	
 	/**
 	 * Set the maximum number of backup files to keep around.

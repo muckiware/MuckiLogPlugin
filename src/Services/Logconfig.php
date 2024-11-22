@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 /**
- * MuckiLogPlugin
+ * MuckiLogPlugin plugin
  *
- * @category   SW6 Plugin
+ * @category   Muckiware
  * @package    Muckilog
  * @copyright  Copyright (c) 2021-2024 by Muckiware
  * @license    MIT
@@ -42,24 +42,29 @@ class Logconfig implements LogconfigInterface
 
         return $this->logger;
     }
+
     /**
      * Method for to load a xml config file, if it already exists.
      *
      * @param string $loggerContext
      * @return boolean
+     * @throws \DOMException
      */
-    public function checkConfigPath($loggerContext = '', $extensionContext = ''): bool
+    public function checkConfigPath(string $loggerContext = '', string $extensionContext = ''): bool
     {
         $configFilePath = $this->pluginSettings->getConfigPath($loggerContext, $extensionContext);
         
         if($this->_checkConfigFile($configFilePath, $loggerContext, $extensionContext)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
-    
-    protected function _checkConfigFile(string $path, string $loggerContext='', string $extensionContext=''): bool
+
+    /**
+     * @throws \DOMException
+     */
+    protected function _checkConfigFile(string $path, string $loggerContext = '', string $extensionContext = ''): bool
     {
         if(file_exists($path)) {
             return true;
@@ -69,9 +74,9 @@ class Logconfig implements LogconfigInterface
             
             if(file_exists($path)) {
                 return true;
-            } else {
-                return false;
             }
+
+            return false;
         }
     }
 
@@ -81,7 +86,11 @@ class Logconfig implements LogconfigInterface
      * @return void
      * @throws \DOMException
      */
-    protected function _createConfigXML(string $configFilePath, string $loggerContext='', string $extensionContext=''): void
+    protected function _createConfigXML(
+        string $configFilePath,
+        string $loggerContext='',
+        string $extensionContext=''
+    ): void
     {
         $dom = new \DomDocument('1.0', 'UTF-8');
         
@@ -100,6 +109,8 @@ class Logconfig implements LogconfigInterface
         $nodeAppender->appendChild($nodeParam2);
         $nodeParam3 = $dom->createElement('param');
         $nodeAppender->appendChild($nodeParam3);
+        $nodeParam4 = $dom->createElement('param');
+        $nodeAppender->appendChild($nodeParam4);
         $nodeLayout = $dom->createElement('layout');
         $nodeAppender->appendChild($nodeLayout);
         $nodeFilter = $dom->createElement('filter');
@@ -148,12 +159,20 @@ class Logconfig implements LogconfigInterface
         $attr = $dom->createAttribute('value');
         $attr->appendChild($dom->createTextNode($this->pluginSettings->getMaxBackupIndex()));
         $nodeParam2->appendChild($attr);
+
         $attr = $dom->createAttribute('name');
         $attr->appendChild($dom->createTextNode('maxFileSize'));
         $nodeParam3->appendChild($attr);
         $attr = $dom->createAttribute('value');
         $attr->appendChild($dom->createTextNode($this->pluginSettings->getMaxFileSize()));
         $nodeParam3->appendChild($attr);
+
+        $attr = $dom->createAttribute('name');
+        $attr->appendChild($dom->createTextNode('compress'));
+        $nodeParam4->appendChild($attr);
+        $attr = $dom->createAttribute('value');
+        $attr->appendChild($dom->createTextNode($this->pluginSettings->isEnabledCompress() ? 'true' : 'false'));
+        $nodeParam4->appendChild($attr);
         
         $attr = $dom->createAttribute('class');
         $attr->appendChild($dom->createTextNode('MuckiLogPlugin\Log4php\layouts\LoggerLayoutPattern'));
@@ -202,15 +221,12 @@ class Logconfig implements LogconfigInterface
         }
     }
     
-    public function removeLogConfigFiles(string $path): void
+    public function removeLogConfigFiles($path): void
     {
-        $filesLogconfig = glob($path.'/logconfig.*');
-        if($filesLogconfig) {
-            foreach($filesLogconfig as $file) {
+        foreach(glob($path.'/logconfig.*') as $file) {
 
-                if(is_file($file)) {
-                    unlink($file);
-                }
+            if(is_file($file)) {
+                unlink($file);
             }
         }
     }

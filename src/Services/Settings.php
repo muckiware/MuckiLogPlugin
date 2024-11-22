@@ -252,4 +252,9 @@ class Settings implements SettingsInterface
     {
         return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL->value);
     }
+
+    public function isEnabledCompress(): bool
+    {
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE_COMPRESS->value);
+    }
 }

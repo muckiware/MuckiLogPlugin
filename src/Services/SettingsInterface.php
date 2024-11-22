@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * MuckiLogPlugin plugin
  *
@@ -40,5 +40,6 @@ interface SettingsInterface
     public function getSalesChannelId(): ?string;
     public function getNotificationMailSender(): ?string;
     public function isNotificationMailEnabled(): bool;
+    public function isEnabledCompress(): bool;
 }
 
