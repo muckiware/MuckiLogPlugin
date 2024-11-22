@@ -49,8 +49,12 @@
         </input-field>
         <input-field type="text">
             <name>maxfilesize</name>
-            <label>Max Logfile Size</label>
+            <label>Max Logfile Size in MB</label>
             <defaultValue>6</defaultValue>
+        </input-field>
+        <input-field type="bool">
+            <name>activeCompress</name>
+            <label>Active compress rotated files</label>
         </input-field>
     </card>
     <card>

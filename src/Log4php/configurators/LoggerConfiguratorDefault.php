@@ -481,7 +481,8 @@ class LoggerConfiguratorDefault implements LoggerConfigurator
 	}
 	
 	/** Helper method to simplify error reporting. */
-	private function warn($message) {
+	private function warn($message): void
+    {
 		trigger_error("log4php: $message", E_USER_WARNING);
 	}
 }

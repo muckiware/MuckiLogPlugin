@@ -17,7 +17,7 @@
  *
  * @package log4php
  */
-namespace MuckiLogPlugin\Log4php\filters;
+namespace MuckiLogPlugin\Log4php\Filters;
 /**
  * This filter drops all logging events.
  *

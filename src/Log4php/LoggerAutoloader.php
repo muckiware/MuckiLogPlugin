@@ -79,10 +79,10 @@ class LoggerAutoloader {
 		'MuckiLogPlugin\Log4php\configurators\LoggerConfiguratorDefault' => '/configurators/LoggerConfiguratorDefault.php',
 
 		// Filters
-		'MuckiLogPlugin\Log4php\filters\LoggerFilterDenyAll' => '/filters/LoggerFilterDenyAll.php',
-		'MuckiLogPlugin\Log4php\filters\LoggerFilterLevelMatch' => '/filters/LoggerFilterLevelMatch.php',
-		'MuckiLogPlugin\Log4php\filters\LoggerFilterLevelRange' => '/filters/LoggerFilterLevelRange.php',
-		'MuckiLogPlugin\Log4php\filters\LoggerFilterStringMatch' => '/filters/LoggerFilterStringMatch.php',
+		'MuckiLogPlugin\Log4php\Filters\LoggerFilterDenyAll' => '/Filters/LoggerFilterDenyAll.php',
+		'MuckiLogPlugin\Log4php\Filters\LoggerFilterLevelMatch' => '/Filters/LoggerFilterLevelMatch.php',
+		'MuckiLogPlugin\Log4php\Filters\LoggerFilterLevelRange' => '/Filters/LoggerFilterLevelRange.php',
+		'MuckiLogPlugin\Log4php\Filters\LoggerFilterStringMatch' => '/Filters/LoggerFilterStringMatch.php',
 
 		// Helpers
 		'MuckiLogPlugin\Log4php\helpers\LoggerFormattingInfo' => '/helpers/LoggerFormattingInfo.php',

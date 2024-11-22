@@ -161,17 +161,18 @@ abstract class LoggerAppender extends LoggerConfigurable {
 			}
 		}
 		$this->append($event);
-	}	 
+	}
 
 	/**
 	 * Sets the appender layout.
 	 * @param LoggerLayout $layout
 	 */
-	public function setLayout($layout) {
+	public function setLayout($layout)
+    {
 		if($this->requiresLayout()) {
 			$this->layout = $layout;
 		}
-	} 
+	}
 	
 	/**
 	 * Returns the appender layout.
