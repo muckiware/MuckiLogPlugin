@@ -19,6 +19,8 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 
 use MuckiLogPlugin\Setup\Setup;
+use MuckiLogPlugin\Services\Logconfig;
+use MuckiLogPlugin\Services\Settings;
 
 class MuckiLogPlugin extends Plugin
 {
@@ -65,6 +67,12 @@ class MuckiLogPlugin extends Plugin
     {
         $setup = new Setup($this->container, $updateContext);
         $setup->update($updateContext);
+
+        /** @var Settings $pluginSettings */
+        $pluginSettings = $this->container->get('MuckiLogPlugin\Services\Settings');
+        /** @var Logconfig $servicesLogconfig */
+        $servicesLogconfig = $this->container->get('MuckiLogPlugin\Services\Logconfig');
+        $servicesLogconfig->removeLogConfigFiles($pluginSettings->getLogConfigPath());
     }
 
     public function postInstall(InstallContext $installContext): void

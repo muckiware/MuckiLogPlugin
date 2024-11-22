@@ -23,6 +23,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface;
+use MuckiLogPlugin\Core\ConfigPath;
 
 class ResponseHeaderListener implements EventSubscriberInterface
 {
@@ -83,7 +84,7 @@ class ResponseHeaderListener implements EventSubscriberInterface
     
     protected function checkConfigItems(array $requestContent): bool
     {
-        $configActive = PluginSettings::CONFIG_PATH_ACTIVE;
+        $configActive = ConfigPath::CONFIG_PATH_ACTIVE->value;
         if(array_search(1, array_column($requestContent, $configActive)) >= 0) {
             return true;
         }
