@@ -16,26 +16,29 @@
  * limitations under the License.
  *
  * @package log4php
+ *
+ * changed by muckiware (c)2024
+ * @link https://github.com/muckiware/MuckiLogPlugin
  */
 namespace MuckiLogPlugin\Log4php\Appenders;
 
 use MuckiLogPlugin\Log4php\LoggerException;
 /**
- * LoggerAppenderRollingFile writes logging events to a specified file. The 
+ * LoggerAppenderRollingFile writes logging events to a specified file. The
  * file is rolled over after a specified size has been reached.
- * 
+ *
  * This appender uses a layout.
  *
  * ## Configurable parameters: ##
- * 
+ *
  * - **file** - Path to the target file.
- * - **append** - If set to true, the appender will append to the file, 
+ * - **append** - If set to true, the appender will append to the file,
  *     otherwise the file contents will be overwritten.
  * - **maxBackupIndex** - Maximum number of backup files to keep. Default is 1.
- * - **maxFileSize** - Maximum allowed file size (in bytes) before rolling 
+ * - **maxFileSize** - Maximum allowed file size (in bytes) before rolling
  *     over. Suffixes "KB", "MB" and "GB" are allowed. 10KB = 10240 bytes, etc.
  *     Default is 10M.
- * - **compress** - If set to true, rolled-over files will be compressed. 
+ * - **compress** - If set to true, rolled-over files will be compressed.
  *     Requires the zlib extension.
  *
  * @version $Revision: 1394975 $
@@ -44,16 +47,16 @@ use MuckiLogPlugin\Log4php\LoggerException;
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  * @link http://logging.apache.org/log4php/docs/appenders/rolling-file.html Appender documentation
  */
-class LoggerAppenderRollingFile extends LoggerAppenderFile {
-
+class LoggerAppenderRollingFile extends LoggerAppenderFile
+{
 	/** Compressing backup files is done in chunks, this determines how large. */
 	const COMPRESS_CHUNK_SIZE = 102400; // 100KB
 	
 	/**
-	 * The maximum size (in bytes) that the output file is allowed to reach 
+	 * The maximum size (in bytes) that the output file is allowed to reach
 	 * before being rolled over to backup files.
 	 *
-	 * The default maximum file size is 10MB (10485760 bytes). Maximum value 
+	 * The default maximum file size is 10MB (10485760 bytes). Maximum value
 	 * for this option may depend on the file system.
 	 *
 	 * @var integer
@@ -62,42 +65,48 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	
 	/**
 	 * Set the maximum number of backup files to keep around.
-	 * 
-	 * Determines how many backup files are kept before the oldest is erased. 
-	 * This option takes a positive integer value. If set to zero, then there 
-	 * will be no backup files and the log file will be truncated when it 
+	 *
+	 * Determines how many backup files are kept before the oldest is erased.
+	 * This option takes a positive integer value. If set to zero, then there
+	 * will be no backup files and the log file will be truncated when it
 	 * reaches <var>maxFileSize</var>.
-	 * 
+	 *
 	 * There is one backup file by default.
 	 *
-	 * @var integer 
+	 * @var integer
 	 */
-	protected $maxBackupIndex = 1;
+	protected int $maxBackupIndex = 1;
 	
 	/**
-	 * The <var>compress</var> parameter determindes the compression with zlib. 
+	 * The <var>compress</var> parameter determindes the compression with zlib.
 	 * If set to true, the rollover files are compressed and saved with the .gz extension.
 	 * @var boolean
 	 */
-	protected $compress = false;
+	protected bool $compress = false;
 
 	/**
   * Set to true in the constructor if PHP >= 5.3.0. In that case clearstatcache
   * supports conditional clearing of statistics.
   * @see http://php.net/manual/en/function.clearstatcache.php
   */
- private bool $clearConditional = false;
-	
-	/**
+    private bool $clearConditional = false;
+    /**
+     * @var false
+     */
+    private bool $compression;
+
+    /**
 	 * Get the maximum size that the output file is allowed to reach
 	 * before being rolled over to backup files.
 	 * @return integer
 	 */
-	public function getMaximumFileSize() {
+	public function getMaximumFileSize(): int
+    {
 		return $this->maxFileSize;
 	}
 
-	public function __construct($name = '') {
+	public function __construct($name = '')
+    {
 		parent::__construct($name);
 		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
 			$this->clearConditional = true;
@@ -107,16 +116,18 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	/**
 	 * Implements the usual roll over behaviour.
 	 *
-	 * If MaxBackupIndex is positive, then files File.1, ..., File.MaxBackupIndex -1 are renamed to File.2, ..., File.MaxBackupIndex. 
+	 * If MaxBackupIndex is positive, then files File.1, ...,
+     * File.MaxBackupIndex -1 are renamed to File.2, ..., File.MaxBackupIndex.
 	 * Moreover, File is renamed File.1 and closed. A new File is created to receive further log output.
-	 * 
+	 *
 	 * If MaxBackupIndex is equal to zero, then the File is truncated with no backup files created.
-	 * 
-	 * Rollover must be called while the file is locked so that it is safe for concurrent access. 
-	 * 
+	 *
+	 * Rollover must be called while the file is locked so that it is safe for concurrent access.
+	 *
 	 * @throws LoggerException If any part of the rollover procedure fails.
 	 */
-	private function rollOver() {
+	private function rollOver(): void
+    {
 		// If maxBackups <= 0, then there is no file renaming to be done.
 		if($this->maxBackupIndex > 0) {
 			// Delete the oldest file, to keep Windows happy.
@@ -137,8 +148,12 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 		ftruncate($this->fp, 0);
 		rewind($this->fp);
 	}
-	
-	private function moveToBackup($source) {
+
+    /**
+     * @throws LoggerException
+     */
+    private function moveToBackup($source): void
+    {
 		if ($this->compress) {
 			$target = $source . '.1.gz';
 			$this->compressFile($source, $target);
@@ -147,8 +162,12 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 			copy($source, $target);
 		}
 	}
-	
-	private function compressFile($source, $target) {
+
+    /**
+     * @throws LoggerException
+     */
+    private function compressFile($source, $target): void
+    {
 		$target = 'compress.zlib://' . $target;
 		
 		$fin = fopen($source, 'rb');
@@ -172,7 +191,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 		fclose($fout);
 	}
 	
-	private function renameArchievedLogs($fileName) {
+	private function renameArchievedLogs($fileName): void
+    {
 		for($i = $this->maxBackupIndex - 1; $i >= 1; $i--) {
 			
 			$source = $fileName . "." . $i;
@@ -184,30 +204,29 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 				$target = $fileName . '.' . ($i + 1);
 				if ($this->compress) {
 					$target .= '.gz';
-				}				
+				}
 				
 				rename($source, $target);
 			}
 		}
 	}
-	
-	/**
-	 * Writes a string to the target file. Opens file if not already open.
-	 * @param string $string Data to write.
-	 */
-	protected function write($string) {
+
+    /**
+     * Writes a string to the target file. Opens file if not already open.
+     * @param string|null $string $string Data to write.
+     */
+	protected function write(?string $string): void
+    {
 		// Lazy file open
-		if(!isset($this->fp)) {
-			if ($this->openFile() === false) {
-				return; // Do not write if file open failed.
-			}
+		if(!isset($this->fp) && $this->openFile() === false) {
+            return; // Do not write if file open failed.
 		}
 		
 		// Lock the file while writing and possible rolling over
 		if(flock($this->fp, LOCK_EX)) {
 			
 			// Write to locked file
-			if(fwrite($this->fp, $string) === false) {
+			if($string && fwrite($this->fp, $string) === false) {
 				$this->warn("Failed writing to file. Closing appender.");
 				$this->closed = true;
 			}
@@ -237,7 +256,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 		}
 	}
 	
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		parent::activateOptions();
 		
 		if ($this->compress && !extension_loaded('zlib')) {
@@ -250,7 +270,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 * Set the 'maxBackupIndex' parameter.
 	 * @param integer $maxBackupIndex
 	 */
-	public function setMaxBackupIndex($maxBackupIndex) {
+	public function setMaxBackupIndex(int $maxBackupIndex): void
+    {
 		$this->setPositiveInteger('maxBackupIndex', $maxBackupIndex);
 	}
 	
@@ -258,7 +279,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 * Returns the 'maxBackupIndex' parameter.
 	 * @return integer
 	 */
-	public function getMaxBackupIndex() {
+	public function getMaxBackupIndex(): int
+    {
 		return $this->maxBackupIndex;
 	}
 	
@@ -266,7 +288,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 * Set the 'maxFileSize' parameter.
 	 * @param mixed $maxFileSize
 	 */
-	public function setMaxFileSize($maxFileSize) {
+	public function setMaxFileSize(mixed $maxFileSize): void
+    {
 		$this->setFileSize('maxFileSize', $maxFileSize);
 	}
 	
@@ -274,7 +297,8 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 * Returns the 'maxFileSize' parameter.
 	 * @return integer
 	 */
-	public function getMaxFileSize() {
+	public function getMaxFileSize(): int
+    {
 		return $this->maxFileSize;
 	}
 	
@@ -283,24 +307,27 @@ class LoggerAppenderRollingFile extends LoggerAppenderFile {
 	 * @param mixed $maxFileSize
 	 * @deprecated Use setMaxFileSize() instead.
 	 */
-	public function setMaximumFileSize($maxFileSize) {
+	public function setMaximumFileSize(mixed $maxFileSize): void
+    {
 		$this->warn("The 'maximumFileSize' parameter is deprecated. Use 'maxFileSize' instead.");
-		return $this->setMaxFileSize($maxFileSize);
+		$this->setMaxFileSize($maxFileSize);
 	}
 	
 	/**
 	 * Sets the 'compress' parameter.
 	 * @param boolean $compress
 	 */
-	public function setCompress($compress) {
+	public function setCompress(bool $compress): void
+    {
 		$this->setBoolean('compress', $compress);
 	}
 	
 	/**
 	 * Returns the 'compress' parameter.
-	 * @param boolean 
+	 * @param boolean
 	 */
-	public function getCompress() {
+	public function getCompress(): bool
+    {
 		return $this->compress;
 	}
 }
