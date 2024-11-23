@@ -25,8 +25,9 @@
  * changed by muckiware (c)2024
  * @link https://github.com/muckiware/MuckiLogPlugin
  */
-namespace MuckiLogPlugin\Log4php;
+namespace MuckiLogPlugin\tests\Log4php;
 
+use MuckiLogPlugin\Log4php\Logger;
 use MuckiLogPlugin\Log4php\LoggerLevel;
 use MuckiLogPlugin\Log4php\LoggerLoggingEvent;
 

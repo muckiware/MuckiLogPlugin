@@ -30,7 +30,7 @@ namespace MuckiLogPlugin\Log4php\Appenders;
 use PHPUnit\Framework\TestCase;
 
 use MuckiLogPlugin\Log4php\Logger;
-use MuckiLogPlugin\Log4php\LoggerTestHelper;
+use MuckiLogPlugin\tests\Log4php\LoggerTestHelper;
 use MuckiLogPlugin\Log4php\layouts\LoggerLayoutSimple;
 
 /**
