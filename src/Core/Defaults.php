@@ -28,7 +28,7 @@ class Defaults
     const DEFAULT_SEND_MAIL_MODE = 'eachLogLevelOneMail';
     public const DEFAULT_TASK_INTERVAL_IN_SECONDS = 300;
 
-    const LOGGER_PATH = '/log4php/Logger.php';
+    const LOGGER_PATH = '/Log4php/Logger.php';
     const LOG_PATH = '/var/log';
     const LOGGER_CONFIG_PATH = '/Resources/config';
 }
