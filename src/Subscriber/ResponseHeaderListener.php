@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * MuckiLogPlugin plugin
  *
@@ -10,9 +10,6 @@
  * @author     Muckiware
  *
  */
-
-declare(strict_types=1);
-
 namespace MuckiLogPlugin\Subscriber;
 
 use Shopware\Core\PlatformRequest;
