@@ -39,7 +39,7 @@ use MuckiLogPlugin\Log4php\layouts\LoggerLayoutSimple;
 class LoggerAppenderRollingFileTest extends TestCase
 {
 	const WARNING_MASSAGE = 'WARNING - my messageXYZ';
-    const FILENAME_COMPRESS = 'TEST-rolling-with-compression.txt';
+    const FILENAME_COMPRESS = 'TEST-rolling-with-compression.log';
 
 	
 	protected function setUp(): void
@@ -91,7 +91,7 @@ class LoggerAppenderRollingFileTest extends TestCase
      * @param string $testFileName
      * @return LoggerAppenderRollingFile
      */
-	private function createRolloverAppender(string $testFileName='TEST-rolling.txt'): LoggerAppenderRollingFile
+	private function createRolloverAppender(string $testFileName='TEST-rolling.log'): LoggerAppenderRollingFile
     {
 		$layout = new LoggerLayoutSimple();
 		
@@ -118,20 +118,20 @@ class LoggerAppenderRollingFileTest extends TestCase
 		$appender->append(LoggerTestHelper::getWarningEvent("my messageXYZ"));
 		$appender->close();
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log';
 		$data = file($file);
 		$line = $data[count($data)-1];
 		$e = "WARNING - my messageXYZ".PHP_EOL;
 		self::assertEquals($e, $line);
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.1';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.1';
 		$this->checkFileContent($file);
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.2';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.2';
 		$this->checkFileContent($file);
 
 		// Should not roll over three times
-		$this->assertFalse(file_exists(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.3'));
+		$this->assertFalse(file_exists(LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.3'));
 	}
 	
 	public function testLoggingViaLogger()
@@ -146,21 +146,21 @@ class LoggerAppenderRollingFileTest extends TestCase
 
 		$logger->warning("my messageXYZ");
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log';
 		$data = file($file);
 
 		$line = $data[count($data)-1];
 		$e = "WARNING - my messageXYZ".PHP_EOL;
 		self::assertEquals($e, $line);
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.1';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.1';
 		$this->checkFileContent($file);
 
-		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.2';
+		$file = LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.2';
 		$this->checkFileContent($file);
 
 		$this->assertFalse(
-            file_exists(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.3'),
+            file_exists(LoggerTestHelper::getTestDirPath().'/TEST-rolling.log.3'),
             'should not roll over three times'
         );
 	}
