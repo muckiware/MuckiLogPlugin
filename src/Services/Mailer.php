@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\MailTemplate\Aggregate\MailTemplateType\MailTemplateTypeEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Content\Mail\Service\MailService;
+use Shopware\Core\Content\Mail\Service\AbstractMailService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -31,7 +32,7 @@ use MuckiLogPlugin\Core\SendMailMode;
 class Mailer
 {
     public function __construct(
-        protected MailService $mailService,
+        private readonly AbstractMailService $mailService,
         protected EntityRepository $templateRepository,
         protected SystemConfigService $systemConfigService,
         protected PluginSettings $pluginSettings,
