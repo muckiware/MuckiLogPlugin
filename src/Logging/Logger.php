@@ -30,8 +30,8 @@ class Logger implements LoggerInterface
 	
 	public function __construct(
         protected LogconfigInterface $logConfig,
-        protected SettingsInterface $settings,
-        protected LoggingEvent $loggingEvent
+        protected SettingsInterface $settings
+//        protected LoggingEvent $loggingEvent
 	) {
 	    $this->logger = $this->logConfig->getLogger();
 	}
@@ -55,10 +55,6 @@ class Logger implements LoggerInterface
             case LogLevel::CRITICAL:
                 $this->logger->critical($loggerSetup->getMessage());
                 break;
-        }
-
-        if($this->settings->isNotificationMailEnabled() && $loggerSetup->isSendNotification()) {
-            $this->loggingEvent->saveEvent($loggerSetup);
         }
     }
 

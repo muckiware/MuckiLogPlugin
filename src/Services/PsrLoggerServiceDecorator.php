@@ -24,7 +24,7 @@ use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\Helper as PluginHelper;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLogger;
 
-class LoggerServiceDecorator implements LoggerInterface
+class PsrLoggerServiceDecorator implements LoggerInterface
 {
     const DEFAULT_SW_CONTEXT = 'sw';
     const DEFAULT_SW_EXTENSION = 'dev';
@@ -34,7 +34,8 @@ class LoggerServiceDecorator implements LoggerInterface
         LoggerInterface $loggerService,
         protected MuckiLogger $muckiLogger,
         protected PluginSettings $pluginSettings,
-        protected PluginHelper $pluginHelper
+        protected PluginHelper $pluginHelper,
+        protected LoggingEvent $loggingEvent
     )
     {
         $this->originalLoggerService = $loggerService;
@@ -77,7 +78,12 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function debug(mixed $message, array $context = array()): void
     {
-        $this->muckiLogger->logItem($this->getLoggerSetup(LogLevel::DEBUG, $message, $context));
+        $loggerSetup = $this->getLoggerSetup(LogLevel::DEBUG, $message, $context);
+        $this->muckiLogger->logItem($loggerSetup);
+
+        if($this->pluginSettings->isNotificationMailEnabled() && $loggerSetup->isSendNotification()) {
+            $this->loggingEvent->saveEvent($loggerSetup);
+        }
     }
 
     public function log($level, mixed $message, array $context=[]): void

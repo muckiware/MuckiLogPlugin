@@ -25,7 +25,7 @@ use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
-use MuckiLogPlugin\Services\LoggerServiceDecorator;
+use MuckiLogPlugin\Services\PsrLoggerServiceDecorator;
 
 class Checkup extends Command
 {
@@ -43,7 +43,7 @@ class Checkup extends Command
         protected LogconfigInterface $logconfigInterface,
         protected LoggerInterface $logger,
         protected MuckiLoggerInterface $muckiLogger,
-        protected LoggerServiceDecorator $loggerServiceDecorator
+        protected PsrLoggerServiceDecorator $loggerServiceDecorator
     )
     {
         parent::__construct(self::$defaultName);
