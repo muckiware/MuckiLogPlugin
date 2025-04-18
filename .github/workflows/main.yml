@@ -26,7 +26,7 @@ jobs:
       matrix:
         php-versions: [ '8.1', '8.2' ]
         mysql-versions: [ '8.0' ]
-        shopware-versions: [ 'v6.5.3.0' ]
+        shopware-versions: [ 'v6.5.8.0' ]
     services:
       mysql:
         image: mysql:${{ matrix.mysql-versions }}
@@ -42,7 +42,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: mbstring, xdebug, curl, dom, fileinfo, gd, iconv, intl, json, xml, mbstring, pdo, phar, zip, sodium, pdo_mysql
-          tools: composer:2.6.6
+          tools: composer:2.8.6
 
       - name: "Check PHP Version"
         run: php -v
