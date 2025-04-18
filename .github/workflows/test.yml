@@ -1,0 +1,30 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - dev
+      - main65
+  pull_request:
+    branches:
+      - dev
+      - main65
+  workflow_dispatch:
+
+env:
+  MODULE_NAME: MuckiLogPlugin
+  COMPOSER_NAME: muckiware/log-plugin
+  TEST_DATABASE_URL: "mysql://root:root@127.0.0.1:3306/db_test"
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Shopware
+        uses: shopware/setup-shopware@v1
+        with:
+          env: test
+          shopware-version: v6.5.3.2
+          shopware-repository: shopware/shopware
+          php-version: 8.1
+          install: true
