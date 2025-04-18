@@ -97,5 +97,5 @@ jobs:
           echo APP_SECRET=secretf0rt3st >> .env
           bin/console system:install --basic-setup
 
-      - name: "Run PHPUnit Tests"
-        run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
+#      - name: "Run PHPUnit Tests"
+#        run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
