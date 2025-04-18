@@ -26,10 +26,9 @@ function getProjectDir(): string
 }
 
 $testProjectDir = getProjectDir();
-(new Dotenv())->usePutenv()->load($testProjectDir . '/.env');
-
 echo 'DATABASE_URL: '.getenv('DATABASE_URL')."\n";
 echo '$testProjectDir: '.$testProjectDir."\n";
+(new Dotenv())->usePutenv()->load($testProjectDir . '/.env');
 
 $shopwareBootstrapLookup = [
     $testProjectDir . '/vendor/shopware/core/TestBootstrapper.php',
