@@ -30,7 +30,26 @@ $testProjectDir = getProjectDir();
 
 echo 'DATABASE_URL: '.getenv('DATABASE_URL')."\n";
 echo '$testProjectDir: '.$testProjectDir."\n";
+
+$shopwareBootstrapLookup = [
+    $testProjectDir . '/vendor/shopware/core/TestBootstrapper.php',
+    $testProjectDir . '/src/Core/TestBootstrapper.php',
+];
+
+foreach ($shopwareBootstrapLookup as $item) {
+    if (is_readable($item)) {
+        require_once $item;
+
+        break;
+    }
+}
+
+if (!class_exists(TestBootstrapper::class)) {
+    throw new \RuntimeException("Shopware bootstrapper was not found. Tried locations: \n" . implode("\n", $shopwareBootstrapLookup));
+}
+
 $loader = (new TestBootstrapper())
+    ->setProjectDir($testProjectDir)
     ->addCallingPlugin()
     ->addActivePlugins('MuckiLogPlugin')
     ->setDatabaseUrl(getenv('TEST_DATABASE_URL'))
