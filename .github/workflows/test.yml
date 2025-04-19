@@ -18,21 +18,14 @@ env:
 
 jobs:
   phpunit:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Shopware
-        uses: shopware/setup-shopware@v1
-        with:
-          env: test
-          shopware-version: v6.5.3.2
-          shopware-repository: shopware/shopware
-          php-version: 8.1
-          install: true
-
-      - name: "Checkout ${{ env.COMPOSER_NAME }}"
-        uses: actions/checkout@v3
-        with:
-          path: custom/plugins/${{ env.MODULE_NAME }}
-
-      - name: "Run PHPUnit Tests"
-        run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        shopware-version:
+          - '6.5.x'
+          - '6.6.x'
+    uses: shopware/github-actions/.github/workflows/phpunit.yml@main
+    with:
+      extensionName: ${{ github.event.repository.name }}
+      shopwareVersion: ${{ matrix.shopware-version }}
+      uploadCoverage: true
