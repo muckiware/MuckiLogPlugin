@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use Shopware\Core\TestBootstrapper;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
 use Symfony\Component\Dotenv\Dotenv;
 
 function getProjectDir(): string
