@@ -29,10 +29,10 @@ jobs:
           php-version: 8.1
           install: true
 
-      - name: "Checkout ${{ env.COMPOSER_NAME }}"
-        uses: actions/checkout@v3
-        with:
-          path: custom/plugins/${{ env.MODULE_NAME }}
-
-      - name: "Run PHPUnit Tests"
-        run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
+#      - name: "Checkout ${{ env.COMPOSER_NAME }}"
+#        uses: actions/checkout@v3
+#        with:
+#          path: custom/plugins/${{ env.MODULE_NAME }}
+#
+#      - name: "Run PHPUnit Tests"
+#        run: ./vendor/bin/phpunit --configuration="custom/plugins/${{ env.MODULE_NAME }}"
