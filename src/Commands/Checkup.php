@@ -25,7 +25,7 @@ use MuckiLogPlugin\Services\Settings as PluginSettings;
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Logging\LoggerInterface as MuckiLoggerInterface;
-use MuckiLogPlugin\Services\PsrLoggerServiceDecorator;
+use MuckiLogPlugin\Services\LoggerServiceDecorator;
 
 class Checkup extends Command
 {
@@ -41,10 +41,9 @@ class Checkup extends Command
     public function __construct(
         protected PluginSettings $pluginSettings,
         protected LogconfigInterface $logconfigInterface,
-        protected LoggerInterface $psrLogger,
-        protected LoggerInterface $monoLogger,
+        protected LoggerInterface $logger,
         protected MuckiLoggerInterface $muckiLogger,
-        protected PsrLoggerServiceDecorator $loggerServiceDecorator
+        protected LoggerServiceDecorator $loggerServiceDecorator
     )
     {
         parent::__construct(self::$defaultName);
@@ -110,8 +109,8 @@ class Checkup extends Command
         if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log')) {
             unlink($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION . '.' . PluginDefaults::CONTEXT . '.log');
         }
-        if(file_exists($this->pluginSettings->getLogPath().'/'.PluginDefaults::DEFAULT_SW_EXTENSION.'.'.PluginDefaults::DEFAULT_SW_CONTEXT.'.log')) {
-            unlink($this->pluginSettings->getLogPath().'/'.PluginDefaults::DEFAULT_SW_EXTENSION.'.'.PluginDefaults::DEFAULT_SW_CONTEXT.'.log');
+        if(file_exists($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log')) {
+            unlink($this->pluginSettings->getLogPath().'/'.$this->loggerServiceDecorator::DEFAULT_SW_EXTENSION.'.'.$this->loggerServiceDecorator::DEFAULT_SW_CONTEXT.'.log');
         }
         if(file_exists($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION_SW . '.' . PluginDefaults::CONTEXT . '.log')) {
             unlink($this->pluginSettings->getLogPath() . '/' . PluginDefaults::EXTENSION_SW . '.' . PluginDefaults::CONTEXT . '.log');
@@ -126,19 +125,16 @@ class Checkup extends Command
 
             $output->writeln($key.' - Write '.$loggingMethod->value.'. Default muckilog');
 
-            $this->psrLogger->{$loggingMethod->value}($key.' - Test log item for -> '.$loggingMethod->value);
-            $this->psrLogger->{$loggingMethod->value}([$key.' - Test log array for -> '.$loggingMethod->value]);
-
-            $this->monoLogger->{$loggingMethod->value}($key.' - Test log item for -> '.$loggingMethod->value);
-            $this->monoLogger->{$loggingMethod->value}([$key.' - Test log array for -> '.$loggingMethod->value]);
+            $this->logger->{$loggingMethod->value}($key.' - Test log item for -> '.$loggingMethod->value);
+            $this->logger->{$loggingMethod->value}([$key.' - Test log array for -> '.$loggingMethod->value]);
 
             $output->writeln(
                 $key.' - Write '.$loggingMethod->value.'. With context: '. PluginDefaults::CONTEXT.' extension '.PluginDefaults::EXTENSION
             );
-            $this->psrLogger->{$loggingMethod->value}(
+            $this->logger->{$loggingMethod->value}(
                 $key.' - Test log item for -> '.$loggingMethod->value, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION)
             );
-            $this->psrLogger->{$loggingMethod->value}(
+            $this->logger->{$loggingMethod->value}(
                 $key.' - Test log item for -> '.$loggingMethod->value, array(
                     PluginDefaults::CONTEXT,
                     PluginDefaults::EXTENSION,
@@ -150,20 +146,6 @@ class Checkup extends Command
                 )
             );
 
-            $this->monoLogger->{$loggingMethod->value}(
-                $key.' - Test log item for -> '.$loggingMethod->value, array(PluginDefaults::CONTEXT, PluginDefaults::EXTENSION)
-            );
-            $this->monoLogger->{$loggingMethod->value}(
-                $key.' - Test log item for -> '.$loggingMethod->value, array(
-                    PluginDefaults::CONTEXT,
-                    PluginDefaults::EXTENSION,
-                    array('setup' => array(
-                        'notificationEmail' => true,
-                        'notificationEmailReceiver' => 'notificationEmailReceiver@example.com',
-                        'notificationEmailSender' => 'notificationEmailSender@example.com',
-                    ))
-                )
-            );
         }
 
         if(file_exists($this->pluginSettings->getLogPath().'/muckilog.log')) {

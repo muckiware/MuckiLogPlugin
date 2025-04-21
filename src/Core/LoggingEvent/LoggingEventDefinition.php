@@ -49,10 +49,10 @@ class LoggingEventDefinition extends EntityDefinition
             (new StringField('vendor', 'vendor')),
             (new StringField('plugin', 'plugin')),
             (new StringField('loglevel', 'loglevel')),
-            (new LongTextField('message', 'message'))->addFlags(new AllowHtml()),
-            (new IdField('notification_email_template_id', 'notificationEmailTemplateId'))->addFlags(new Required()),
-            (new EmailField('notification_email_receiver', 'notificationEmailReceiver'))->addFlags(new Required()),
-            (new EmailField('notification_email_sender', 'notificationEmailSender')),
+            (new LongTextField('message', 'message'))->addFlags(new ApiAware(), new AllowHtml()),
+            (new IdField('notification_email_template_id', 'notificationEmailTemplateId'))->addFlags(new ApiAware(), new Required()),
+            (new EmailField('notification_email_receiver', 'notificationEmailReceiver'))->addFlags(new ApiAware(), new Required()),
+            (new EmailField('notification_email_sender', 'notificationEmailSender'))->addFlags(new ApiAware()),
             new CreatedAtField(),
             new UpdatedAtField()
         ]);

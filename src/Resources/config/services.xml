@@ -8,10 +8,6 @@
         <service id="MuckiLogPlugin\Core\LoggingEvent\LoggingEventDefinition">
             <tag name="shopware.entity.definition" entity="muwa_logging_event" />
         </service>
-        <service id="MuckiLogPlugin\Core\BuildLoggerSetup">
-            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
-            <argument type="service" id="MuckiLogPlugin\Services\Helper"/>
-        </service>
     	<service id="MuckiLogPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
@@ -23,9 +19,9 @@
         </service>
         <service id="MuckiLogPlugin\Services\LogconfigInterface" alias="MuckiLogPlugin\Services\Logconfig"/>
         <service id="MuckiLogPlugin\Logging\Logger">
-            <argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+            <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
         </service>
         <service id="MuckiLogPlugin\Logging\LoggerInterface" alias="MuckiLogPlugin\Logging\Logger"/>
 
@@ -43,9 +39,8 @@
             <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
             <argument type="service" id="MuckiLogPlugin\Services\LogconfigInterface"/>
             <argument type="service" id="Psr\Log\LoggerInterface"/>
-            <argument type="service" id="logger"/>
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
-            <argument type="service" id="MuckiLogPlugin\Services\PsrLoggerServiceDecorator"/>
+            <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator"/>
             <tag name="console.command"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -62,19 +57,11 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
-        <service id="MuckiLogPlugin\Services\PsrLoggerServiceDecorator" decorates="Psr\Log\LoggerInterface" decoration-priority="10002">
-            <argument type="service" id="MuckiLogPlugin\Services\PsrLoggerServiceDecorator.inner" />
+        <service id="MuckiLogPlugin\Services\LoggerServiceDecorator" decorates="Psr\Log\LoggerInterface" decoration-priority="10">
+            <argument type="service" id="MuckiLogPlugin\Services\LoggerServiceDecorator.inner" />
             <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
-            <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
-            <argument type="service" id="MuckiLogPlugin\Core\BuildLoggerSetup"/>
-        </service>
-        <service id="MuckiLogPlugin\Services\MonologLoggerServiceDecorator" decorates="logger" decoration-priority="10001">
-            <argument type="service" id="MuckiLogPlugin\Services\MonologLoggerServiceDecorator.inner" />
-            <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
-            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
-<!--            <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>-->
-            <argument type="service" id="MuckiLogPlugin\Core\BuildLoggerSetup"/>
+            <argument type="service" id="MuckiLogPlugin\Services\Helper"/>
         </service>
         <service id="MuckiLogPlugin\Services\LoggingEvent" public="true">
             <argument type="service" id="muwa_logging_event.repository"/>

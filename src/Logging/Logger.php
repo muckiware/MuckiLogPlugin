@@ -4,12 +4,10 @@
  *
  * @category   Muckiware
  * @package    Logger
- * @copyright  Copyright (c) 2021-2025 by muckiware
+ * @copyright  Copyright (c) 2021-2024 by muckiware
  *
  */
 namespace MuckiLogPlugin\Logging;
-
-use Symfony\Component\HttpKernel\KernelInterface;
 
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Entity\LoggerSetup;
@@ -31,9 +29,9 @@ class Logger implements LoggerInterface
 
 	
 	public function __construct(
-        protected KernelInterface $kernel,
         protected LogconfigInterface $logConfig,
-        protected SettingsInterface $settings
+        protected SettingsInterface $settings,
+        protected LoggingEvent $loggingEvent
 	) {
 	    $this->logger = $this->logConfig->getLogger();
 	}
@@ -60,7 +58,7 @@ class Logger implements LoggerInterface
         }
 
         if($this->settings->isNotificationMailEnabled() && $loggerSetup->isSendNotification()) {
-            $this->kernel->getContainer()->get(LoggingEvent::class)->saveEvent($loggerSetup);
+            $this->loggingEvent->saveEvent($loggerSetup);
         }
     }
 

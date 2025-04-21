@@ -271,22 +271,20 @@ abstract class LoggerAppender extends LoggerConfigurable {
 	 * 
 	 * @param LoggerLoggingEvent $event
 	 */
-	abstract protected function append(LoggerLoggingEvent $event);
+	abstract protected function append(LoggerLoggingEvent $event); 
 
 	/**
 	 * Releases any resources allocated by the appender.
-	 *
+	 * 
 	 * Derived appenders should override this method to perform proper closing
 	 * procedures.
 	 */
-	public function close(): void
-    {
+	public function close() {
 		$this->closed = true;
 	}
 	
 	/** Triggers a warning for this logger with the given message. */
-	protected function warn($message): void
-    {
+	protected function warn($message) {
 		$id = get_class($this) . (empty($this->name) ? '' : ":{$this->name}");
 		trigger_error("log4php: [$id]: $message", E_USER_WARNING);
 	}
