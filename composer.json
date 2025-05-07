@@ -1,7 +1,7 @@
 {
 	"name" : "muckiware/log-plugin",
 	"description" : "Mucki Log Plugin",
-	"version": "v2.3.0",
+	"version": "v2.4.0",
 	"keywords": [
 		"shopware6",
 		"shopware6-plugin",
