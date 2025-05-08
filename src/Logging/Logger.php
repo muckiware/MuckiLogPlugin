@@ -9,12 +9,16 @@
  */
 namespace MuckiLogPlugin\Logging;
 
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+
 use MuckiLogPlugin\Core\LogLevel;
 use MuckiLogPlugin\Entity\LoggerSetup;
 use MuckiLogPlugin\Services\SettingsInterface;
 use MuckiLogPlugin\Services\LogconfigInterface;
 use MuckiLogPlugin\Services\LoggingEvent;
 use MuckiLogPlugin\Log4php\Logger as Log4phpLogger;
+use MuckiLogPlugin\Events\CreateLogEvent;
+use MuckiLogPlugin\Events\LoggerEvents;
 
 /**
  * @package MuckiLogPlugin\Logging
@@ -29,6 +33,7 @@ class Logger implements LoggerInterface
 
 	
 	public function __construct(
+        protected EventDispatcherInterface $eventDispatcher,
         protected LogconfigInterface $logConfig,
         protected SettingsInterface $settings,
         protected LoggingEvent $loggingEvent
@@ -38,12 +43,15 @@ class Logger implements LoggerInterface
 
     public function executeLoggingByLogLevel(LoggerSetup $loggerSetup): void
     {
+        $event = new CreateLogEvent($loggerSetup);
+        $this->eventDispatcher->dispatch($event, LoggerEvents::CREATE_LOG_EVENT_BEFORE);
+
         switch ($loggerSetup->getLogLevel()) {
 
             default:
                 $this->logger->debug($loggerSetup->getMessage());
                 break;
-            case LogLevel::INFO;
+            case LogLevel::INFO:
                 $this->logger->info($loggerSetup->getMessage());
                 break;
             case LogLevel::WARNING:
@@ -56,6 +64,8 @@ class Logger implements LoggerInterface
                 $this->logger->critical($loggerSetup->getMessage());
                 break;
         }
+
+        $this->eventDispatcher->dispatch($event, LoggerEvents::CREATE_LOG_EVENT_AFTER);
 
         if($this->settings->isNotificationMailEnabled() && $loggerSetup->isSendNotification()) {
             $this->loggingEvent->saveEvent($loggerSetup);

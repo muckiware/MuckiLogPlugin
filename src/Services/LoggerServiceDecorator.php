@@ -101,6 +101,10 @@ class LoggerServiceDecorator implements LoggerInterface
         }
 
         $loggerSetup->setSendNotification($needNotification);
+        $loggerSetup->setPathLogFile($this->pluginSettings->getConfigPath(
+            $loggerSetup->getVendor(),
+            $loggerSetup->getPlugin()
+        ));
 
         return $loggerSetup;
     }

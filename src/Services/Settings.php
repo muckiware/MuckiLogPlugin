@@ -86,11 +86,11 @@ class Settings implements SettingsInterface
     public function getConfigPath(string $loggerContext='', string $extensionContext=''): string
     {
         switch (true) {
-            case ($loggerContext !== '' && $extensionContext !== ''):
+            case $loggerContext !== '' && $extensionContext !== '':
                 return $this->getLogConfigPath().'/logconfig.'.$extensionContext.'.'.$loggerContext.'.xml';
-            case ($loggerContext !== '' && $extensionContext == ''):
+            case $loggerContext !== '' && $extensionContext == '':
                 return $this->getLogConfigPath().'/logconfig.'.$loggerContext.'.xml';
-            case ($loggerContext == '' && $extensionContext !== ''):
+            case $loggerContext == '' && $extensionContext !== '':
                 return $this->getLogConfigPath().'/logconfig.'.$extensionContext.'.xml';
             default:
                 return $this->getLogConfigPath().'/logconfig.xml';

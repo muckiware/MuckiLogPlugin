@@ -35,6 +35,8 @@ class LoggerSetup
 
     protected bool $sendNotification;
 
+    protected string $pathLogFile;
+
     public function __construct()
     {
         $this->id = Uuid::randomHex();
@@ -133,5 +135,14 @@ class LoggerSetup
     public function setSendNotification(bool $sendNotification): void
     {
         $this->sendNotification = $sendNotification;
+    }
+
+    public function getPathLogFile(): string
+    {
+        return $this->pathLogFile;
+    }
+    public function setPathLogFile(string $pathLogFile): void
+    {
+        $this->pathLogFile = $pathLogFile;
     }
 }
