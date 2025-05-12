@@ -60,9 +60,10 @@ class ErrorControllerDecorator extends StorefrontController
                 $requestUrl = $request->attributes->get('sw-sales-channel-absolute-base-url').$request->attributes->get('sw-original-request-uri');
                 $languageID = $request->headers->get('sw-language-id');
 
-                $this->logger->error('Request: '.$requestUrl, [$errorID, 'sw']);
-                $this->logger->error('languageID: '.$languageID, [$errorID, 'sw']);
-                $this->logger->error('ErrorController exception: '.print_r($exception, true), [$errorID, 'sw']);
+                $this->logger->error('Message ID: '.$errorID, ['storefront', 'exceptions']);
+                $this->logger->error('Request: '.$requestUrl, ['storefront', 'exceptions']);
+                $this->logger->error('languageID: '.$languageID, ['storefront', 'exceptions']);
+                $this->logger->error('ErrorController exception: '.print_r($exception, true), ['storefront', 'exceptions']);
                 $session->getFlashBag()->add(
                     'danger',
                     sprintf('%s<br>ID: <b>%s</b>', $this->trans('error.message-default'), $errorID)
