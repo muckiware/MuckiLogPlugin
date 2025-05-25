@@ -4,13 +4,21 @@
 This Shopware 6 Plugin creates log files with file rotation, max file size setup, loglevels, etc. You can create for all your plugins own log fieles by context.
 like /var/log/myloginplugin.vendor.log, or /var/log/myextraplugin.vendor.log
 It can send emails by log events. For example: You get an error log event, and it can sends an email to a specific address.
-
+## Features overview
+- Works for alle Shopware 6 versions, 6.5.x or greater
+- Create log files with automatic file rotation by max file size and max file count
+- Log files can automatically compress by gzip
+- Easy to use logger interface, which can be used in all plugins and creates own log files by context
+- Global log setup via plugin configuration, like log level, pattern for log content format, etc.
+  ![backup_paths_config.png](img%2Fglobal_plugin_setup.png)
+- Can send emails by log events
+- Storefront errors can be idendified by a unique error id, which can be used to find the error in the log file
+  ![backup_paths_config.png](img%2Fstorefront_error_message.png)
 ## Installation
 ```shell
 composer require muckiware/log-plugin
 bin/console plugin:install -a MuckiLogPlugin
 ```
-
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.
 ```xml
