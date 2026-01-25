@@ -120,16 +120,19 @@ class LoggerAppenderFile extends LoggerAppender
 		}
 		
 		// Write the header
-		$this->write($this->layout->getHeader());
+        $header = $this->layout->getHeader();
+        if($header) {
+            $this->write($header);
+        }
 
         return true;
 	}
 
     /**
      * Writes a string to the target file. Opens file if not already open.
-     * @param string|null $string $string Data to write.
+     * @param string $string $string Data to write.
      */
-	protected function write(?string $string): void
+	protected function write(string $string): void
     {
 		// Lazy file open
 		if(!isset($this->fp) && $this->openFile() === false) {
@@ -143,7 +146,7 @@ class LoggerAppenderFile extends LoggerAppender
 		}
 	}
 	
-	protected function writeWithLocking($string): void
+	protected function writeWithLocking(string $string): void
     {
 		if(flock($this->fp, LOCK_EX)) {
 			if(fwrite($this->fp, $string) === false) {
@@ -157,7 +160,7 @@ class LoggerAppenderFile extends LoggerAppender
 		}
 	}
 	
-	protected function writeWithoutLocking($string): void
+	protected function writeWithoutLocking(string $string): void
     {
 		if(fwrite($this->fp, $string) === false) {
 
@@ -166,7 +169,8 @@ class LoggerAppenderFile extends LoggerAppender
 		}
 	}
 	
-	public function activateOptions() {
+	public function activateOptions(): void
+    {
 		if (empty($this->file)) {
 			$this->warn("Required parameter 'file' not set. Closing appender.");
 			$this->closed = true;
@@ -177,7 +181,11 @@ class LoggerAppenderFile extends LoggerAppender
 	public function close(): void
     {
 		if (is_resource($this->fp)) {
-			$this->write($this->layout->getFooter());
+
+            $footer = $this->layout->getFooter();
+            if($footer) {
+                $this->write($footer);
+            }
 			fclose($this->fp);
 		}
 		$this->fp = null;

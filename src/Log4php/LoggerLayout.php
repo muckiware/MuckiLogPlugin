@@ -47,28 +47,32 @@ abstract class LoggerLayout extends LoggerConfigurable {
 	 * Returns the content type output by this layout.
 	 * @return string
 	 */
-	public function getContentType() {
+	public function getContentType(): string
+    {
 		return "text/plain";
-	} 
-			
-	/**
-	 * Returns the footer for the layout format.
-	 * @return string
-	 */
-	public function getFooter() {
-		return null;
-	} 
+	}
 
-	/**
-	 * Returns the header for the layout format.
-	 * @return string
-	 */
-	public function getHeader() {
+    /**
+     * Returns the footer for the layout format.
+     * @return string|null
+     */
+	public function getFooter(): ?string
+    {
+		return null;
+	}
+
+    /**
+     * Returns the header for the layout format.
+     * @return string|null
+     */
+	public function getHeader(): ?string
+    {
 		return null;
 	}
 	
 	/** Triggers a warning for this layout with the given message. */
-	protected function warn($message) {
+	protected function warn($message): void
+    {
 		trigger_error("log4php: [" . get_class($this) . "]: $message", E_USER_WARNING);
 	}
 }

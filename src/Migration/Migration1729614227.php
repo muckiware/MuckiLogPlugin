@@ -4,7 +4,7 @@
  *
  * @category   Muckiware
  * @package    Logger
- * @copyright  Copyright (c) 2021-2024 by muckiware
+ * @copyright  Copyright (c) 2021-2026 by muckiware
  *
  */
 namespace MuckiLogPlugin\Migration;
@@ -20,9 +20,12 @@ class Migration1729614227 extends MigrationStep
         return 1729614227;
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `muwa_logging_event` (
               `id` BINARY(16) NOT NULL,
               `vendor` VARCHAR(255) NULL,
