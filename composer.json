@@ -1,6 +1,6 @@
 {
-	"name": "muckiware/log-plugin",
-	"description": "Mucki Log Plugin",
+	"name" : "muckiware/log-plugin",
+	"description" : "Mucki Log Plugin",
 	"version": "v2.4.0",
 	"keywords": [
 		"shopware6",
@@ -8,30 +8,30 @@
 		"logging",
 		"plugin"
 	],
-	"type": "shopware-platform-plugin",
-	"license": "MIT",
+	"type" : "shopware-platform-plugin",
+	"license" : "MIT",
 	"authors": [
 		{
 			"name": "muckiware"
 		}
 	],
-	"extra": {
-		"shopware-plugin-class": "MuckiLogPlugin\\MuckiLogPlugin",
-		"copyright": "(c) by muckiware",
-		"label": {
-			"de-DE": "Mucki Log Erweiterung",
-			"en-GB": "Mucki Log Plugin"
+	"extra" : {
+		"shopware-plugin-class" : "MuckiLogPlugin\\MuckiLogPlugin",
+		"copyright" : "(c) by muckiware",
+		"label" : {
+			"de-DE" : "Mucki Log Erweiterung",
+			"en-GB" : "Mucki Log Plugin"
 		}
 	},
-	"require": {
-		"php": ">= 8.2"
+	"require" : {
+		"php" : ">= 8.1"
 	},
-	"require-dev": {
-		"phpstan/phpstan": "*"
+	"require-dev" : {
+		"phpstan/phpstan" : "*"
 	},
-	"autoload": {
-		"psr-4": {
-			"MuckiLogPlugin\\": "src/"
+	"autoload" : {
+		"psr-4" : {
+			"MuckiLogPlugin\\" : "src/"
 		}
 	},
 	"autoload-dev": {
@@ -47,6 +47,5 @@
 	},
 	"scripts": {
 		"phpstan": "./vendor/bin/phpstan analyse -n --no-progress"
-	},
-	"suggest": {}
+	}
 }
