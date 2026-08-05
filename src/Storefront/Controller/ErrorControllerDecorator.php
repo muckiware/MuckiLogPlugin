@@ -2,9 +2,8 @@
 
 namespace MuckiLogPlugin\Storefront\Controller;
 
-use Faker\Core\Uuid;
+
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -84,13 +83,7 @@ class ErrorControllerDecorator extends StorefrontController
             } else {
                 $errorTemplate = $this->errorTemplateResolver->resolve($exception, $request);
 
-                /* @deprecated tag:v6.7.0 - Remove the whole if branch as it is not needed anymore */
-                if (!$request->isXmlHttpRequest() && !Feature::isActive('cache_rework')) {
-                    $header = $this->headerPageletLoader->load($request, $context);
-                    $footer = $this->footerPageletLoader->load($request, $context);
-                    $errorTemplate->setHeader($header);
-                    $errorTemplate->setFooter($footer);
-                }
+                // cache_rework is active by default in SW 6.7 — header/footer loaded via ESI
 
                 $response = $this->renderStorefront($errorTemplate->getTemplateName(), ['page' => $errorTemplate]);
             }
@@ -128,32 +121,15 @@ class ErrorControllerDecorator extends StorefrontController
 
         $response = [];
 
-        if (Feature::isActive('ACCESSIBILITY_TWEAKS')) {
-            $response[] = [
+        // ACCESSIBILITY_TWEAKS is always active in SW 6.7
+        $response[] = [
+            'type' => 'danger',
+            'error' => 'invalid_captcha',
+            'alert' => $this->renderView('@Storefront/storefront/utilities/alert.html.twig', [
                 'type' => 'danger',
-                'error' => 'invalid_captcha',
-                'alert' => $this->renderView('@Storefront/storefront/utilities/alert.html.twig', [
-                    'type' => 'danger',
-                    'list' => [$this->trans('error.' . $formViolations->getViolations()->get(0)->getCode())],
-                ]),
-            ];
-        } else {
-            $response[] = [
-                'type' => 'danger',
-                'error' => 'invalid_captcha',
-                'alert' => $this->renderView('@Storefront/storefront/utilities/alert.html.twig', [
-                    'type' => 'danger',
-                    'list' => [$this->trans('error.' . $formViolations->getViolations()->get(0)->getCode())],
-                ]),
-                /**
-                 * @deprecated tag:v6.7.0 - Storefront implementation changed. The response no longer needs the rendered input.
-                 */
-                'input' => $this->renderView('@Storefront/storefront/component/captcha/basicCaptchaFields.html.twig', [
-                    'formId' => $request->get('formId'),
-                    'formViolations' => $formViolations,
-                ]),
-            ];
-        }
+                'list' => [$this->trans('error.' . $formViolations->getViolations()->get(0)->getCode())],
+            ]),
+        ];
 
         return new JsonResponse($response);
     }

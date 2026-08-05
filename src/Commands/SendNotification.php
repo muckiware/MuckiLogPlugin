@@ -31,10 +31,7 @@ class SendNotification extends Command
 {
     protected LogconfigInterface $logconfig;
     protected MuckiLoggerInterface $muckilogLogger;
-    /**
-     * @var string
-     */
-    public static $defaultName = 'muckiware:logger:send';
+
 
     protected ?ContainerInterface $container = null;
 
@@ -46,7 +43,7 @@ class SendNotification extends Command
         protected ServiceSendNotification $serviceSendNotification
     )
     {
-        parent::__construct(self::$defaultName);
+        parent::__construct();
         $this->logconfig = $logconfigInterface;
         $this->muckilogLogger = $muckiLogger;
     }
@@ -72,6 +69,7 @@ class SendNotification extends Command
      */
     public function configure(): void
     {
+        $this->setName('muckiware:logger:send');
         $this->setDescription('This Muckilog plugin command for to send logger events by email');
         parent::configure();
     }

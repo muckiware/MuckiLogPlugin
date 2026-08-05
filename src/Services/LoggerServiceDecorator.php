@@ -13,7 +13,6 @@
 
 namespace MuckiLogPlugin\Services;
 
-use http\Message;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 

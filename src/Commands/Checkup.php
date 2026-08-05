@@ -31,10 +31,7 @@ class Checkup extends Command
 {
     protected LogconfigInterface $logconfig;
     protected MuckiLoggerInterface $muckilogLogger;
-    /**
-     * @var string
-     */
-    public static $defaultName = 'muckiware:logger:check';
+
 
     protected ?ContainerInterface $container = null;
 
@@ -46,7 +43,7 @@ class Checkup extends Command
         protected LoggerServiceDecorator $loggerServiceDecorator
     )
     {
-        parent::__construct(self::$defaultName);
+        parent::__construct();
         $this->logconfig = $logconfigInterface;
         $this->muckilogLogger = $muckiLogger;
     }
@@ -72,6 +69,7 @@ class Checkup extends Command
      */
     public function configure(): void
     {
+        $this->setName('muckiware:logger:check');
         $this->setDescription('This Muckilog plugin command is just for testing logging method.');
         parent::configure();
     }
