@@ -45,8 +45,10 @@ class LoggerTest extends TestCase
         $this->assertIsBool($checkConfigPath);
         $this->assertTrue($checkConfigPath, 'Logconfig path could not be created for the test.');
 
+        \MuckiLogPlugin\Log4php\Logger::configure(TestDefaults::getLoggerConfigPath());
+
         $logconfigInterface = $this->createMock(LogconfigInterface::class);
-        $Log4phpLogger = new \MuckiLogPlugin\Log4php\Logger('muckilog');
+        $Log4phpLogger = \MuckiLogPlugin\Log4php\Logger::getLogger('muckilog');
         $logconfigInterface->method('getLogger')->willReturn($Log4phpLogger);
 
         $logger = new Logger(
