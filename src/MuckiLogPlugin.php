@@ -4,7 +4,7 @@
  *
  * @category   SW6 Plugin
  * @package    Muckilog
- * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @copyright  Copyright (c) 2021-2026 by Muckiware
  * @license    MIT
  * @author     Muckiware
  *
@@ -17,13 +17,21 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+use MuckiLogPlugin\DependencyInjection\LoggerDecoratorCompilerPass;
 use MuckiLogPlugin\Setup\Setup;
 use MuckiLogPlugin\Services\Logconfig;
 use MuckiLogPlugin\Services\Settings;
 
 class MuckiLogPlugin extends Plugin
 {
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        $container->addCompilerPass(new LoggerDecoratorCompilerPass());
+    }
+
     /**
      * @throws \Exception
      */

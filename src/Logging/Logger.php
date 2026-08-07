@@ -4,7 +4,7 @@
  *
  * @category   Muckiware
  * @package    Logger
- * @copyright  Copyright (c) 2021-2024 by muckiware
+ * @copyright  Copyright (c) 2021-2026 by muckiware
  *
  */
 namespace MuckiLogPlugin\Logging;
@@ -40,6 +40,11 @@ class Logger implements LoggerInterface
 	) {
 	    $this->logger = $this->logConfig->getLogger();
 	}
+
+    public function setLogger(LogconfigInterface $logConfig): void
+    {
+        $this->logger = $logConfig->getLogger();
+    }
 
     public function executeLoggingByLogLevel(LoggerSetup $loggerSetup): void
     {
