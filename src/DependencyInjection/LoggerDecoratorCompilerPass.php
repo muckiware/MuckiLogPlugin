@@ -26,11 +26,17 @@ class LoggerDecoratorCompilerPass implements CompilerPassInterface
             return;
         }
 
-        // Alle transitiven Abhängigkeiten des Decorators sammeln,
-        // damit wir keine Kreisreferenzen erzeugen.
         $decoratorDeps = [];
         $this->collectTransitiveDeps(self::DECORATOR_ID, $container, $decoratorDeps);
 
+        $this->replaceLoggerArguments($container, $decoratorDeps);
+    }
+
+    /**
+     * Ersetzt id="logger" Injektionen durch den Decorator.
+     */
+    private function replaceLoggerArguments(ContainerBuilder $container, array $decoratorDeps): void
+    {
         foreach ($container->getDefinitions() as $serviceId => $definition) {
             if ($serviceId === self::DECORATOR_ID || isset($decoratorDeps[$serviceId])) {
                 continue;
