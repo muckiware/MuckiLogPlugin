@@ -110,6 +110,78 @@ $loggerContext = array(
 );
 $this->logger->critical('Call HeaderPageletLoadedEvent with mail notification', $loggerContext);
 ```
+## Decorator Coverage
+
+MuckiLogPlugin intercepts Shopware and Symfony log calls through two complementary mechanisms.
+
+### 1. `Psr\Log\LoggerInterface` — via service decorator
+
+The primary decorator (`LoggerServiceDecorator`) wraps the default Symfony/Monolog logger. Any service
+that injects the logger via the standard PSR-3 interface is automatically covered:
+
+```xml
+<argument type="service" id="Psr\Log\LoggerInterface"/>
+```
+
+This is the recommended way to use the logger in your own plugins.
+
+### 2. `id="logger"` — via DI CompilerPass
+
+Many Shopware core services use the explicit `logger` service ID instead of the interface alias:
+
+```xml
+<argument type="service" id="logger"/>
+```
+
+The `LoggerDecoratorCompilerPass` runs at container compile time, traverses all service definitions
+and replaces every `id="logger"` reference with a reference to the `LoggerServiceDecorator` — except
+for services that are transitive dependencies of the decorator itself (those would create circular
+references).
+
+**What this means in practice:** Log calls from Shopware core services like `ProductStreamProcessor`,
+`StockUpdater`, or `ElasticsearchEntitySearcher` are routed through MuckiLogPlugin automatically,
+without any code changes in those services.
+
+### Why Monolog channel loggers (`id="monolog.logger.*"`) are not auto-decorated
+
+Shopware registers a dedicated Monolog logger per concern (`monolog.logger.event`,
+`monolog.logger.messenger`, `monolog.logger.request`, etc.). Decorating these channels with a
+service decorator is architecturally incompatible with the current plugin design:
+
+`LoggerServiceDecorator` → `MuckiLogPlugin\Logging\Logger` → `LoggingEvent`
+→ `muwa_logging_event.repository` → Shopware DAL → most Shopware services
+→ those Shopware services use channel loggers → **circular reference**
+
+The correct approach for intercepting channel loggers is a **Monolog Handler** (a handler is a leaf
+node in the DI graph and does not create cycles). This is documented as a future improvement.
+
+### Context array convention
+
+The decorator reads the PSR-3 context array to determine which log file to write to:
+
+```php
+// Writes to var/log/myplugin.myvendor.log
+$this->logger->error('Something failed', ['myvendor', 'myplugin']);
+
+// Writes to var/log/dev.sw.log (default fallback)
+$this->logger->error('Something failed', []);
+
+// Writes with email notification
+$this->logger->error('Critical failure', [
+    'myvendor',
+    'myplugin',
+    ['setup' => [
+        'notificationEmail'         => true,
+        'notificationEmailReceiver' => 'ops@example.com',
+        'notificationEmailSender'   => 'shop@example.com',
+    ]]
+]);
+```
+
+> **Important:** The context array must use numeric indices `0` (vendor) and `1` (plugin name).
+> Associative arrays passed by Shopware core services (e.g. `['exception' => ...]`) are handled
+> gracefully — they fall back to the default `sw/dev` log file without errors.
+
 ## CLIs
 ```shell
 bin/console muckiware:logger:send
@@ -118,7 +190,16 @@ This command execute the sending of open logger events by email. Regular will th
 ```shell
 bin/console muckiware:logger:check
 ```
-This command is just for testing logging methods.
+This command tests the `Psr\Log\LoggerInterface` injection path and writes sample log entries
+across all log levels.
+
+```shell
+bin/console muckiware:logger:check-sw
+```
+This command tests the `id="logger"` injection path (typical Shopware core pattern) to verify
+that the `LoggerDecoratorCompilerPass` correctly routes those calls through MuckiLogPlugin.
+The first output line shows the actual class injected — it should read
+`MuckiLogPlugin\Services\LoggerServiceDecorator`, not `Monolog\Logger`.
 
 # Testing
 ## phpstan
