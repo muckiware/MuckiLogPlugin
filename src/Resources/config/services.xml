@@ -18,7 +18,7 @@
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
         <service id="MuckiLogPlugin\Services\LogconfigInterface" alias="MuckiLogPlugin\Services\Logconfig"/>
-        <service id="MuckiLogPlugin\Logging\Logger">
+        <service id="MuckiLogPlugin\Logging\Logger" lazy="true">
             <argument type="service" id="event_dispatcher"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
         	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>

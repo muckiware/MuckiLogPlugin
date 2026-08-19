@@ -24,7 +24,8 @@
 		}
 	},
 	"require" : {
-		"php" : ">= 8.1"
+		"php" : ">= 8.2",
+		"shopware/core" : ">= 6.5.8.0"
 	},
 	"require-dev" : {
 		"phpstan/phpstan" : "*"
