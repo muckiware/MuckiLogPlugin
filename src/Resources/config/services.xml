@@ -47,6 +47,14 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+        <service class="MuckiLogPlugin\Commands\CheckupSwLogger" id="muckilog.commands.checkupSwLogger" public="true">
+            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+            <argument type="service" id="logger"/>
+            <tag name="console.command"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         <service class="MuckiLogPlugin\Commands\SendNotification" id="muckilog.commands.sendNotification" public="true">
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\Settings"/>

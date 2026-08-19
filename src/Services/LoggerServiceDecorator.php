@@ -5,12 +5,11 @@
  *
  * @category   Muckiware
  * @package    Muckilog
- * @copyright  Copyright (c) 2021-2024 by Muckiware
+ * @copyright  Copyright (c) 2021-2026 by Muckiware
  * @license    MIT
  * @author     Muckiware
  *
  */
-
 namespace MuckiLogPlugin\Services;
 
 use http\Message;
@@ -111,8 +110,9 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function contextSetupNeedNotification(array $context): bool
     {
-        if(
-            !empty($context) && count($context) === 3 &&
+        if (
+            isset($context[2]) &&
+            is_array($context[2]) &&
             array_key_exists('setup', $context[2]) &&
             array_key_exists('notificationEmail', $context[2]['setup']) &&
             is_bool($context[2]['setup']['notificationEmail'])
@@ -124,8 +124,9 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function setupNotificationEmailTemplateId(array $context, LoggerSetup $loggerSetup): LoggerSetup
     {
-        if(
-            !empty($context) && count($context) === 3 &&
+        if (
+            isset($context[2]) &&
+            is_array($context[2]) &&
             array_key_exists('setup', $context[2]) &&
             array_key_exists('notificationEmailTemplateId', $context[2]['setup']) &&
             Uuid::isValid(trim($context[2]['setup']['notificationEmailTemplateId']))
@@ -143,8 +144,9 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function setupNotificationEmailReceiver(array $context, LoggerSetup $loggerSetup): LoggerSetup
     {
-        if(
-            !empty($context) && count($context) === 3 &&
+        if (
+            isset($context[2]) &&
+            is_array($context[2]) &&
             array_key_exists('setup', $context[2]) &&
             array_key_exists('notificationEmailReceiver', $context[2]['setup']) &&
             $this->pluginHelper->isValidEmail(trim($context[2]['setup']['notificationEmailReceiver']))
@@ -162,8 +164,9 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function setupNotificationEmailSender(array $context, LoggerSetup $loggerSetup): LoggerSetup
     {
-        if(
-            !empty($context) && count($context) === 3 &&
+        if (
+            isset($context[2]) &&
+            is_array($context[2]) &&
             array_key_exists('setup', $context[2]) &&
             array_key_exists('notificationEmailSender', $context[2]['setup']) &&
             $this->pluginHelper->isValidEmail(trim($context[2]['setup']['notificationEmailSender']))
@@ -177,12 +180,10 @@ class LoggerServiceDecorator implements LoggerInterface
 
     public function setupVendorPluginNames(array $context, LoggerSetup $loggerSetup): LoggerSetup
     {
-        if(!empty($context) && count($context) >= 2) {
-
+        if (isset($context[0], $context[1])) {
             $loggerSetup->setVendor(trim($context[0]));
             $loggerSetup->setPlugin(trim($context[1]));
         } else {
-
             $loggerSetup->setVendor(Defaults::DEFAULT_SW_CONTEXT);
             $loggerSetup->setPlugin(Defaults::DEFAULT_SW_EXTENSION);
         }

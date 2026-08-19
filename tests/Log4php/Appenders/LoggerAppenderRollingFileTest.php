@@ -44,9 +44,11 @@ class LoggerAppenderRollingFileTest extends TestCase
 	
 	protected function setUp(): void
     {
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.1');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.2');
+		// Reset the shared, static logger hierarchy so this test does not inherit
+		// a polluted root level (e.g. ERROR set by LoggerTest) which would
+		// suppress the WARNING messages and prevent the log file from being created.
+		Logger::resetConfiguration();
+		$this->removeTestFiles();
 	}
 	
 	public function testRequiresLayout()
@@ -223,13 +225,35 @@ class LoggerAppenderRollingFileTest extends TestCase
 	
 	protected function tearDown(): void
     {
-//        @unlink(LoggerTestHelper::getTestDirPath().'/'.self::FILENAME_COMPRESS);
-//        @unlink(LoggerTestHelper::getTestDirPath().'/'.self::FILENAME_COMPRESS.'.1.gz');
-//        @unlink(LoggerTestHelper::getTestDirPath().'/'.self::FILENAME_COMPRESS.'.2.gz');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.1');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.2');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.1.gz');
-//		@unlink(LoggerTestHelper::getTestDirPath().'/TEST-rolling.txt.2.gz');
+		// Flush/close appenders held by the shared logger and reset the hierarchy
+		// so the next test starts from a clean, deterministic state.
+		Logger::resetConfiguration();
+		$this->removeTestFiles();
+	}
+
+	/**
+	 * Removes all log files (and rolled-over backups) produced by this test so
+	 * repeated runs and rollover assertions stay deterministic.
+	 */
+	private function removeTestFiles(): void
+    {
+		$dir = LoggerTestHelper::getTestDirPath();
+		$files = array(
+			$dir.'/TEST-rolling.log',
+			$dir.'/TEST-rolling.log.1',
+			$dir.'/TEST-rolling.log.2',
+			$dir.'/TEST-rolling.log.3',
+			$dir.'/'.self::FILENAME_COMPRESS,
+			$dir.'/'.self::FILENAME_COMPRESS.'.1',
+			$dir.'/'.self::FILENAME_COMPRESS.'.2',
+			$dir.'/'.self::FILENAME_COMPRESS.'.1.gz',
+			$dir.'/'.self::FILENAME_COMPRESS.'.2.gz',
+		);
+
+		foreach ($files as $file) {
+			if (is_file($file)) {
+				unlink($file);
+			}
+		}
 	}
 }
