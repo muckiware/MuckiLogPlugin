@@ -18,6 +18,21 @@
         flex: 1 1 240px;
     }
 
+    // The text field reserves space below for hint/error text (margin-bottom),
+    // which makes the flex row taller than the buttons and pushes the buttons
+    // visually lower. Remove that reserved space inside the toolbar. Cover both
+    // render variants: mt-field (Shopware 6.7 Meteor) and sw-field (6.6). The
+    // compound selectors raise specificity above the core `.mt-field` rule.
+    &__toolbar &__search {
+        &.mt-field,
+        &.sw-field,
+        .mt-field,
+        .sw-field,
+        .sw-block-field__block {
+            margin-bottom: 0;
+        }
+    }
+
     &__matches {
         white-space: nowrap;
         color: $color-darkgray-200;
