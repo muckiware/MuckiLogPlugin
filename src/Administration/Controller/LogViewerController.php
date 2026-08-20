@@ -85,6 +85,13 @@ final class LogViewerController
         $response = new BinaryFileResponse($path);
         $response->setContentDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, basename($path));
 
+        // Prevent the HTTP cache from trying to serialize this response — a
+        // BinaryFileResponse holds a File object that cannot be serialized,
+        // which otherwise triggers a 500 in CacheStore::write.
+        $response->setPrivate();
+        $response->headers->addCacheControlDirective('no-store', true);
+        $response->headers->addCacheControlDirective('no-cache', true);
+
         return $response;
     }
 }
