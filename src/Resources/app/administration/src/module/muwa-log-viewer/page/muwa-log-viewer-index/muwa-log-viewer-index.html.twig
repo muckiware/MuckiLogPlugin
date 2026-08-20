@@ -1,0 +1,84 @@
+{% block muwa_log_viewer_index %}
+<sw-page class="muwa-log-viewer-index">
+    {% block muwa_log_viewer_index_header %}
+        <template #smart-bar-header>
+            <h2>{{ $tc('muwa-log-viewer.general.mainMenuItemGeneral') }}</h2>
+        </template>
+    {% endblock %}
+
+    {% block muwa_log_viewer_index_content %}
+        <template #content>
+            <sw-card-view>
+                <sw-alert
+                    v-if="errorMessage"
+                    variant="error"
+                    class="muwa-log-viewer-index__alert"
+                >
+                    {{ errorMessage }}
+                </sw-alert>
+
+                <sw-card
+                    :title="$tc('muwa-log-viewer.general.cardTitle')"
+                    :isLoading="isLoading"
+                >
+                    <sw-single-select
+                        :label="$tc('muwa-log-viewer.index.fileLabel')"
+                        :placeholder="$tc('muwa-log-viewer.index.filePlaceholder')"
+                        :options="fileOptions"
+                        :value="selectedFile"
+                        @update:value="onFileChange"
+                    />
+
+                    <p v-if="!files.length && !isLoading">
+                        {{ $tc('muwa-log-viewer.index.empty') }}
+                    </p>
+
+                    <template v-if="selectedFile">
+                        <div class="muwa-log-viewer-index__toolbar">
+                            <sw-text-field
+                                class="muwa-log-viewer-index__search"
+                                :placeholder="$tc('muwa-log-viewer.index.searchPlaceholder')"
+                                :value="searchTerm"
+                                @update:value="onSearchInput"
+                            />
+                            <span class="muwa-log-viewer-index__matches">
+                                <template v-if="searchTerm">
+                                    {{ matchCount ? $tc('muwa-log-viewer.index.matches', 0, { current: currentMatch, total: matchCount }) : $tc('muwa-log-viewer.index.noMatches') }}
+                                </template>
+                            </span>
+                            <sw-button size="small" :disabled="!matchCount" @click="previousMatch">&#8249;</sw-button>
+                            <sw-button size="small" :disabled="!matchCount" @click="nextMatch">&#8250;</sw-button>
+                            <sw-button size="small" @click="toggleCaseSensitive">
+                                Aa{{ caseSensitive ? ' ✓' : '' }}
+                            </sw-button>
+                            <sw-button size="small" @click="refresh">
+                                {{ $tc('muwa-log-viewer.index.refresh') }}
+                            </sw-button>
+                            <sw-button
+                                size="small"
+                                :disabled="!hasMore"
+                                @click="loadMore"
+                            >
+                                {{ $tc('muwa-log-viewer.index.loadMore') }}
+                            </sw-button>
+                            <sw-button size="small" @click="onDownload">
+                                {{ $tc('muwa-log-viewer.index.download') }}
+                            </sw-button>
+                        </div>
+
+                        <sw-alert
+                            v-if="hasMore"
+                            variant="info"
+                            :closable="false"
+                        >
+                            {{ $tc('muwa-log-viewer.index.truncatedHint') }}
+                        </sw-alert>
+
+                        <pre class="muwa-log-viewer-index__viewer" v-html="highlightedContent"></pre>
+                    </template>
+                </sw-card>
+            </sw-card-view>
+        </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

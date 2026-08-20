@@ -77,6 +77,15 @@
             <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
         <service id="MuckiLogPlugin\Services\Helper"/>
+        <service id="MuckiLogPlugin\Services\LogViewer">
+        	<argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+        </service>
+        <service id="MuckiLogPlugin\Services\LogViewerInterface" alias="MuckiLogPlugin\Services\LogViewer"/>
+
+        <service id="MuckiLogPlugin\Administration\Controller\LogViewerController" public="true">
+        	<argument type="service" id="MuckiLogPlugin\Services\LogViewerInterface"/>
+        	<tag name="controller.service_arguments"/>
+        </service>
         <service id="MuckiLogPlugin\Services\SendNotification">
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
             <argument type="service" id="MuckiLogPlugin\Services\CliOutput"/>

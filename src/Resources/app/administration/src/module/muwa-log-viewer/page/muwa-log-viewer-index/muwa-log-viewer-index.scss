@@ -1,0 +1,48 @@
+@import "~scss/variables";
+@import "~scss/mixins";
+
+.muwa-log-viewer-index {
+    &__alert {
+        margin-bottom: 16px;
+    }
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    &__search {
+        flex: 1 1 240px;
+    }
+
+    &__matches {
+        white-space: nowrap;
+        color: $color-darkgray-200;
+    }
+
+    &__viewer {
+        max-height: 60vh;
+        overflow: auto;
+        background: $color-gray-100;
+        border: 1px solid $color-gray-300;
+        border-radius: 4px;
+        padding: 12px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+
+        mark {
+            background: #ffe34d;
+            padding: 0;
+
+            &.is-active {
+                background: #ff9f00;
+            }
+        }
+    }
+}
