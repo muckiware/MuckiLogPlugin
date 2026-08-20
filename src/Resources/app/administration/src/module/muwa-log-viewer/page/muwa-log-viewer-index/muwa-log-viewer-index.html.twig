@@ -42,11 +42,7 @@
                                 :value="searchTerm"
                                 @update:value="onSearchInput"
                             />
-                            <span class="muwa-log-viewer-index__matches">
-                                <template v-if="searchTerm">
-                                    {{ matchCount ? $tc('muwa-log-viewer.index.matches', 0, { current: currentMatch, total: matchCount }) : $tc('muwa-log-viewer.index.noMatches') }}
-                                </template>
-                            </span>
+                            <span class="muwa-log-viewer-index__matches">{{ matchLabel }}</span>
                             <sw-button size="small" :disabled="!matchCount" @click="previousMatch">&#8249;</sw-button>
                             <sw-button size="small" :disabled="!matchCount" @click="nextMatch">&#8250;</sw-button>
                             <sw-button size="small" @click="toggleCaseSensitive">

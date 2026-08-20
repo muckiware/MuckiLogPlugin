@@ -10,7 +10,7 @@
             "fileLabel": "Log file",
             "filePlaceholder": "Select file …",
             "searchPlaceholder": "Search in this file …",
-            "matches": "{current} of {total}",
+            "matchesLabel": "matches",
             "noMatches": "No matches",
             "refresh": "Refresh",
             "loadMore": "Load more",

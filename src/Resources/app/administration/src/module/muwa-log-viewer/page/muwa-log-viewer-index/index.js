@@ -51,6 +51,19 @@ Component.register('muwa-log-viewer-index', {
                 return `<mark id="muwa-match-${index}" class="muwa-log-match${active}">${match}</mark>`;
             });
         },
+
+        matchLabel() {
+            if (!this.searchTerm) {
+                return '';
+            }
+            if (this.matchCount === 0) {
+                return this.$tc('muwa-log-viewer.index.noMatches');
+            }
+            // Built in JS instead of via $tc placeholders, whose named
+            // interpolation is unreliable in this vue-i18n version.
+            const label = this.$tc('muwa-log-viewer.index.matchesLabel');
+            return `${this.currentMatch} / ${this.matchCount} ${label}`;
+        },
     },
 
     watch: {
