@@ -1,13 +1,9 @@
 parameters:
     level: 8
     treatPhpDocTypesAsCertain: false
-    checkMissingIterableValueType: false
     inferPrivatePropertyTypeFromConstructor: true
     reportUnmatchedIgnoredErrors: false
     tmpDir: var/cache/phpstan
-
-    featureToggles:
-    	disableCheckMissingIterableValueType: false
 
     paths:
         - src

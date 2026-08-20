@@ -12,11 +12,54 @@ It can send emails by log events. For example: You get an error log event, and i
 - Global log setup via plugin configuration, like log level, pattern for log content format, etc.
   ![backup_paths_config.png](img%2Fglobal_plugin_setup.png)
 - Can send emails by log events
+- **Log viewer in the Administration** — browse, search and download your log files directly from the admin, without shell access
 ## Installation
 ```shell
 composer require muckiware/log-plugin
 bin/console plugin:install -a MuckiLogPlugin
 ```
+
+## Log Viewer (Administration)
+
+The plugin ships with a built-in log viewer in the Shopware Administration, so you can inspect log
+files without SSH or filesystem access to the server.
+
+**Where to find it:** Settings → Plugins → *Log viewer*.
+
+### What it does
+
+- **File selection** — lists every `*.log` file in the configured log directory, sorted by last
+  modification (newest first) and annotated with the file size, so the most relevant file is easy
+  to spot.
+- **Tail view** — shows the most recent entries of the selected file. By default the last 2,000
+  lines are loaded; the file is read backwards in chunks, so even very large log files open quickly
+  without loading the whole file into memory.
+- **Load more** — appends the next older block of lines on top of the current view (byte-based
+  pagination), letting you step back through the history of a large file on demand.
+- **Refresh** — reloads the tail of the current file to pick up entries written since it was opened.
+- **In-file search** — a live search field highlights all matches in the loaded content, with a
+  match counter, next/previous navigation (the view scrolls to the active match) and an optional
+  case-sensitive toggle.
+- **Download** — downloads the complete, unmodified log file as an attachment.
+
+### Security & access control
+
+- All requests are protected by the ACL privilege `muwa_log_viewer:read`; the admin module route
+  requires the `muwa_log_viewer.viewer` privilege. Assign it via a Shopware ACL role to control who
+  may read logs.
+- File access is restricted to the configured log directory. File names are validated (must end in
+  `.log`) and resolved against the real path of the log directory, so directory-traversal attempts
+  (e.g. `../../`) are rejected.
+
+### API endpoints
+
+The viewer is backed by three read-only admin-API actions:
+
+| Method & path | Purpose |
+|---|---|
+| `GET /api/_action/muwa-log-viewer/files` | List available log files (name, size, mtime) |
+| `GET /api/_action/muwa-log-viewer/content?file=<name>&lines=<n>&before=<byte>` | Read the tail of a file (`lines` 1–20,000, default 2,000; `before` for pagination) |
+| `GET /api/_action/muwa-log-viewer/download?file=<name>` | Download the full log file |
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.
 ```xml
