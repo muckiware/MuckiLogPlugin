@@ -1,0 +1,22 @@
+{
+    "muwa-log-viewer": {
+        "general": {
+            "mainMenuItemGeneral": "Log-Viewer",
+            "description": "Log-Dateien ansehen und durchsuchen",
+            "cardTitle": "Log-Dateien",
+            "placeholder": "Bitte eine Log-Datei auswählen."
+        },
+        "index": {
+            "fileLabel": "Log-Datei",
+            "filePlaceholder": "Datei auswählen …",
+            "searchPlaceholder": "In dieser Datei suchen …",
+            "matchesLabel": "Treffer",
+            "noMatches": "Keine Treffer",
+            "refresh": "Aktualisieren",
+            "loadMore": "Mehr laden",
+            "download": "Herunterladen",
+            "empty": "Keine Log-Dateien gefunden.",
+            "truncatedHint": "Es werden die neuesten Zeilen angezeigt. Für ältere Einträge „Mehr laden“."
+        }
+    }
+}

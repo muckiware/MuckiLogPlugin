@@ -1,0 +1,73 @@
+@import "~scss/variables";
+@import "~scss/mixins";
+
+.muwa-log-viewer-index {
+    &__alert {
+        margin-bottom: 16px;
+    }
+
+    // Cards are capped and centered (max-width 60rem via the scoped rule
+    // `.mt-card[data-v-...]` in 6.7 / `.sw-card` in 6.6). Raise specificity via
+    // the page root so this page uses the full available width for the output.
+    & &__card {
+        &.mt-card,
+        &.sw-card {
+            max-width: 100%;
+        }
+    }
+
+    &__toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+    }
+
+    &__search {
+        flex: 1 1 240px;
+    }
+
+    // The text field reserves space below for hint/error text (margin-bottom),
+    // which makes the flex row taller than the buttons and pushes the buttons
+    // visually lower. Remove that reserved space inside the toolbar. Cover both
+    // render variants: mt-field (Shopware 6.7 Meteor) and sw-field (6.6). The
+    // compound selectors raise specificity above the core `.mt-field` rule.
+    &__toolbar &__search {
+        &.mt-field,
+        &.sw-field,
+        .mt-field,
+        .sw-field,
+        .sw-block-field__block {
+            margin-bottom: 0;
+        }
+    }
+
+    &__matches {
+        white-space: nowrap;
+        color: $color-darkgray-200;
+    }
+
+    &__viewer {
+        max-height: 60vh;
+        overflow: auto;
+        background: $color-gray-100;
+        border: 1px solid $color-gray-300;
+        border-radius: 4px;
+        padding: 12px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-all;
+
+        mark {
+            background: #ffe34d;
+            padding: 0;
+
+            &.is-active {
+                background: #ff9f00;
+            }
+        }
+    }
+}

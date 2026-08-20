@@ -1,0 +1,22 @@
+{
+    "muwa-log-viewer": {
+        "general": {
+            "mainMenuItemGeneral": "Log viewer",
+            "description": "View and search log files",
+            "cardTitle": "Log files",
+            "placeholder": "Please select a log file."
+        },
+        "index": {
+            "fileLabel": "Log file",
+            "filePlaceholder": "Select file …",
+            "searchPlaceholder": "Search in this file …",
+            "matchesLabel": "matches",
+            "noMatches": "No matches",
+            "refresh": "Refresh",
+            "loadMore": "Load more",
+            "download": "Download",
+            "empty": "No log files found.",
+            "truncatedHint": "Showing the most recent lines. Use “Load more” for older entries."
+        }
+    }
+}
