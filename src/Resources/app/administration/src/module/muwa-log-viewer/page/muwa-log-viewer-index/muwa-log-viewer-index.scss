@@ -6,6 +6,16 @@
         margin-bottom: 16px;
     }
 
+    // Cards are capped and centered (max-width 60rem via the scoped rule
+    // `.mt-card[data-v-...]` in 6.7 / `.sw-card` in 6.6). Raise specificity via
+    // the page root so this page uses the full available width for the output.
+    & &__card {
+        &.mt-card,
+        &.sw-card {
+            max-width: 100%;
+        }
+    }
+
     &__toolbar {
         display: flex;
         align-items: center;
