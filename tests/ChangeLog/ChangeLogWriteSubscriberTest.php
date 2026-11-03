@@ -97,6 +97,29 @@ class ChangeLogWriteSubscriberTest extends TestCase
         static::assertNotNull($this->changeNamed($entry, 'price'));
     }
 
+    public function testIdenticalPriceGivesNoEntry(): void
+    {
+        $this->productRepository->update([[
+            'id' => $this->productId,
+            'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 10, 'net' => 8.4, 'linked' => false]],
+        ]], $this->context);
+
+        static::assertCount(0, $this->entriesFor($this->productId));
+    }
+
+    public function testIdenticalPriceIsNotListedNextToRealChange(): void
+    {
+        $this->productRepository->update([[
+            'id' => $this->productId,
+            'stock' => 11,
+            'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 10, 'net' => 8.4, 'linked' => false]],
+        ]], $this->context);
+
+        $entries = $this->entriesFor($this->productId);
+        static::assertCount(1, $entries);
+        static::assertSame(['stock'], array_column($entries[0]->get('changes'), 'field'));
+    }
+
     public function testTranslationOnlyUpdateHasOldValue(): void
     {
         $this->productRepository->update([[

@@ -9,8 +9,11 @@ use MuckiLogPlugin\ChangeLog\Struct\FieldChange;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\AssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Field;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\FloatField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
@@ -38,6 +41,7 @@ final class FieldChangeExtractor
         }
 
         $definition = $this->registry->getByEntityName($result->getEntityName());
+        $isUpdate = ChangeAction::fromOperation($result->getOperation()) === ChangeAction::Update;
         $changes = [];
 
         foreach ($this->pairs($result) as $name => [$old, $new]) {
@@ -45,9 +49,13 @@ final class FieldChangeExtractor
             if ($field === null || $this->isSkipped($field, $subEntity)) {
                 continue;
             }
-            $property = $field->getPropertyName();
+            $old = $this->normalizer->normalize($old);
+            $new = $this->normalizer->normalize($new);
+            if ($isUpdate && $this->isEquivalent($field, $old, $new)) {
+                continue;
+            }
 
-            $changes[] = $this->build($property, $field, $subEntity, $context, $old, $new);
+            $changes[] = $this->build($field, $subEntity, $context, $old, $new);
         }
 
         return $changes;
@@ -129,17 +137,52 @@ final class FieldChangeExtractor
     }
 
     /**
+     * MySQL normalizes JSON and the ChangeSet compares strings, so unchanged values can
+     * show up as changed; compare canonical forms instead.
+     */
+    private function isEquivalent(Field $field, mixed $old, mixed $new): bool
+    {
+        return $this->canonical($field, $old) === $this->canonical($field, $new);
+    }
+
+    private function canonical(Field $field, mixed $value): string
+    {
+        if ($field instanceof BoolField && \in_array($value, [true, 1, '1', false, 0, '0'], true)) {
+            return \in_array($value, [true, 1, '1'], true) ? 'true' : 'false';
+        }
+        if (($field instanceof IntField || $field instanceof FloatField) && is_numeric($value)) {
+            $value = (float) $value;
+        }
+
+        return (string) json_encode($this->sortRecursive($value), \JSON_PRESERVE_ZERO_FRACTION);
+    }
+
+    private function sortRecursive(mixed $value): mixed
+    {
+        if (\is_int($value)) {
+            return (float) $value;
+        }
+        if (!\is_array($value)) {
+            return $value;
+        }
+        ksort($value);
+
+        return array_map($this->sortRecursive(...), $value);
+    }
+
+    /**
      * @param array<string, mixed> $context
      */
-    private function build(string $property, ?Field $field, ?string $subEntity, array $context, mixed $old, mixed $new): FieldChange
+    private function build(Field $field, ?string $subEntity, array $context, mixed $old, mixed $new): FieldChange
     {
+        $property = $field->getPropertyName();
         if ($this->masker->isSensitive($property, $field)) {
             return new FieldChange($property, $subEntity, $context, SensitiveFieldMasker::MASK, SensitiveFieldMasker::MASK, true);
         }
 
         $masked = false;
-        $old = $this->masker->maskValue($this->normalizer->normalize($old), $masked);
-        $new = $this->masker->maskValue($this->normalizer->normalize($new), $masked);
+        $old = $this->masker->maskValue($old, $masked);
+        $new = $this->masker->maskValue($new, $masked);
 
         return new FieldChange($property, $subEntity, $context, $old, $new, $masked);
     }

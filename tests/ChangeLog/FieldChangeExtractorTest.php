@@ -75,6 +75,40 @@ class FieldChangeExtractorTest extends TestCase
         static::assertSame(7, $changes[0]->new);
     }
 
+    public function testCanonicallyEqualJsonIsNoChange(): void
+    {
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(
+                ['price' => '{"cb7d2554b0ce847cd82f3ac9bd1c0dfca": {"net": 8.4, "gross": 10, "linked": false, "currencyId": "b7d2554b0ce847cd82f3ac9bd1c0dfca"}}', 'stock' => 5],
+                ['price' => '{"cb7d2554b0ce847cd82f3ac9bd1c0dfca":{"currencyId":"b7d2554b0ce847cd82f3ac9bd1c0dfca","gross":10.0,"net":8.4,"linked":false}}', 'stock' => 6],
+                false
+            )
+        );
+
+        $changes = $this->extractor->extract($result, null, []);
+
+        static::assertSame(['stock'], array_map(static fn ($c) => $c->field, $changes));
+    }
+
+    public function testBoolAndNumericEquivalentsAreNoChange(): void
+    {
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(['active' => '0', 'weight' => '1.500', 'stock' => '5'], ['active' => false, 'weight' => 1.5, 'stock' => 5.0], false)
+        );
+
+        static::assertSame([], $this->extractor->extract($result, null, []));
+    }
+
     public function testDeleteUsesChangeSetBefore(): void
     {
         $result = new EntityWriteResult(
