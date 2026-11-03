@@ -74,6 +74,36 @@ final class CommitBuilderTest extends TestCase
         static::assertSame(['name' => 'Shirt'], $commits[0]->getBeforeValues());
     }
 
+    public function testRootDeleteKeepsTranslationChangesButDropsOtherChildren(): void
+    {
+        $b = new CommitBuilder();
+        $b->add($this->root(), ChangeAction::Delete, [$this->change('productNumber')]);
+        $b->add($this->root('p1', 'product_translation'), ChangeAction::Delete, [$this->change('name', 'product_translation')]);
+        $b->add($this->root('p1', 'product_price'), ChangeAction::Delete, [$this->change('price', 'product_price')]);
+
+        $commits = $b->build();
+
+        static::assertCount(1, $commits);
+        static::assertSame(ChangeAction::Delete, $commits[0]->getAction());
+        static::assertSame(
+            ['productNumber', 'name'],
+            array_map(static fn (FieldChange $c): string => $c->field, $commits[0]->getChanges())
+        );
+        static::assertSame('product_translation', $commits[0]->getChanges()[1]->subEntity);
+    }
+
+    public function testTranslationBeforeRootDeleteIsKept(): void
+    {
+        $b = new CommitBuilder();
+        $b->add($this->root('p1', 'product_translation'), ChangeAction::Delete, [$this->change('name', 'product_translation')]);
+        $b->add($this->root('p1', 'product_price'), ChangeAction::Delete, [$this->change('price', 'product_price')]);
+        $b->add($this->root(), ChangeAction::Delete, [$this->change('productNumber')]);
+
+        $fields = array_map(static fn (FieldChange $c): string => $c->field, $b->build()[0]->getChanges());
+
+        static::assertSame(['name', 'productNumber'], $fields);
+    }
+
     public function testTwoRootsKeepInsertionOrder(): void
     {
         $b = new CommitBuilder();

@@ -95,6 +95,34 @@ class FieldChangeExtractorTest extends TestCase
         static::assertSame(5, $changes[0]->old);
     }
 
+    public function testDeleteSkipsUnknownAssociationAndIndexerColumns(): void
+    {
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_DELETE,
+            null,
+            new ChangeSet([
+                'name' => 'Shirt',
+                'stock' => 5,
+                'auto_increment' => 12,
+                'cheapest_price' => 'O:8:"stdClass":0:{}',
+                'cheapest_price_accessor' => '{}',
+                'display_group' => 'abc',
+                'states' => '["is-physical"]',
+                'child_count' => 0,
+                'media' => 'id1',
+                'translations' => 'id1',
+                'some_unknown_column' => 'x',
+            ], [], true)
+        );
+
+        $fields = array_map(static fn ($c) => $c->field, $this->extractor->extract($result, null, []));
+
+        static::assertSame(['name', 'stock'], $fields);
+    }
+
     public function testSensitiveFieldIsMasked(): void
     {
         $result = new EntityWriteResult(
@@ -119,7 +147,7 @@ class FieldChangeExtractorTest extends TestCase
         $result = new EntityWriteResult(
             'id1',
             [],
-            'product',
+            'product_translation',
             EntityWriteResult::OPERATION_UPDATE,
             null,
             new ChangeSet(['custom_fields' => '{"color":"blue"}'], ['custom_fields' => '{"apiKey":"x","color":"red"}'], false)

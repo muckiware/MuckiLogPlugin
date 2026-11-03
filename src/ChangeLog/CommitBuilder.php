@@ -18,7 +18,7 @@ use MuckiLogPlugin\ChangeLog\Struct\RootReference;
  * Action precedence when the root itself is written: Delete > Insert > Update.
  * Sub-entity-only changes yield Update. Update commits without changes are
  * dropped; Insert/Delete commits are kept. For a deleted root, changes of
- * cascade-deleted children are not recorded.
+ * cascade-deleted children are not recorded, except its translations.
  *
  * The root's before-values are kept only for label resolution, never persisted.
  */
@@ -45,7 +45,7 @@ final class CommitBuilder
 
         if ($entry['action'] === ChangeAction::Delete) {
             $entry['changes'] = $this->ownChanges($entry['changes']);
-            $changes = $root->subEntity === null ? $changes : [];
+            $changes = $this->keptOnDelete($root->subEntity) ? $changes : [];
         }
 
         array_push($entry['changes'], ...$changes);
@@ -67,7 +67,7 @@ final class CommitBuilder
     }
 
     /**
-     * Root delete: keep only the root's own changes, drop cascaded children.
+     * Root delete: keep only the root's own and translation changes, drop cascaded children.
      *
      * @param list<FieldChange> $changes
      *
@@ -77,8 +77,16 @@ final class CommitBuilder
     {
         return array_values(array_filter(
             $changes,
-            static fn (FieldChange $c): bool => $c->subEntity === null,
+            fn (FieldChange $c): bool => $this->keptOnDelete($c->subEntity),
         ));
+    }
+
+    /**
+     * Root row and its translations belong to "what was deleted" (Ruling R10).
+     */
+    private function keptOnDelete(?string $subEntity): bool
+    {
+        return $subEntity === null || str_ends_with($subEntity, '_translation');
     }
 
     /**

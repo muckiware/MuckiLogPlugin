@@ -8,8 +8,11 @@ use MuckiLogPlugin\ChangeLog\Struct\ChangeAction;
 use MuckiLogPlugin\ChangeLog\Struct\FieldChange;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\AssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Field;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 
 final class FieldChangeExtractor
@@ -35,10 +38,10 @@ final class FieldChangeExtractor
 
         foreach ($this->pairs($result) as $name => [$old, $new]) {
             $field = $this->findField($definition, $name);
-            $property = $field?->getPropertyName() ?? $name;
-            if ($this->isSkipped($property, $field, $subEntity)) {
+            if ($field === null || $this->isSkipped($field, $subEntity)) {
                 continue;
             }
+            $property = $field->getPropertyName();
 
             $changes[] = $this->build($property, $field, $subEntity, $context, $old, $new);
         }
@@ -85,9 +88,17 @@ final class FieldChangeExtractor
         return $fields->get($name) ?? $fields->getByStorageName($name);
     }
 
-    private function isSkipped(string $property, ?Field $field, ?string $subEntity): bool
+    /**
+     * Skips technical columns, associations/inheritance join columns and
+     * indexer-maintained fields (WriteProtected/Runtime), see Ruling R11.
+     */
+    private function isSkipped(Field $field, ?string $subEntity): bool
     {
+        $property = $field->getPropertyName();
         if (\in_array($property, self::SKIPPED, true) || str_ends_with($property, 'VersionId')) {
+            return true;
+        }
+        if ($field instanceof AssociationField || $field->is(WriteProtected::class) || $field->is(Runtime::class)) {
             return true;
         }
 
