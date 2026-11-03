@@ -146,7 +146,10 @@ final class EntityGraph
             }
         }
 
-        return $this->childIndex;
+        /** @var array<string, list<ParentLink>> $index */
+        $index = $this->childIndex;
+
+        return $index;
     }
 
     private function indexChild(EntityDefinition $parent, Field $field): void

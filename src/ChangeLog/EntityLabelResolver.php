@@ -76,9 +76,7 @@ final class EntityLabelResolver
 
         $result = [];
         foreach ($entities as $entity) {
-            if ($entity instanceof Entity) {
-                $result[$entity->getUniqueIdentifier()] = $entity;
-            }
+            $result[$entity->getUniqueIdentifier()] = $entity;
         }
 
         return $result;

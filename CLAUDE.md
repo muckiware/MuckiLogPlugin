@@ -127,7 +127,7 @@ Payload: `CreateLogEvent` mit `LoggerSetup`-DTO (enthält Vendor, Plugin, LogLev
 | `EmailNotificationEntity` | — | E-Mail-Notification-Konfiguration |
 | `AdminChangeLogEntity` | `muwa_admin_change_log` | Änderungslog (Commits mit Diff als JSON `changes`) |
 
-Migration: `src/Migration/Migration1729614227.php`
+Migrationen: `src/Migration/Migration1729614227.php`, `src/Migration/Migration1793724000AdminChangeLog.php`
 
 ---
 
