@@ -24,6 +24,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -31,6 +32,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ChangeLogWriteSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use SalesChannelApiTestBehaviour;
 
     private EntityRepository $productRepository;
 
@@ -153,6 +155,22 @@ class ChangeLogWriteSubscriberTest extends TestCase
         ));
         static::assertCount(1, $updates);
         static::assertSame('Old name', $updates[0]->get('entityLabel'));
+    }
+
+    public function testCustomerLastLoginOnlyGivesNoEntry(): void
+    {
+        $this->setTracked(['customer']);
+        $customerId = $this->createCustomer();
+
+        static::getContainer()->get('customer.repository')->update([[
+            'id' => $customerId,
+            'lastLogin' => new \DateTimeImmutable(),
+        ]], $this->context);
+
+        static::assertCount(0, array_filter(
+            $this->entriesFor($customerId),
+            static fn (AdminChangeLogEntity $e): bool => $e->get('action') === 'update'
+        ));
     }
 
     public function testBulkUpsert50Products(): void

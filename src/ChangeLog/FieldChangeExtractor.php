@@ -26,6 +26,13 @@ final class FieldChangeExtractor
 {
     private const SKIPPED = ['id', 'versionId', 'createdAt', 'updatedAt'];
 
+    /**
+     * Fields maintained automatically by the core (login, checkout, indexers), Ruling R20.
+     */
+    private const IGNORED_BY_ENTITY = [
+        'customer' => ['lastLogin', 'lastPaymentMethodId', 'lastOrderDate', 'orderCount', 'orderTotalAmount', 'reviewCount'],
+    ];
+
     public function __construct(
         private readonly DefinitionInstanceRegistry $registry,
         private readonly ValueNormalizer $normalizer,
@@ -50,7 +57,7 @@ final class FieldChangeExtractor
 
         foreach ($this->pairs($result) as $name => [$old, $new]) {
             $field = $this->findField($definition, $name);
-            if ($field === null || $this->isSkipped($field, $subEntity)) {
+            if ($field === null || $this->isSkipped($result->getEntityName(), $field, $subEntity)) {
                 continue;
             }
             $old = $this->normalize($field, $old);
@@ -125,12 +132,16 @@ final class FieldChangeExtractor
 
     /**
      * Skips technical columns, associations/inheritance join columns and
-     * indexer-maintained fields (WriteProtected/Runtime), see Ruling R11.
+     * indexer-maintained fields (WriteProtected/Runtime), see Ruling R11, and
+     * automatically maintained fields (Ruling R20).
      */
-    private function isSkipped(Field $field, ?string $subEntity): bool
+    private function isSkipped(string $entityName, Field $field, ?string $subEntity): bool
     {
         $property = $field->getPropertyName();
         if (\in_array($property, self::SKIPPED, true) || str_ends_with($property, 'VersionId')) {
+            return true;
+        }
+        if (\in_array($property, self::IGNORED_BY_ENTITY[$entityName] ?? [], true)) {
             return true;
         }
         if ($field instanceof AssociationField || $field->is(WriteProtected::class) || $field->is(Runtime::class)) {

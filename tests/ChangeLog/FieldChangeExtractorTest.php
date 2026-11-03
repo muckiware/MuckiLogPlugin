@@ -147,6 +147,26 @@ class FieldChangeExtractorTest extends TestCase
         static::assertSame($text, $changes[0]->new);
     }
 
+    public function testAutomaticallyMaintainedCustomerFieldsAreIgnored(): void
+    {
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'customer',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(
+                ['last_login' => '2026-01-01 00:00:00.000', 'last_payment_method_id' => 'a', 'last_order_date' => 'x', 'order_count' => 1, 'order_total_amount' => 1.0, 'review_count' => 0, 'first_name' => 'A'],
+                ['last_login' => '2026-02-01 00:00:00.000', 'last_payment_method_id' => 'b', 'last_order_date' => 'y', 'order_count' => 2, 'order_total_amount' => 2.0, 'review_count' => 1, 'first_name' => 'B'],
+                false
+            )
+        );
+
+        $changes = $this->extractor->extract($result, null, []);
+
+        static::assertSame(['firstName'], array_map(static fn ($c) => $c->field, $changes));
+    }
+
     public function testDeleteUsesChangeSetBefore(): void
     {
         $result = new EntityWriteResult(
