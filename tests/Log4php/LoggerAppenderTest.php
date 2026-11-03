@@ -30,7 +30,7 @@ use PHPUnit\Framework\TestCase;
 
 use MuckiLogPlugin\Log4php\Appenders\LoggerAppenderEcho;
 use MuckiLogPlugin\Log4php\Appenders\LoggerAppenderNull;
-use MuckiLogPlugin\Log4php\Layouts\LoggerLayoutSimple;
+use MuckiLogPlugin\Log4php\layouts\LoggerLayoutSimple;
 use MuckiLogPlugin\Log4php\LoggerLevel;
 use MuckiLogPlugin\Log4php\Logger;
 use MuckiLogPlugin\Log4php\Filters\LoggerFilterDenyAll;
