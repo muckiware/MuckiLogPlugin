@@ -22,6 +22,17 @@ class ValueNormalizerTest extends TestCase
         static::assertSame('ab00000000000000ff11111111111111', $this->normalizer->normalize($binary));
     }
 
+    public function testValidUtf8ControlCharBinaryBecomesHex(): void
+    {
+        $binary = "\x01" . str_repeat("\x02", 15);
+        static::assertSame('01' . str_repeat('02', 15), $this->normalizer->normalize($binary));
+    }
+
+    public function testPrintableSixteenCharStringStaysString(): void
+    {
+        static::assertSame('ABCDEFGHIJKLMNOP', $this->normalizer->normalize('ABCDEFGHIJKLMNOP'));
+    }
+
     public function testJsonObjectStringIsDecoded(): void
     {
         static::assertSame(['a' => 1], $this->normalizer->normalize('{"a":1}'));

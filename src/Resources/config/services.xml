@@ -11,20 +11,20 @@
         <service id="MuckiLogPlugin\Core\AdminChangeLog\AdminChangeLogDefinition">
             <tag name="shopware.entity.definition" entity="muwa_admin_change_log" />
         </service>
-        <service id="MuckiLogPlugin\Services\Settings" public="true">
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
+    	<service id="MuckiLogPlugin\Services\Settings" public="true">
+        	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
         </service>
         <service id="MuckiLogPlugin\Services\SettingsInterface" alias="MuckiLogPlugin\Services\Settings"/>
         <service id="MuckiLogPlugin\Services\Logconfig" public="true">
-            <argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
-            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+        	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
         </service>
         <service id="MuckiLogPlugin\Services\LogconfigInterface" alias="MuckiLogPlugin\Services\Logconfig"/>
         <service id="MuckiLogPlugin\Logging\Logger" lazy="true">
             <argument type="service" id="event_dispatcher"/>
-            <argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
-            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
         </service>
         <service id="MuckiLogPlugin\Logging\LoggerInterface" alias="MuckiLogPlugin\Logging\Logger"/>
@@ -34,9 +34,9 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="MuckiLogPlugin\Subscriber\ResponseHeaderListener">
-            <argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
-            <argument type="service" id="MuckiLogPlugin\Services\Settings"/>
-            <argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\Logconfig"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\Settings"/>
+        	<argument type="service" id="MuckiLogPlugin\Logging\LoggerInterface"/>
             <tag name="kernel.event_subscriber"/>
         </service>
         <service class="MuckiLogPlugin\Commands\Checkup" id="muckilog.commands.checkup" public="true">
@@ -81,13 +81,13 @@
         </service>
         <service id="MuckiLogPlugin\Services\Helper"/>
         <service id="MuckiLogPlugin\Services\LogViewer">
-            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
         </service>
         <service id="MuckiLogPlugin\Services\LogViewerInterface" alias="MuckiLogPlugin\Services\LogViewer"/>
 
         <service id="MuckiLogPlugin\Administration\Controller\LogViewerController" public="true">
-            <argument type="service" id="MuckiLogPlugin\Services\LogViewerInterface"/>
-            <tag name="controller.service_arguments"/>
+        	<argument type="service" id="MuckiLogPlugin\Services\LogViewerInterface"/>
+        	<tag name="controller.service_arguments"/>
         </service>
         <service id="MuckiLogPlugin\Services\SendNotification">
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>

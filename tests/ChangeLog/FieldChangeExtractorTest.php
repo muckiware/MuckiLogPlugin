@@ -114,6 +114,25 @@ class FieldChangeExtractorTest extends TestCase
         static::assertTrue($changes[0]->masked);
     }
 
+    public function testNestedSecretsAreMasked(): void
+    {
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(['custom_fields' => '{"color":"blue"}'], ['custom_fields' => '{"apiKey":"x","color":"red"}'], false)
+        );
+
+        $changes = $this->extractor->extract($result, null, []);
+
+        static::assertCount(1, $changes);
+        static::assertSame(['color' => 'blue'], $changes[0]->old);
+        static::assertSame(['apiKey' => '***', 'color' => 'red'], $changes[0]->new);
+        static::assertTrue($changes[0]->masked);
+    }
+
     public function testSubEntityAndContextArePassedThrough(): void
     {
         $result = new EntityWriteResult('id1', ['name' => 'Foo', 'productId' => 'p', 'languageId' => 'l'], 'product_translation', EntityWriteResult::OPERATION_INSERT);
