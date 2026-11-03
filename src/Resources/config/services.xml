@@ -157,5 +157,14 @@
             <argument type="service" id="MuckiLogPlugin\ChangeLog\ValueNormalizer"/>
             <argument type="service" id="MuckiLogPlugin\ChangeLog\SensitiveFieldMasker"/>
         </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\EntityGraph">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\RootResolver">
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\EntityGraph"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
     </services>
 </container>
