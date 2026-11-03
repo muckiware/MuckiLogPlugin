@@ -167,5 +167,18 @@
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <tag name="kernel.reset" method="reset"/>
         </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\SourceResolver">
+            <argument type="service" id="user.repository"/>
+            <argument type="service" id="integration.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\EntityLabelResolver">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
     </services>
 </container>
