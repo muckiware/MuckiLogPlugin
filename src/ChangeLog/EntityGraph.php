@@ -12,7 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ChildrenAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Field;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\AssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\TranslationsAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\VersionField;
@@ -149,11 +151,10 @@ final class EntityGraph
 
     private function indexChild(EntityDefinition $parent, Field $field): void
     {
-        if (!$this->isOwnedChildAssociation($field)) {
+        if (!$field instanceof AssociationField || !$this->isOwnedChildAssociation($field)) {
             return;
         }
 
-        /** @var OneToManyAssociationField $field */
         $child = $field->getReferenceDefinition();
         if ($child->getEntityName() === $parent->getEntityName()
             || $child instanceof EntityTranslationDefinition
@@ -175,13 +176,19 @@ final class EntityGraph
         );
     }
 
-    private function isOwnedChildAssociation(Field $field): bool
+    /**
+     * Owned children: one-to-many lists and one-to-one associations whose FK lives on the child
+     * (storage name `id` on the parent side), both with clone-relevant CascadeDelete.
+     */
+    private function isOwnedChildAssociation(AssociationField $field): bool
     {
-        if (!$field instanceof OneToManyAssociationField
-            || $field instanceof ChildrenAssociationField
-            || $field instanceof TranslationsAssociationField
-            || $field->getLocalField() !== 'id'
-        ) {
+        $owned = match (true) {
+            $field instanceof ChildrenAssociationField, $field instanceof TranslationsAssociationField => false,
+            $field instanceof OneToManyAssociationField => $field->getLocalField() === 'id',
+            $field instanceof OneToOneAssociationField => $field->getStorageName() === 'id',
+            default => false,
+        };
+        if (!$owned) {
             return false;
         }
 

@@ -10,19 +10,25 @@ use MuckiLogPlugin\ChangeLog\Struct\RootReference;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Maps a write result of a (sub-)entity to its topmost tracked root entity.
  */
-final class RootResolver
+final class RootResolver implements ResetInterface
 {
-    /** @var array<string, ?string> */
+    /** @var array<string, string> Only successful lookups are cached; reset per request/message via kernel.reset. */
     private array $lookups = [];
 
     public function __construct(
         private readonly EntityGraph $graph,
         private readonly Connection $connection,
     ) {
+    }
+
+    public function reset(): void
+    {
+        $this->lookups = [];
     }
 
     /**
@@ -114,7 +120,7 @@ final class RootResolver
     private function lookup(string $table, string $column, string $id): ?string
     {
         $key = $table . '.' . $column . '.' . $id;
-        if (\array_key_exists($key, $this->lookups)) {
+        if (isset($this->lookups[$key])) {
             return $this->lookups[$key];
         }
 
@@ -126,8 +132,11 @@ final class RootResolver
         }
 
         $value = $this->connection->fetchOne($sql, $params);
+        if (!\is_string($value) || $value === '') {
+            return null;
+        }
 
-        return $this->lookups[$key] = \is_string($value) && $value !== '' ? $value : null;
+        return $this->lookups[$key] = $value;
     }
 
     /**

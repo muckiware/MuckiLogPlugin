@@ -82,29 +82,63 @@ class RootResolverTest extends TestCase
 
     public function testMultiLevelChildResolvesToOrderViaDatabase(): void
     {
+        $order = $this->createOrder();
+
+        static::assertEquals(
+            new RootReference('order', $order['orderId'], 'order_delivery_position', ['id' => $order['positionId']]),
+            $this->resolver->resolve($this->positionResult($order['positionId'], $order['deliveryId']), self::TRACKED)
+        );
+    }
+
+    public function testFailedLookupIsNotCached(): void
+    {
         $orderId = Uuid::randomHex();
         $context = Context::createDefaultContext();
-        static::getContainer()->get('order.repository')->create($this->getOrderData($orderId, $context), $context);
-        $row = static::getContainer()->get(Connection::class)->fetchAssociative(
-            'SELECT LOWER(HEX(p.id)) AS id, LOWER(HEX(p.order_delivery_id)) AS delivery
-             FROM order_delivery_position p JOIN order_delivery d ON d.id = p.order_delivery_id
-             WHERE d.order_id = UNHEX(:orderId)',
-            ['orderId' => $orderId]
-        );
-        static::assertIsArray($row);
+        $data = $this->getOrderData($orderId, $context);
+        $deliveryId = $data[0]['deliveries'][0]['id'];
+        $positionId = Uuid::randomHex();
 
+        static::assertNull($this->resolver->resolve($this->positionResult($positionId, $deliveryId), self::TRACKED));
+
+        static::getContainer()->get('order.repository')->create($data, $context);
+
+        static::assertEquals(
+            new RootReference('order', $orderId, 'order_delivery_position', ['id' => $positionId]),
+            $this->resolver->resolve($this->positionResult($positionId, $deliveryId), self::TRACKED)
+        );
+    }
+
+    public function testResetClearsLookupCache(): void
+    {
+        $first = $this->createOrder();
+        $second = $this->createOrder();
+        $result = $this->positionResult($first['positionId'], $first['deliveryId']);
+        static::assertSame($first['orderId'], $this->resolver->resolve($result, self::TRACKED)?->entityId);
+
+        static::getContainer()->get(Connection::class)->executeStatement(
+            'UPDATE order_delivery SET order_id = UNHEX(:orderId) WHERE id = UNHEX(:deliveryId)',
+            ['orderId' => $second['orderId'], 'deliveryId' => $first['deliveryId']]
+        );
+
+        static::assertSame($first['orderId'], $this->resolver->resolve($result, self::TRACKED)?->entityId);
+        $this->resolver->reset();
+        static::assertSame($second['orderId'], $this->resolver->resolve($result, self::TRACKED)?->entityId);
+    }
+
+    public function testOneToOneChildResolvesToParent(): void
+    {
+        $orderId = Uuid::randomHex();
+        $orderCustomerId = Uuid::randomHex();
         $result = new EntityWriteResult(
-            $row['id'],
-            ['id' => $row['id'], 'quantity' => 2],
-            'order_delivery_position',
-            EntityWriteResult::OPERATION_UPDATE,
-            null,
-            new ChangeSet(['order_delivery_id' => Uuid::fromHexToBytes($row['delivery']), 'quantity' => 1], ['quantity' => 2], false)
+            $orderCustomerId,
+            ['id' => $orderCustomerId, 'orderId' => $orderId, 'email' => 'a@b.c'],
+            'order_customer',
+            EntityWriteResult::OPERATION_UPDATE
         );
 
         static::assertEquals(
-            new RootReference('order', $orderId, 'order_delivery_position', ['id' => $row['id']]),
-            $this->resolver->resolve($result, self::TRACKED)
+            new RootReference('order', $orderId, 'order_customer', ['id' => $orderCustomerId]),
+            $this->resolver->resolve($result, ['order'])
         );
     }
 
@@ -163,5 +197,38 @@ class RootResolverTest extends TestCase
         $result = new EntityWriteResult($priceId, ['id' => $priceId, 'quantityStart' => 2], 'product_price', EntityWriteResult::OPERATION_UPDATE);
 
         static::assertNull($this->resolver->resolve($result, self::TRACKED));
+    }
+
+    /**
+     * @return array{orderId: string, deliveryId: string, positionId: string}
+     */
+    private function createOrder(): array
+    {
+        $orderId = Uuid::randomHex();
+        $context = Context::createDefaultContext();
+        $data = $this->getOrderData($orderId, $context);
+        $data[0]['deepLinkCode'] = Uuid::randomHex();
+        static::getContainer()->get('order.repository')->create($data, $context);
+        $row = static::getContainer()->get(Connection::class)->fetchAssociative(
+            'SELECT LOWER(HEX(p.id)) AS id, LOWER(HEX(p.order_delivery_id)) AS delivery
+             FROM order_delivery_position p JOIN order_delivery d ON d.id = p.order_delivery_id
+             WHERE d.order_id = UNHEX(:orderId)',
+            ['orderId' => $orderId]
+        );
+        static::assertIsArray($row);
+
+        return ['orderId' => $orderId, 'deliveryId' => $row['delivery'], 'positionId' => $row['id']];
+    }
+
+    private function positionResult(string $positionId, string $deliveryId): EntityWriteResult
+    {
+        return new EntityWriteResult(
+            $positionId,
+            ['id' => $positionId, 'quantity' => 2],
+            'order_delivery_position',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(['order_delivery_id' => Uuid::fromHexToBytes($deliveryId), 'quantity' => 1], ['quantity' => 2], false)
+        );
     }
 }

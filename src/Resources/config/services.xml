@@ -165,6 +165,7 @@
         <service id="MuckiLogPlugin\ChangeLog\RootResolver">
             <argument type="service" id="MuckiLogPlugin\ChangeLog\EntityGraph"/>
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <tag name="kernel.reset" method="reset"/>
         </service>
     </services>
 </container>

@@ -39,6 +39,22 @@ class EntityGraphTest extends TestCase
         );
     }
 
+    public function testOneToOneOwnedChildLinksToParent(): void
+    {
+        static::assertContainsEquals(
+            new ParentLink('order', 'order_id', 'orderId', 'child'),
+            $this->graph->getParentLinks('order_customer')
+        );
+        static::assertTrue($this->graph->isRelevant('order_customer', ['order']));
+    }
+
+    public function testOneToOneOwningSideIsNoChild(): void
+    {
+        $parents = array_map(static fn (ParentLink $l) => $l->parentEntity, $this->graph->getParentLinks('sales_channel_analytics'));
+
+        static::assertNotContains('sales_channel', $parents);
+    }
+
     public function testMappingLinksBothSidesInDefinitionOrder(): void
     {
         $links = $this->graph->getParentLinks('product_category');
