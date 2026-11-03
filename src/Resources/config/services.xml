@@ -118,8 +118,13 @@
             <argument type="service" id="Psr\Log\LoggerInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\HttpRequestLogFormatterInterface"/>
             <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
-            <tag name="shopware.store_client.middleware"/>
-            <tag name="shopware.frw_client.middleware"/>
+        </service>
+
+        <!-- Tags fuer beide Middlewares setzt der StoreClientMiddlewareCompilerPass je nach Shopware-Version -->
+        <service id="MuckiLogPlugin\Services\LegacyStoreClientLoggingMiddleware" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\HttpRequestLogFormatterInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
         </service>
 
         <service id="MuckiLogPlugin\Storefront\Controller\ErrorControllerDecorator" decorates="Shopware\Storefront\Controller\ErrorController" decoration-priority="100">

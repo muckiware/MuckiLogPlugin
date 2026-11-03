@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Fatal error on Shopware 6.6.x and early 6.7.x: `StoreClientLoggingMiddleware` was incompatible with the
+  older signature of Shopware's internal Store `MiddlewareInterface`. A compiler pass now registers the
+  matching middleware for the installed Shopware version; on older versions the new
+  `LegacyStoreClientLoggingMiddleware` logs Store-/FRW-API responses (requests are not visible there).
+
 ## [2.5.0] - 2026-09-29
 
 ### Added

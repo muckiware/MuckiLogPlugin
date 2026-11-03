@@ -15,7 +15,6 @@ use GuzzleHttp\Promise\Create;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Store\Services\MiddlewareInterface;
 
 use MuckiLogPlugin\Services\Http\GuzzleLoggingTrait;
 
@@ -23,8 +22,13 @@ use MuckiLogPlugin\Services\Http\GuzzleLoggingTrait;
  * Guzzle-Middleware fuer den Store-/FRW-API-Client (shopware.store_client,
  * shopware.frw_client), registriert ueber deren offiziellen
  * Middleware-Tag-Mechanismus.
+ *
+ * Implementiert bewusst nicht das interne Shopware-MiddlewareInterface, dessen
+ * Signatur sich innerhalb von 6.7 geaendert hat. Getaggt wird die Klasse nur
+ * vom StoreClientMiddlewareCompilerPass, wenn Shopware Handler-Middlewares
+ * erwartet; aeltere Versionen nutzen LegacyStoreClientLoggingMiddleware.
  */
-final class StoreClientLoggingMiddleware implements MiddlewareInterface
+final class StoreClientLoggingMiddleware
 {
     use GuzzleLoggingTrait;
 

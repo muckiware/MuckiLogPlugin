@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 use MuckiLogPlugin\DependencyInjection\LoggerDecoratorCompilerPass;
+use MuckiLogPlugin\DependencyInjection\StoreClientMiddlewareCompilerPass;
 use MuckiLogPlugin\Setup\Setup;
 use MuckiLogPlugin\Services\Logconfig;
 use MuckiLogPlugin\Services\Settings;
@@ -30,6 +31,7 @@ class MuckiLogPlugin extends Plugin
     {
         parent::build($container);
         $container->addCompilerPass(new LoggerDecoratorCompilerPass());
+        $container->addCompilerPass(new StoreClientMiddlewareCompilerPass());
     }
 
     /**
