@@ -22,6 +22,10 @@ Component.register('muwa-change-log-list', {
 
     inject: ['repositoryFactory', 'acl', 'systemConfigApiService'],
 
+    mixins: [
+        Shopware.Mixin.getByName('notification'),
+    ],
+
     props: {
         entityName: {
             type: String,
@@ -47,6 +51,7 @@ Component.register('muwa-change-log-list', {
             page: 1,
             limit: 25,
             isLoading: false,
+            loadError: false,
             term: '',
             dateFrom: null,
             dateTo: null,
@@ -120,6 +125,7 @@ Component.register('muwa-change-log-list', {
     methods: {
         async loadList() {
             this.isLoading = true;
+            this.loadError = false;
             try {
                 const result = await this.changeLogRepository.search(this.buildCriteria(), Shopware.Context.api);
                 this.items = Array.from(result);
@@ -127,6 +133,10 @@ Component.register('muwa-change-log-list', {
             } catch {
                 this.items = [];
                 this.total = 0;
+                this.loadError = true;
+                this.createNotificationError({
+                    message: this.$tc('muwa-change-log.list.loadError'),
+                });
             } finally {
                 this.isLoading = false;
             }

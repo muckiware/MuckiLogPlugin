@@ -61,7 +61,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-if="!items.length && !isLoading">
+                    <tr v-if="loadError && !isLoading">
+                        <td
+                            class="muwa-change-log-list__error"
+                            :colspan="columnCount"
+                        >
+                            {{ $tc('muwa-change-log.list.loadError') }}
+                        </td>
+                    </tr>
+                    <tr v-else-if="!items.length && !isLoading">
                         <td
                             class="muwa-change-log-list__empty"
                             :colspan="columnCount"

@@ -24,7 +24,8 @@
             "fieldSingular": "field",
             "fieldPlural": "fields",
             "empty": "No entries found.",
-            "systemConfigEntity": "Settings"
+            "systemConfigEntity": "Settings",
+            "loadError": "The changes could not be loaded."
         },
         "action": {
             "insert": "created",
@@ -40,11 +41,40 @@
         "diff": {
             "yes": "yes",
             "no": "no",
-            "empty": "(empty)",
             "linkedEntity": "Assignment",
             "added": "new",
             "removed": "removed",
             "noChanges": "No field changes stored."
+        },
+        "fields": {
+            "name": "Name",
+            "description": "Description",
+            "active": "Active",
+            "stock": "Stock",
+            "price": "Price",
+            "productNumber": "Product number",
+            "ean": "EAN",
+            "manufacturerId": "Manufacturer",
+            "taxId": "Tax rate",
+            "categoryId": "Category",
+            "categoryIds": "Categories",
+            "title": "Title",
+            "firstName": "First name",
+            "lastName": "Last name",
+            "email": "Email",
+            "street": "Street",
+            "zipcode": "Postal code",
+            "city": "City",
+            "orderNumber": "Order number",
+            "stateId": "Status",
+            "amountTotal": "Total amount",
+            "customFields": "Custom fields",
+            "metaTitle": "Meta title",
+            "metaDescription": "Meta description",
+            "keywords": "Keywords",
+            "visibility": "Visibility",
+            "salesChannelId": "Sales channel",
+            "password": "Password"
         }
     },
     "sw-privileges": {

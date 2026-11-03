@@ -24,7 +24,8 @@
             "fieldSingular": "Feld",
             "fieldPlural": "Felder",
             "empty": "Keine Einträge gefunden.",
-            "systemConfigEntity": "Einstellungen"
+            "systemConfigEntity": "Einstellungen",
+            "loadError": "Die Änderungen konnten nicht geladen werden."
         },
         "action": {
             "insert": "angelegt",
@@ -40,11 +41,40 @@
         "diff": {
             "yes": "ja",
             "no": "nein",
-            "empty": "(leer)",
             "linkedEntity": "Zuordnung",
             "added": "neu",
             "removed": "entfernt",
             "noChanges": "Keine Feldänderungen gespeichert."
+        },
+        "fields": {
+            "name": "Name",
+            "description": "Beschreibung",
+            "active": "Aktiv",
+            "stock": "Bestand",
+            "price": "Preis",
+            "productNumber": "Produktnummer",
+            "ean": "EAN",
+            "manufacturerId": "Hersteller",
+            "taxId": "Steuersatz",
+            "categoryId": "Kategorie",
+            "categoryIds": "Kategorien",
+            "title": "Titel",
+            "firstName": "Vorname",
+            "lastName": "Nachname",
+            "email": "E-Mail",
+            "street": "Straße",
+            "zipcode": "PLZ",
+            "city": "Stadt",
+            "orderNumber": "Bestellnummer",
+            "stateId": "Status",
+            "amountTotal": "Gesamtbetrag",
+            "customFields": "Zusatzfelder",
+            "metaTitle": "Meta-Titel",
+            "metaDescription": "Meta-Beschreibung",
+            "keywords": "Keywords",
+            "visibility": "Sichtbarkeit",
+            "salesChannelId": "Verkaufskanal",
+            "password": "Passwort"
         }
     },
     "sw-privileges": {

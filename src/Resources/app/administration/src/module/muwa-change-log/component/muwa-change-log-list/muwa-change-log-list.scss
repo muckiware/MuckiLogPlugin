@@ -76,6 +76,11 @@
         color: $color-gray-600;
     }
 
+    &__error {
+        text-align: center;
+        color: $color-crimson-500;
+    }
+
     &.is--compact &__filter {
         flex-basis: 100%;
     }
