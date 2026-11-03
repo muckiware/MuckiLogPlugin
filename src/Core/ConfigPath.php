@@ -34,4 +34,7 @@ enum ConfigPath: string
     case CONFIG_PATH_ACTIVE_NOTIFICATION_MAIL = 'MuckiLogPlugin.config.activeNotificationMail';
     case CONFIG_PATH_ACTIVE_COMPRESS = 'MuckiLogPlugin.config.activeCompress';
     case CONFIG_PATH_ACTIVE_HTTP_LOGGING = 'MuckiLogPlugin.config.activeHttpLogging';
+    case CONFIG_PATH_ACTIVE_CHANGE_LOG = 'MuckiLogPlugin.config.activeChangeLog';
+    case CONFIG_PATH_CHANGE_LOG_ENTITIES = 'MuckiLogPlugin.config.changeLogEntities';
+    case CONFIG_PATH_CHANGE_LOG_RETENTION_DAYS = 'MuckiLogPlugin.config.changeLogRetentionDays';
 }
