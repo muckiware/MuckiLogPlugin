@@ -99,6 +99,30 @@ class SystemConfigChangeSubscriberTest extends TestCase
         static::assertStringNotContainsString('super-secret-value', json_encode($entries[0]->get('changes'), \JSON_THROW_ON_ERROR));
     }
 
+    public function testPortalKeyIsMasked(): void
+    {
+        $this->systemConfig->setMultiple(['Payone.settings.portalKey' => 'portal-secret-value']);
+
+        $entries = $this->entriesFor('Payone.settings|global');
+        static::assertCount(1, $entries);
+        $change = $entries[0]->get('changes')[0];
+        static::assertSame('***', $change['new']);
+        static::assertTrue($change['masked']);
+        static::assertStringNotContainsString('portal-secret-value', json_encode($entries[0]->get('changes'), \JSON_THROW_ON_ERROR));
+    }
+
+    public function testNestedSecretInArrayValueIsMasked(): void
+    {
+        $this->systemConfig->setMultiple(['MuckiNested.config.connection' => ['host' => 'h', 'credentials' => ['user' => 'a', 'password' => 'nested-secret-b']]]);
+
+        $entries = $this->entriesFor('MuckiNested.config|global');
+        static::assertCount(1, $entries);
+        $change = $entries[0]->get('changes')[0];
+        static::assertSame(['host' => 'h', 'credentials' => '***'], $change['new']);
+        static::assertTrue($change['masked']);
+        static::assertStringNotContainsString('nested-secret-b', json_encode($entries[0]->get('changes'), \JSON_THROW_ON_ERROR));
+    }
+
     public function testDeletedValueGivesNullNew(): void
     {
         $this->systemConfig->set(self::DOMAIN . '.level', null);

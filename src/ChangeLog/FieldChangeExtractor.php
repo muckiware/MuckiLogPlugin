@@ -138,28 +138,9 @@ final class FieldChangeExtractor
         }
 
         $masked = false;
-        $old = $this->maskNested($this->normalizer->normalize($old), $masked);
-        $new = $this->maskNested($this->normalizer->normalize($new), $masked);
+        $old = $this->masker->maskValue($this->normalizer->normalize($old), $masked);
+        $new = $this->masker->maskValue($this->normalizer->normalize($new), $masked);
 
         return new FieldChange($property, $subEntity, $context, $old, $new, $masked);
-    }
-
-    private function maskNested(mixed $value, bool &$masked): mixed
-    {
-        if (!\is_array($value)) {
-            return $value;
-        }
-
-        foreach ($value as $key => $item) {
-            if (\is_string($key) && $this->masker->isSensitive($key)) {
-                $value[$key] = SensitiveFieldMasker::MASK;
-                $masked = true;
-
-                continue;
-            }
-            $value[$key] = $this->maskNested($item, $masked);
-        }
-
-        return $value;
     }
 }

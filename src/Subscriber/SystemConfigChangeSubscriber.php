@@ -135,7 +135,11 @@ final class SystemConfigChangeSubscriber implements EventSubscriberInterface
             return new FieldChange($key, null, $context, SensitiveFieldMasker::MASK, SensitiveFieldMasker::MASK, true);
         }
 
-        return new FieldChange($key, null, $context, $old, $new);
+        $masked = false;
+        $old = $this->masker->maskValue($old, $masked);
+        $new = $this->masker->maskValue($new, $masked);
+
+        return new FieldChange($key, null, $context, $old, $new, $masked);
     }
 
     /**
