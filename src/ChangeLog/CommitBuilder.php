@@ -24,7 +24,7 @@ use MuckiLogPlugin\ChangeLog\Struct\RootReference;
  */
 final class CommitBuilder
 {
-    /** @var array<string, array{name: string, id: string, action: ChangeAction, rootWritten: bool, changes: list<FieldChange>, before: array<string, mixed>}> */
+    /** @var array<string, array{name: string, id: string, action: ChangeAction, changes: list<FieldChange>, before: array<string, mixed>}> */
     private array $entries = [];
 
     /**
@@ -34,17 +34,9 @@ final class CommitBuilder
     public function add(RootReference $root, ChangeAction $action, array $changes, array $rootBeforeValues = []): void
     {
         $key = $root->entityName . '|' . $root->entityId;
-        $entry = $this->entries[$key] ?? [
-            'name' => $root->entityName,
-            'id' => $root->entityId,
-            'action' => ChangeAction::Update,
-            'rootWritten' => false,
-            'changes' => [],
-            'before' => [],
-        ];
+        $entry = $this->entries[$key] ?? $this->newEntry($root);
 
         if ($root->subEntity === null) {
-            $entry['rootWritten'] = true;
             $entry['action'] = $this->stronger($entry['action'], $action);
             if ($rootBeforeValues !== []) {
                 $entry['before'] = $rootBeforeValues;
@@ -52,18 +44,41 @@ final class CommitBuilder
         }
 
         if ($entry['action'] === ChangeAction::Delete) {
-            // Root delete: keep only the root's own changes, drop cascaded children.
-            $entry['changes'] = array_values(array_filter(
-                $entry['changes'],
-                static fn (FieldChange $c): bool => $c->subEntity === null,
-            ));
-            if ($root->subEntity !== null) {
-                $changes = [];
-            }
+            $entry['changes'] = $this->ownChanges($entry['changes']);
+            $changes = $root->subEntity === null ? $changes : [];
         }
 
         array_push($entry['changes'], ...$changes);
         $this->entries[$key] = $entry;
+    }
+
+    /**
+     * @return array{name: string, id: string, action: ChangeAction, changes: list<FieldChange>, before: array<string, mixed>}
+     */
+    private function newEntry(RootReference $root): array
+    {
+        return [
+            'name' => $root->entityName,
+            'id' => $root->entityId,
+            'action' => ChangeAction::Update,
+            'changes' => [],
+            'before' => [],
+        ];
+    }
+
+    /**
+     * Root delete: keep only the root's own changes, drop cascaded children.
+     *
+     * @param list<FieldChange> $changes
+     *
+     * @return list<FieldChange>
+     */
+    private function ownChanges(array $changes): array
+    {
+        return array_values(array_filter(
+            $changes,
+            static fn (FieldChange $c): bool => $c->subEntity === null,
+        ));
     }
 
     /**
