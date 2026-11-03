@@ -123,6 +123,46 @@ class FieldChangeExtractorTest extends TestCase
         static::assertSame(['name', 'stock'], $fields);
     }
 
+    public function testMappingInsertYieldsLinkedId(): void
+    {
+        $catId = 'cafe0000cafe0000cafe0000cafe0000';
+        $context = ['linkedEntity' => 'category', 'linkedId' => $catId];
+        $result = new EntityWriteResult(
+            ['productId' => 'p1', 'categoryId' => $catId],
+            ['productId' => 'p1', 'categoryId' => $catId],
+            'product_category',
+            EntityWriteResult::OPERATION_INSERT
+        );
+
+        $changes = $this->extractor->extract($result, 'product_category', $context);
+
+        static::assertCount(1, $changes);
+        static::assertSame('category', $changes[0]->field);
+        static::assertSame('product_category', $changes[0]->subEntity);
+        static::assertSame($context, $changes[0]->context);
+        static::assertNull($changes[0]->old);
+        static::assertSame($catId, $changes[0]->new);
+    }
+
+    public function testMappingDeleteYieldsLinkedId(): void
+    {
+        $catId = 'cafe0000cafe0000cafe0000cafe0000';
+        $context = ['linkedEntity' => 'category', 'linkedId' => $catId];
+        $result = new EntityWriteResult(
+            ['productId' => 'p1', 'categoryId' => $catId],
+            [],
+            'product_category',
+            EntityWriteResult::OPERATION_DELETE
+        );
+
+        $changes = $this->extractor->extract($result, 'product_category', $context);
+
+        static::assertCount(1, $changes);
+        static::assertSame('category', $changes[0]->field);
+        static::assertSame($catId, $changes[0]->old);
+        static::assertNull($changes[0]->new);
+    }
+
     public function testSensitiveFieldIsMasked(): void
     {
         $result = new EntityWriteResult(

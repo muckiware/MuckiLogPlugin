@@ -33,6 +33,10 @@ final class FieldChangeExtractor
      */
     public function extract(EntityWriteResult $result, ?string $subEntity, array $context): array
     {
+        if ($subEntity !== null && isset($context['linkedEntity']) && \is_string($context['linkedEntity'])) {
+            return $this->extractMapping($result, $subEntity, $context);
+        }
+
         $definition = $this->registry->getByEntityName($result->getEntityName());
         $changes = [];
 
@@ -47,6 +51,25 @@ final class FieldChangeExtractor
         }
 
         return $changes;
+    }
+
+    /**
+     * Mapping rows consist only of FKs (Ruling R14): log the assignment itself.
+     *
+     * @param array<string, mixed> $context
+     *
+     * @return list<FieldChange>
+     */
+    private function extractMapping(EntityWriteResult $result, string $subEntity, array $context): array
+    {
+        $linkedId = $context['linkedId'] ?? null;
+        $field = (string) $context['linkedEntity'];
+
+        return match (ChangeAction::fromOperation($result->getOperation())) {
+            ChangeAction::Insert => [new FieldChange($field, $subEntity, $context, null, $linkedId, false)],
+            ChangeAction::Delete => [new FieldChange($field, $subEntity, $context, $linkedId, null, false)],
+            default => [],
+        };
     }
 
     /**

@@ -149,6 +149,50 @@ class ChangeLogWriteSubscriberTest extends TestCase
         static::assertCount(1, $this->allEntries(), 'cascade-deleted children must not create own commits');
     }
 
+    public function testCategoryAssignmentIsLogged(): void
+    {
+        $catId = Uuid::randomHex();
+        $this->createCategory($catId);
+
+        $this->productRepository->update([[
+            'id' => $this->productId,
+            'categories' => [['id' => $catId]],
+        ]], $this->context);
+
+        $entries = $this->entriesFor($this->productId);
+        static::assertCount(1, $entries);
+        $change = $this->changeNamed($entries[0], 'category');
+        static::assertSame('product_category', $change['subEntity']);
+        static::assertNull($change['old']);
+        static::assertSame($catId, $change['new']);
+
+        static::getContainer()->get('product_category.repository')->delete(
+            [['productId' => $this->productId, 'categoryId' => $catId]],
+            $this->context
+        );
+
+        $entries = $this->entriesFor($this->productId);
+        static::assertCount(2, $entries);
+        $removed = null;
+        foreach ($entries as $entry) {
+            foreach ($entry->get('changes') ?? [] as $c) {
+                if (($c['field'] ?? null) === 'category' && ($c['new'] ?? null) === null) {
+                    $removed = $c;
+                }
+            }
+        }
+        static::assertNotNull($removed);
+        static::assertSame($catId, $removed['old']);
+    }
+
+    private function createCategory(string $id): void
+    {
+        static::getContainer()->get('category.repository')->create(
+            [['id' => $id, 'name' => 'Cat ' . $id]],
+            Context::createDefaultContext()
+        );
+    }
+
     public function testInactiveLogsNothing(): void
     {
         $this->systemConfig->set(ConfigPath::CONFIG_PATH_ACTIVE_CHANGE_LOG->value, false);
