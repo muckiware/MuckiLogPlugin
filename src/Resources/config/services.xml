@@ -104,6 +104,24 @@
             <argument type="service" id="Psr\Log\LoggerInterface" />
         </service>
 
+        <service id="MuckiLogPlugin\Services\HttpRequestLogFormatter" public="true"/>
+        <service id="MuckiLogPlugin\Services\HttpRequestLogFormatterInterface" alias="MuckiLogPlugin\Services\HttpRequestLogFormatter"/>
+
+        <service id="MuckiLogPlugin\Services\HttpClientLoggerDecorator" decorates="Symfony\Contracts\HttpClient\HttpClientInterface" decoration-priority="500">
+            <argument type="service" id="MuckiLogPlugin\Services\HttpClientLoggerDecorator.inner" />
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\HttpRequestLogFormatterInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+        </service>
+
+        <service id="MuckiLogPlugin\Services\StoreClientLoggingMiddleware" public="true">
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\HttpRequestLogFormatterInterface"/>
+            <argument type="service" id="MuckiLogPlugin\Services\SettingsInterface"/>
+            <tag name="shopware.store_client.middleware"/>
+            <tag name="shopware.frw_client.middleware"/>
+        </service>
+
         <service id="MuckiLogPlugin\Storefront\Controller\ErrorControllerDecorator" decorates="Shopware\Storefront\Controller\ErrorController" decoration-priority="100">
             <argument type="service" id="MuckiLogPlugin\Storefront\Controller\ErrorControllerDecorator.inner" />
             <argument type="service" id="Psr\Log\LoggerInterface"/>

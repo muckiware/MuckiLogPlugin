@@ -41,5 +41,6 @@ interface SettingsInterface
     public function getNotificationMailSender(): ?string;
     public function isNotificationMailEnabled(): bool;
     public function isEnabledCompress(): bool;
+    public function isHttpLoggingEnabled(): bool;
 }
 

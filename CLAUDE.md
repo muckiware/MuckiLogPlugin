@@ -172,7 +172,7 @@ Alle Keys beginnen mit `MuckiLogPlugin.config.`:
 - **Level-Mapping**: `alert` → `WARNING`, `notice` → `INFO`, `log()` → immer `DEBUG` — Abweichung von PSR-3-Semantik beachten.
 - **Context-Index-Abhängigkeit**: Der Context-Array wird per numerischem Index (`$context[0]`, `$context[1]`, `$context[2]`) ausgewertet — kein assoziativer Zugriff auf Vendor/Plugin-Namen. Bei falscher Struktur greift immer der Fallback.
 - **Config-Datei-Erstellung**: Fehlt die XML-Konfiguration für eine Vendor/Plugin-Kombination, erstellt `Logconfig::_createConfigXML()` sie automatisch via DOM — erfordert Schreibrechte auf `src/Resources/config/`.
-- **ErrorControllerDecorator-Bug**: `$this->originalLoggerService = $errorController;` — Property-Name ist falsch (`originalLoggerService` statt `originalErrorController`), führt aber zu keinem Laufzeitfehler, da die Property nur gesetzt, nie gelesen wird.
+- **ErrorControllerDecorator 6.6/6.7**: Header/Footer-Pagelets werden nur gesetzt, wenn `ErrorTemplateStruct` `setHeader()`/`setFooter()` besitzt (6.6 ohne Cache-Rework); in 6.7 kommen sie per ESI. `onCaptchaFailure()` delegiert an den Core-Controller (`.inner`), damit immer die versionsspezifische Implementierung greift.
 - **`http\Message` Import**: In `LoggerServiceDecorator` wird `use http\Message;` importiert, aber nie genutzt — toter Import.
 
 ---

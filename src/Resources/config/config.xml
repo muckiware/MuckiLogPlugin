@@ -113,4 +113,12 @@
             <label>Active notification mail for Critical event</label>
         </input-field>
     </card>
+    <card>
+        <title>Outbound HTTP logging settings</title>
+        <input-field type="bool">
+            <name>activeHttpLogging</name>
+            <label>Active outbound HTTP request logging</label>
+            <helpText>Logs all outgoing HTTP requests (Symfony http_client, Store-/FRW-API) including URL, method, parameters, and body in var/log/outbound-http.muwa.log. No automatic masking of sensitive data - enable only for targeted debugging.</helpText>
+        </input-field>
+    </card>
 </config>

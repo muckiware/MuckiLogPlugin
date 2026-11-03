@@ -224,4 +224,28 @@ class SettingsTest extends TestCase
             'getConfigPath should return the correct config path with no context'
         );
     }
+
+    public function testIsHttpLoggingEnabledReadsDedicatedConfigSwitch(): void
+    {
+        $kernel = $this->createMock(KernelInterface::class);
+        $config = $this->createMock(SystemConfigService::class);
+        $config->method('getBool')
+            ->with(ConfigPath::CONFIG_PATH_ACTIVE_HTTP_LOGGING->value)
+            ->willReturn(true);
+
+        $settingsClass = new PluginSettings($config, $kernel);
+        static::assertTrue($settingsClass->isHttpLoggingEnabled());
+    }
+
+    public function testIsHttpLoggingEnabledDefaultsToDisabled(): void
+    {
+        $kernel = $this->createMock(KernelInterface::class);
+        $config = $this->createMock(SystemConfigService::class);
+        $config->method('getBool')
+            ->with(ConfigPath::CONFIG_PATH_ACTIVE_HTTP_LOGGING->value)
+            ->willReturn(false);
+
+        $settingsClass = new PluginSettings($config, $kernel);
+        static::assertFalse($settingsClass->isHttpLoggingEnabled());
+    }
 }

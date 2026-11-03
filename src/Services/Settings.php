@@ -257,4 +257,9 @@ class Settings implements SettingsInterface
     {
         return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE_COMPRESS->value);
     }
+
+    public function isHttpLoggingEnabled(): bool
+    {
+        return $this->config->getBool(ConfigPath::CONFIG_PATH_ACTIVE_HTTP_LOGGING->value);
+    }
 }

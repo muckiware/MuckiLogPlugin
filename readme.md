@@ -13,6 +13,7 @@ It can send emails by log events. For example: You get an error log event, and i
   ![backup_paths_config.png](img%2Fglobal_plugin_setup.png)
 - Can send emails by log events
 - **Log viewer in the Administration** — browse, search and download your log files directly from the admin, without shell access
+- **Outbound HTTP request logging (opt-in)** — log every outgoing HTTP request made through Shopware's `http_client` and the Store-/FRW-API, including URL, method, query, body and response
 ## Installation
 ```shell
 composer require muckiware/log-plugin
@@ -60,6 +61,56 @@ The viewer is backed by three read-only admin-API actions:
 | `GET /api/_action/muwa-log-viewer/files` | List available log files (name, size, mtime) |
 | `GET /api/_action/muwa-log-viewer/content?file=<name>&lines=<n>&before=<byte>` | Read the tail of a file (`lines` 1–20,000, default 2,000; `before` for pagination) |
 | `GET /api/_action/muwa-log-viewer/download?file=<name>` | Download the full log file |
+
+## Outbound HTTP Request Logging
+
+Besides logging what your application writes itself, MuckiLogPlugin can also log the HTTP requests
+your shop makes to *external* services — useful for debugging integrations with the Shopware Store,
+update checks or any other outbound call.
+
+### What is logged
+
+For every covered outgoing request:
+
+- the external URL and HTTP method
+- query parameters
+- the request body (if any)
+- the response status code, headers and body (or the exception, if the request failed)
+
+### Coverage
+
+| Source | Covers |
+|---|---|
+| Symfony `http_client` (decorator) | Store update checks, app downloader, SSO token service, S3 filesystem adapter, and any other service that injects `Symfony\Contracts\HttpClient\HttpClientInterface` (this also covers PSR-18 clients, which are a thin wrapper around `http_client`) |
+| Store-/FRW-API (Guzzle middleware) | `shopware.store_client` and `shopware.frw_client` — plugin search, license checks, First Run Wizard |
+
+**Not covered:** the App-System and Webhook Guzzle clients (`shopware.app_system.guzzle`,
+`shopware.webhook.guzzle`) — some of their consumers require the concrete `GuzzleHttp\Client` class
+rather than `ClientInterface`, which a decorator cannot safely satisfy. Also not covered: plugins
+that call `curl_*` directly instead of going through Guzzle or the Symfony HTTP client (e.g. some
+third-party translation/AI plugins) — those bypass the service container entirely, so no decorator
+can intercept them.
+
+### Where the logs go
+
+All sources write to a single shared log file, `var/log/outbound-http.muwa.log`, with a `[http_client]`
+or `[store_client]` prefix per entry identifying the source. Like any other `*.log` file, it shows up
+automatically in the built-in [Log Viewer](#log-viewer-administration) under *Settings → Plugins →
+Log viewer* — no extra setup needed.
+
+### Enabling it
+
+The feature is **opt-in and disabled by default**. Enable it in the plugin configuration under
+*Settings → System → Plugins → MuckiLogPlugin*, card "Outbound HTTP logging settings", switch
+**Active outbound HTTP request logging** (`activeHttpLogging`).
+
+### ⚠️ Security note
+
+There is **no automatic masking** of sensitive data. Authorization headers, API keys, tokens and
+request/response bodies are logged as-is in plain text. Anyone with the `muwa_log_viewer:read` ACL
+privilege can read them through the Log Viewer. Only enable this switch for targeted debugging, and
+turn it back off once you are done.
+
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.
 ```xml
@@ -265,3 +316,6 @@ composer run-script phpstan
 ```shell
 ./vendor/bin/phpunit --configuration="custom/plugins/MuckiLogPlugin"
 ```
+
+# Changelog
+See [CHANGELOG.md](CHANGELOG.md)

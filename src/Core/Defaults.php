@@ -31,4 +31,7 @@ class Defaults
     const LOGGER_PATH = '/Log4php/Logger.php';
     const LOG_PATH = '/var/log';
     const LOGGER_CONFIG_PATH = '/Resources/config';
+
+    public const OUTBOUND_HTTP_LOG_VENDOR = 'muwa';
+    public const OUTBOUND_HTTP_LOG_PLUGIN = 'outbound-http';
 }
