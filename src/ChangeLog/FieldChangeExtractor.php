@@ -15,8 +15,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FloatField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\VersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
@@ -156,9 +154,8 @@ final class FieldChangeExtractor
      */
     private function normalize(Field $field, mixed $value): mixed
     {
-        $isIdField = $field instanceof IdField || $field instanceof FkField
-            || $field instanceof ReferenceVersionField || $field instanceof VersionField;
-        if ($isIdField && \is_string($value) && \strlen($value) === 16) {
+        // FkField covers ReferenceVersionField and VersionField (both extend it).
+        if (($field instanceof IdField || $field instanceof FkField) && \is_string($value) && \strlen($value) === 16) {
             return Uuid::fromBytesToHex($value);
         }
 
