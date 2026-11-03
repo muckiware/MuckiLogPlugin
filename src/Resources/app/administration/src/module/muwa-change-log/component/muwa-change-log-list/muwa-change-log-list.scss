@@ -1,0 +1,86 @@
+@import "~scss/variables";
+
+.muwa-change-log-list {
+    &__filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 12px;
+        margin-bottom: 8px;
+    }
+
+    &__filter {
+        flex: 1 1 180px;
+        min-width: 0;
+    }
+
+    &__filter--search {
+        flex-basis: 240px;
+    }
+
+    &__table-wrapper {
+        position: relative;
+        overflow-x: auto;
+    }
+
+    &__table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+
+        th {
+            text-align: left;
+            padding: 6px 8px;
+            border-bottom: 2px solid $color-gray-300;
+            font-weight: 600;
+            color: $color-darkgray-200;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid $color-gray-300;
+            vertical-align: top;
+        }
+    }
+
+    &__row {
+        cursor: pointer;
+
+        &:hover,
+        &.is--expanded {
+            background: $color-gray-50;
+        }
+    }
+
+    &__diff-row td {
+        background: $color-gray-50;
+    }
+
+    &__date,
+    &__count,
+    &__ip {
+        white-space: nowrap;
+    }
+
+    &__record {
+        word-break: break-word;
+    }
+
+    &__subtitle {
+        font-size: 11px;
+        color: $color-gray-600;
+    }
+
+    &__empty {
+        text-align: center;
+        color: $color-gray-600;
+    }
+
+    &.is--compact &__filter {
+        flex-basis: 100%;
+    }
+
+    &.is--compact &__table {
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,134 @@
+{% block muwa_change_log_list %}
+<div
+    class="muwa-change-log-list"
+    :class="{ 'is--compact': compact }"
+>
+    {% block muwa_change_log_list_filters %}
+        <div class="muwa-change-log-list__filters">
+            <sw-text-field
+                class="muwa-change-log-list__filter muwa-change-log-list__filter--search"
+                :label="$tc('muwa-change-log.list.searchPlaceholder')"
+                :placeholder="$tc('muwa-change-log.list.searchPlaceholder')"
+                :value="term"
+                @update:value="onSearch"
+            />
+            <sw-datepicker
+                class="muwa-change-log-list__filter"
+                date-type="date"
+                :label="$tc('muwa-change-log.list.dateFrom')"
+                :value="dateFrom"
+                @update:value="onDateFromChange"
+            />
+            <sw-datepicker
+                class="muwa-change-log-list__filter"
+                date-type="date"
+                :label="$tc('muwa-change-log.list.dateTo')"
+                :value="dateTo"
+                @update:value="onDateToChange"
+            />
+            <sw-single-select
+                class="muwa-change-log-list__filter"
+                :label="$tc('muwa-change-log.list.sourceLabel')"
+                :options="sourceOptions"
+                :value="sourceKey"
+                @update:value="onSourceChange"
+            />
+            <sw-multi-select
+                v-if="!isEntityFixed"
+                class="muwa-change-log-list__filter"
+                :label="$tc('muwa-change-log.list.entityLabel')"
+                :placeholder="$tc('muwa-change-log.list.entityPlaceholder')"
+                :options="entityOptions"
+                :value="entityFilter"
+                @update:value="onEntityFilterChange"
+            />
+        </div>
+    {% endblock %}
+
+    {% block muwa_change_log_list_table %}
+        <div class="muwa-change-log-list__table-wrapper">
+            <sw-loader v-if="isLoading" />
+            <table class="muwa-change-log-list__table">
+                <thead>
+                    <tr>
+                        <th>{{ $tc('muwa-change-log.list.columnDate') }}</th>
+                        <th>{{ $tc('muwa-change-log.list.columnAction') }}</th>
+                        <th v-if="showEntityColumn">{{ $tc('muwa-change-log.list.columnEntity') }}</th>
+                        <th>{{ $tc('muwa-change-log.list.columnRecord') }}</th>
+                        <th>{{ $tc('muwa-change-log.list.columnSource') }}</th>
+                        <th v-if="!compact">{{ $tc('muwa-change-log.list.columnIp') }}</th>
+                        <th>{{ $tc('muwa-change-log.list.columnChanges') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="!items.length && !isLoading">
+                        <td
+                            class="muwa-change-log-list__empty"
+                            :colspan="columnCount"
+                        >
+                            {{ $tc('muwa-change-log.list.empty') }}
+                        </td>
+                    </tr>
+                    <template
+                        v-for="item in items"
+                        :key="item.id"
+                    >
+                        <tr
+                            class="muwa-change-log-list__row"
+                            :class="{ 'is--expanded': isExpanded(item) }"
+                            @click="toggle(item)"
+                        >
+                            <td class="muwa-change-log-list__date">{{ formatDate(item.createdAt) }}</td>
+                            <td>
+                                <sw-label
+                                    :variant="actionVariant(item.action)"
+                                    appearance="pill"
+                                    size="small"
+                                    :dismissable="false"
+                                >
+                                    {{ actionLabel(item.action) }}
+                                </sw-label>
+                            </td>
+                            <td v-if="showEntityColumn">{{ entityLabel(item.entityName) }}</td>
+                            <td class="muwa-change-log-list__record">{{ item.entityLabel || item.entityId }}</td>
+                            <td>
+                                {{ sourceLabel(item) }}
+                                <div class="muwa-change-log-list__subtitle">{{ sourceTypeLabel(item.sourceType) }}</div>
+                            </td>
+                            <td
+                                v-if="!compact"
+                                class="muwa-change-log-list__ip"
+                            >
+                                {{ item.ipAddress || '–' }}
+                            </td>
+                            <td class="muwa-change-log-list__count">
+                                {{ changeCount(item) }} {{ isExpanded(item) ? '▾' : '›' }}
+                            </td>
+                        </tr>
+                        <tr
+                            v-if="isExpanded(item)"
+                            class="muwa-change-log-list__diff-row"
+                        >
+                            <td :colspan="columnCount">
+                                <muwa-change-log-diff :changes="item.changes || []" />
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    {% endblock %}
+
+    {% block muwa_change_log_list_pagination %}
+        <sw-pagination
+            v-if="total > limit"
+            :page="page"
+            :limit="limit"
+            :total="total"
+            :steps="[limit]"
+            :auto-hide="false"
+            @page-change="onPageChange"
+        />
+    {% endblock %}
+</div>
+{% endblock %}

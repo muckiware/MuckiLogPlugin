@@ -1,0 +1,57 @@
+{
+    "muwa-change-log": {
+        "general": {
+            "mainMenuItemGeneral": "Änderungslog",
+            "description": "Änderungen an Datensätzen im Admin nachvollziehen",
+            "cardTitle": "Änderungen"
+        },
+        "list": {
+            "searchPlaceholder": "Freitextsuche …",
+            "dateFrom": "Datum von",
+            "dateTo": "Datum bis",
+            "sourceLabel": "Wer",
+            "entityLabel": "Entität",
+            "entityPlaceholder": "Alle Entitäten",
+            "optionAll": "Alle",
+            "optionSystem": "System",
+            "columnDate": "Datum",
+            "columnAction": "Aktion",
+            "columnEntity": "Entität",
+            "columnRecord": "Datensatz",
+            "columnSource": "Wer",
+            "columnIp": "IP",
+            "columnChanges": "Änderungen",
+            "fieldSingular": "Feld",
+            "fieldPlural": "Felder",
+            "empty": "Keine Einträge gefunden.",
+            "systemConfigEntity": "Einstellungen"
+        },
+        "action": {
+            "insert": "angelegt",
+            "update": "geändert",
+            "delete": "gelöscht"
+        },
+        "sourceType": {
+            "user": "Admin-User",
+            "integration": "Integration",
+            "sales_channel": "Verkaufskanal",
+            "system": "CLI / Task"
+        },
+        "diff": {
+            "yes": "ja",
+            "no": "nein",
+            "empty": "(leer)",
+            "linkedEntity": "Zuordnung",
+            "added": "neu",
+            "removed": "entfernt",
+            "noChanges": "Keine Feldänderungen gespeichert."
+        }
+    },
+    "sw-privileges": {
+        "permissions": {
+            "muwa_change_log": {
+                "label": "Änderungslog"
+            }
+        }
+    }
+}

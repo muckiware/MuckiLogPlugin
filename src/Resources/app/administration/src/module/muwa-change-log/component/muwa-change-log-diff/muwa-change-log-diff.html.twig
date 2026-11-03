@@ -1,0 +1,34 @@
+{% block muwa_change_log_diff %}
+<div class="muwa-change-log-diff">
+    <p
+        v-if="!rows.length"
+        class="muwa-change-log-diff__empty"
+    >
+        {{ $tc('muwa-change-log.diff.noChanges') }}
+    </p>
+
+    <div
+        v-for="row in rows"
+        :key="row.key"
+        class="muwa-change-log-diff__field"
+    >
+        <div class="muwa-change-log-diff__heading">
+            {{ row.heading }}
+            <span
+                v-if="row.status"
+                class="muwa-change-log-diff__status"
+            >
+                – {{ row.status }}
+            </span>
+        </div>
+        <div
+            v-if="row.oldText !== null"
+            class="muwa-change-log-diff__line is--old"
+        >− {{ row.oldText }}</div>
+        <div
+            v-if="row.newText !== null"
+            class="muwa-change-log-diff__line is--new"
+        >+ {{ row.newText }}</div>
+    </div>
+</div>
+{% endblock %}

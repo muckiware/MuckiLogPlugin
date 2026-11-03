@@ -1,0 +1,12 @@
+@import "~scss/variables";
+
+.muwa-change-log-index {
+    // Cards are capped at 60rem (`.mt-card` in 6.7 / `.sw-card` in 6.6).
+    // Use the full width for the table, as in muwa-log-viewer-index.
+    & &__card {
+        &.mt-card,
+        &.sw-card {
+            max-width: 100%;
+        }
+    }
+}

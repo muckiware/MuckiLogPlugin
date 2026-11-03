@@ -1,0 +1,57 @@
+{
+    "muwa-change-log": {
+        "general": {
+            "mainMenuItemGeneral": "Change log",
+            "description": "Track changes to records made in the administration",
+            "cardTitle": "Changes"
+        },
+        "list": {
+            "searchPlaceholder": "Search …",
+            "dateFrom": "Date from",
+            "dateTo": "Date to",
+            "sourceLabel": "Who",
+            "entityLabel": "Entity",
+            "entityPlaceholder": "All entities",
+            "optionAll": "All",
+            "optionSystem": "System",
+            "columnDate": "Date",
+            "columnAction": "Action",
+            "columnEntity": "Entity",
+            "columnRecord": "Record",
+            "columnSource": "Who",
+            "columnIp": "IP",
+            "columnChanges": "Changes",
+            "fieldSingular": "field",
+            "fieldPlural": "fields",
+            "empty": "No entries found.",
+            "systemConfigEntity": "Settings"
+        },
+        "action": {
+            "insert": "created",
+            "update": "changed",
+            "delete": "deleted"
+        },
+        "sourceType": {
+            "user": "Admin user",
+            "integration": "Integration",
+            "sales_channel": "Sales channel",
+            "system": "CLI / Task"
+        },
+        "diff": {
+            "yes": "yes",
+            "no": "no",
+            "empty": "(empty)",
+            "linkedEntity": "Assignment",
+            "added": "new",
+            "removed": "removed",
+            "noChanges": "No field changes stored."
+        }
+    },
+    "sw-privileges": {
+        "permissions": {
+            "muwa_change_log": {
+                "label": "Change log"
+            }
+        }
+    }
+}
