@@ -14,6 +14,7 @@ It can send emails by log events. For example: You get an error log event, and i
 - Can send emails by log events
 - **Log viewer in the Administration** — browse, search and download your log files directly from the admin, without shell access
 - **Outbound HTTP request logging (opt-in)** — log every outgoing HTTP request made through Shopware's `http_client` and the Store-/FRW-API, including URL, method, query, body and response
+- **Admin change log (opt-in)** — audit log of who changed what and when, with a before/after diff per field
 ## Installation
 ```shell
 composer require muckiware/log-plugin
@@ -110,6 +111,50 @@ There is **no automatic masking** of sensitive data. Authorization headers, API 
 request/response bodies are logged as-is in plain text. Anyone with the `muwa_log_viewer:read` ACL
 privilege can read them through the Log Viewer. Only enable this switch for targeted debugging, and
 turn it back off once you are done.
+
+## Admin Change Log
+
+An audit log in the style of a git log: every create / update / delete on tracked entities is stored as a
+"commit" with author, time, action and a before/after diff per field.
+
+**Where to find it:** Settings → Plugins → *Change log*, and a *Change history* tab on the detail pages
+(product, category, order, customer; CMS pages in the designer sidebar).
+
+### What is logged
+
+- **Sources:** admin user, integration, sales channel and system (CLI, tasks). The user is linked to the
+  `user` entity; user, integration and sales channel names are stored as a snapshot.
+- **IP address** only if there is an HTTP request (empty for CLI, tasks, workers).
+- **One commit per root record and save.** Sub-entities (translations, owned child rows including
+  one-to-one, mapping assignments) are shown as fields in the diff of the topmost tracked root record,
+  labelled with their origin and context (e.g. "Name (en-GB)"). Variants are own products and get their
+  own commits.
+- **Settings (`system_config`)** are captured via a separate path (not the DAL): one commit per save,
+  domain and sales channel; unchanged keys are omitted.
+- Errors of the change log never abort the actual write; they are logged with context `muwa`, `admin-change-log`.
+
+### Configuration
+
+Plugin configuration, card "Change log" (keys under `MuckiLogPlugin.config.`):
+
+| Key | Default | Meaning |
+|---|---|---|
+| `activeChangeLog` | off | Global switch, independent of `active` |
+| `changeLogEntities` | `["product","category","order","customer","cms_page"]` | Tracked root entities (`system_config` = "Settings") |
+| `changeLogRetentionDays` | `90` | Retention in days, `0` = never delete |
+
+The ACL role `muwa_change_log.viewer` is required to see the module and the tabs; the log is read-only.
+The scheduled task `muwa.cleanup_change_log_task` runs daily and deletes entries older than the retention.
+
+### Known limitations
+
+- Secrets are never stored and appear as `***` on both sides (nested keys included).
+- Indexer-maintained / write-protected columns (e.g. order `amountTotal`, product `cheapestPrice`) are not
+  logged — their source fields are.
+- Writes via direct SQL are not captured (except `system_config`).
+- `system_config` entries are written from the before-event, so a failing save could still be logged.
+- Draft-version writes are skipped; only the merged live change is logged.
+- With Shopware's `v6.8.0.0` feature flag active the detail tabs (`sw-tabs`) are not shown.
 
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.
