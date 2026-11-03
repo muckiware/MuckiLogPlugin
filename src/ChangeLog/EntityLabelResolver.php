@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace MuckiLogPlugin\ChangeLog;
 
-use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -19,9 +20,8 @@ final class EntityLabelResolver
 
     public function __construct(
         private readonly DefinitionInstanceRegistry $registry,
-        Connection $connection,
+        private readonly LoggerInterface $logger,
     ) {
-        // Reserved for fallbacks; labels are read through the DAL repository.
     }
 
     /**
@@ -54,9 +54,23 @@ final class EntityLabelResolver
      */
     private function load(string $entityName, array $ids, Context $context): array
     {
+        // ACL-free read, keeping the caller's language chain and version.
+        $readContext = new Context(
+            new SystemSource(),
+            [],
+            $context->getCurrencyId(),
+            $context->getLanguageIdChain(),
+            $context->getVersionId()
+        );
+
         try {
-            $entities = $this->registry->getRepository($entityName)->search(new Criteria($ids), $context)->getEntities();
-        } catch (\Throwable) {
+            $entities = $this->registry->getRepository($entityName)->search(new Criteria($ids), $readContext)->getEntities();
+        } catch (\Throwable $e) {
+            $this->logger->error(
+                \sprintf('Admin change log: could not load labels for "%s": %s', $entityName, $e->getMessage()),
+                ['muwa', 'admin-change-log']
+            );
+
             return [];
         }
 

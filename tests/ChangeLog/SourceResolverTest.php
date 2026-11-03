@@ -139,6 +139,17 @@ class SourceResolverTest extends TestCase
         static::assertSame('Max Muster', $second->userName);
     }
 
+    public function testRepositoryFailureNeverThrows(): void
+    {
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('search')->willThrowException(new \RuntimeException('db down'));
+
+        $source = $this->resolver($repo)->resolve(new Context(new AdminApiSource(Uuid::randomHex())));
+
+        static::assertSame(ChangeSourceType::User, $source->type);
+        static::assertNull($source->userName);
+    }
+
     public function testResetClearsNameCache(): void
     {
         $id = Uuid::randomHex();

@@ -110,16 +110,20 @@ final class SourceResolver implements ResetInterface
             default => $this->salesChannelRepository,
         };
 
-        $entity = $repository->search(new Criteria([$id]), Context::createDefaultContext())->first();
-        if ($entity === null) {
+        try {
+            $entity = $repository->search(new Criteria([$id]), Context::createDefaultContext())->first();
+            if ($entity === null) {
+                return null;
+            }
+
+            return match ($kind) {
+                'user' => $this->userName($entity),
+                'integration' => $this->nonEmpty($entity->get('label')),
+                default => $this->nonEmpty($entity->getTranslation('name') ?? $entity->get('name')),
+            };
+        } catch (\Throwable) {
             return null;
         }
-
-        return match ($kind) {
-            'user' => $this->userName($entity),
-            'integration' => $this->nonEmpty($entity->get('label')),
-            default => $this->nonEmpty($entity->getTranslation('name') ?? $entity->get('name')),
-        };
     }
 
     private function userName(Entity $user): ?string

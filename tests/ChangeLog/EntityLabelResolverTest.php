@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace MuckiLogPlugin\tests\ChangeLog;
 
-use Doctrine\DBAL\Connection;
 use MuckiLogPlugin\ChangeLog\EntityLabelResolver;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\Api\Context\AdminApiSource;
+use Shopware\Core\Framework\Api\Context\SystemSource;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -87,7 +90,7 @@ class EntityLabelResolverTest extends TestCase
         $registry->method('getRepository')->willThrowException(new \RuntimeException('unknown'));
         $id = Uuid::randomHex();
 
-        $labels = (new EntityLabelResolver($registry, $this->createMock(Connection::class)))
+        $labels = (new EntityLabelResolver($registry, $this->createMock(LoggerInterface::class)))
             ->resolveMany('nope', [$id => ['title' => 'T']], Context::createDefaultContext());
 
         static::assertSame([$id => 'T'], $labels);
@@ -107,10 +110,45 @@ class EntityLabelResolverTest extends TestCase
         $registry = $this->createMock(DefinitionInstanceRegistry::class);
         $registry->method('getRepository')->willReturn($repo);
 
-        $labels = (new EntityLabelResolver($registry, $this->createMock(Connection::class)))
+        $labels = (new EntityLabelResolver($registry, $this->createMock(LoggerInterface::class)))
             ->resolveMany('order', [$ida => [], $idb => []], Context::createDefaultContext());
 
         static::assertSame([$ida => '1', $idb => '2'], $labels);
+    }
+
+    public function testReadsWithAclFreeContextKeepingLanguageChain(): void
+    {
+        $order = new OrderEntity();
+        $order->setUniqueIdentifier($id = Uuid::randomHex());
+        $order->setOrderNumber('77');
+        $lang = Uuid::randomHex();
+        $caller = new Context(new AdminApiSource(Uuid::randomHex()), [], Defaults::CURRENCY, [$lang, Defaults::LANGUAGE_SYSTEM]);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->expects(static::once())->method('search')->with(
+            static::anything(),
+            static::callback(static fn (Context $c): bool => $c->getSource() instanceof SystemSource
+                && $c->getLanguageIdChain() === $caller->getLanguageIdChain()
+                && $c->getVersionId() === $caller->getVersionId())
+        )->willReturn($this->searchResult([$order]));
+        $registry = $this->createMock(DefinitionInstanceRegistry::class);
+        $registry->method('getRepository')->willReturn($repo);
+
+        $labels = (new EntityLabelResolver($registry, $this->createMock(LoggerInterface::class)))
+            ->resolveMany('order', [$id => []], $caller);
+
+        static::assertSame([$id => '77'], $labels);
+    }
+
+    public function testLoadErrorIsLogged(): void
+    {
+        $registry = $this->createMock(DefinitionInstanceRegistry::class);
+        $registry->method('getRepository')->willThrowException(new \RuntimeException('boom'));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(static::once())->method('error')->with(static::stringContains('boom'), ['muwa', 'admin-change-log']);
+
+        (new EntityLabelResolver($registry, $logger))
+            ->resolveMany('order', [Uuid::randomHex() => []], Context::createDefaultContext());
     }
 
     /**
@@ -126,7 +164,7 @@ class EntityLabelResolverTest extends TestCase
         $registry = $this->createMock(DefinitionInstanceRegistry::class);
         $registry->method('getRepository')->willReturn($repo);
 
-        return (new EntityLabelResolver($registry, $this->createMock(Connection::class)))
+        return (new EntityLabelResolver($registry, $this->createMock(LoggerInterface::class)))
             ->resolveMany($entity, $before, Context::createDefaultContext());
     }
 

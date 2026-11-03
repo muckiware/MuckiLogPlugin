@@ -178,7 +178,7 @@
 
         <service id="MuckiLogPlugin\ChangeLog\EntityLabelResolver">
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
         </service>
     </services>
 </container>
