@@ -2,11 +2,10 @@
 
 namespace MuckiLogPlugin\Storefront\Controller;
 
-use Faker\Core\Uuid;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Feature;
 use Shopware\Core\Framework\Log\Package;
-use Shopware\Core\Framework\Validation\Exception\ConstraintViolationException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Twig\ErrorTemplateResolver;
@@ -15,7 +14,6 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoaderInterface;
 use Shopware\Storefront\Pagelet\Header\HeaderPageletLoaderInterface;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Controller\ErrorController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
@@ -29,12 +27,11 @@ use Symfony\Component\Validator\ConstraintViolationList;
 #[Package('framework')]
 class ErrorControllerDecorator extends StorefrontController
 {
-    protected ErrorController $originalErrorController;
     /**
      * @internal
      */
     public function __construct(
-        ErrorController $errorController,
+        private readonly ErrorController $originalErrorController,
         protected LoggerInterface $logger,
         private readonly ErrorTemplateResolver $errorTemplateResolver,
         private readonly HeaderPageletLoaderInterface $headerPageletLoader,
@@ -43,7 +40,6 @@ class ErrorControllerDecorator extends StorefrontController
         private readonly FooterPageletLoaderInterface $footerPageletLoader
     )
     {
-        $this->originalLoggerService = $errorController;
     }
 
     public function error(\Throwable $exception, Request $request, SalesChannelContext $context): Response
@@ -54,19 +50,11 @@ class ErrorControllerDecorator extends StorefrontController
             $is404StatusCode = $exception instanceof HttpException
                 && $exception->getStatusCode() === Response::HTTP_NOT_FOUND;
 
-            if (!$is404StatusCode && $session !== null && $session instanceof FlashBagAwareSessionInterface && !$session->getFlashBag()->has('danger')) {
-
-                $errorID = \Shopware\Core\Framework\Uuid\Uuid::randomHex();
-                $requestUrl = $request->attributes->get('sw-sales-channel-absolute-base-url').$request->attributes->get('sw-original-request-uri');
-                $languageID = $request->headers->get('sw-language-id');
-
-                $this->logger->error('Message ID: '.$errorID, ['storefront', 'exceptions']);
-                $this->logger->error('Request: '.$requestUrl, ['storefront', 'exceptions']);
-                $this->logger->error('languageID: '.$languageID, ['storefront', 'exceptions']);
-                $this->logger->error('ErrorController exception: '.print_r($exception, true), ['storefront', 'exceptions']);
+            if (!$is404StatusCode && $session instanceof FlashBagAwareSessionInterface && !$session->getFlashBag()->has('danger')) {
+                $errorId = $this->logException($exception, $request);
                 $session->getFlashBag()->add(
                     'danger',
-                    sprintf('%s<br>ID: <b>%s</b>', $this->trans('error.message-default'), $errorID)
+                    sprintf('%s<br>ID: <b>%s</b>', $this->trans('error.message-default'), $errorId)
                 );
             }
 
@@ -83,14 +71,7 @@ class ErrorControllerDecorator extends StorefrontController
                 );
             } else {
                 $errorTemplate = $this->errorTemplateResolver->resolve($exception, $request);
-
-                /* @deprecated tag:v6.7.0 - Remove the whole if branch as it is not needed anymore */
-                if (!$request->isXmlHttpRequest() && !Feature::isActive('cache_rework')) {
-                    $header = $this->headerPageletLoader->load($request, $context);
-                    $footer = $this->footerPageletLoader->load($request, $context);
-                    $errorTemplate->setHeader($header);
-                    $errorTemplate->setFooter($footer);
-                }
+                $this->addLegacyHeaderAndFooter($errorTemplate, $request, $context);
 
                 $response = $this->renderStorefront($errorTemplate->getTemplateName(), ['page' => $errorTemplate]);
             }
@@ -98,7 +79,7 @@ class ErrorControllerDecorator extends StorefrontController
             if ($exception instanceof HttpException) {
                 $response->setStatusCode($exception->getStatusCode());
             }
-        } catch (\Exception $e) { // final Fallback
+        } catch (\Throwable $e) { // final Fallback
             $response = $this->renderStorefront(
                 '@Storefront/storefront/page/error/index.html.twig',
                 ['exception' => $exception, 'followingException' => $e]
@@ -110,51 +91,69 @@ class ErrorControllerDecorator extends StorefrontController
         // After this controllers content is rendered (even if the flashbag was not used e.g. on a 404 page),
         // clear the existing flashbag messages
 
-        if ($session !== null && $session instanceof FlashBagAwareSessionInterface) {
+        if ($session instanceof FlashBagAwareSessionInterface) {
             $session->getFlashBag()->clear();
         }
 
         return $response;
     }
 
+    /**
+     * The captcha handling is not extended by this plugin, so the version specific core implementation is used.
+     */
     public function onCaptchaFailure(
         ConstraintViolationList $violations,
         Request $request
     ): Response {
-        $formViolations = new ConstraintViolationException($violations, []);
-        if (!$request->isXmlHttpRequest()) {
-            return $this->forwardToRoute($request->get('_route'), ['formViolations' => $formViolations]);
+        return $this->originalErrorController->onCaptchaFailure($violations, $request);
+    }
+
+    private function logException(\Throwable $exception, Request $request): string
+    {
+        $errorId = Uuid::randomHex();
+        $requestUrl = $request->attributes->get('sw-sales-channel-absolute-base-url')
+            . $request->attributes->get('sw-original-request-uri');
+
+        $this->logger->error(
+            sprintf(
+                "Message ID: %s\nRequest: %s\nlanguageID: %s\nErrorController exception: %s: %s in %s:%d\n%s",
+                $errorId,
+                $requestUrl,
+                (string) $request->headers->get('sw-language-id'),
+                $exception::class,
+                $exception->getMessage(),
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getTraceAsString()
+            ),
+            ['storefront', 'exceptions']
+        );
+
+        return $errorId;
+    }
+
+    /**
+     * Shopware 6.6: ErrorTemplateStruct extends Page and needs header/footer pagelets,
+     * unless the cache rework renders them via ESI.
+     * Shopware 6.7+: header/footer are always rendered via ESI, setHeader()/setFooter() no longer exist.
+     *
+     * @deprecated tag:v6.7.0 - Remove once Shopware 6.6 support is dropped
+     */
+    private function addLegacyHeaderAndFooter(object $errorTemplate, Request $request, SalesChannelContext $context): void
+    {
+        if ($request->isXmlHttpRequest()) {
+            return;
         }
 
-        $response = [];
-
-        if (Feature::isActive('ACCESSIBILITY_TWEAKS')) {
-            $response[] = [
-                'type' => 'danger',
-                'error' => 'invalid_captcha',
-                'alert' => $this->renderView('@Storefront/storefront/utilities/alert.html.twig', [
-                    'type' => 'danger',
-                    'list' => [$this->trans('error.' . $formViolations->getViolations()->get(0)->getCode())],
-                ]),
-            ];
-        } else {
-            $response[] = [
-                'type' => 'danger',
-                'error' => 'invalid_captcha',
-                'alert' => $this->renderView('@Storefront/storefront/utilities/alert.html.twig', [
-                    'type' => 'danger',
-                    'list' => [$this->trans('error.' . $formViolations->getViolations()->get(0)->getCode())],
-                ]),
-                /**
-                 * @deprecated tag:v6.7.0 - Storefront implementation changed. The response no longer needs the rendered input.
-                 */
-                'input' => $this->renderView('@Storefront/storefront/component/captcha/basicCaptchaFields.html.twig', [
-                    'formId' => $request->get('formId'),
-                    'formViolations' => $formViolations,
-                ]),
-            ];
+        if (!method_exists($errorTemplate, 'setHeader') || !method_exists($errorTemplate, 'setFooter')) {
+            return;
         }
 
-        return new JsonResponse($response);
+        if (Feature::has('cache_rework') && Feature::isActive('cache_rework')) {
+            return;
+        }
+
+        $errorTemplate->setHeader($this->headerPageletLoader->load($request, $context));
+        $errorTemplate->setFooter($this->footerPageletLoader->load($request, $context));
     }
 }
