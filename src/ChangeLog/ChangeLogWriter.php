@@ -19,7 +19,7 @@ final class ChangeLogWriter
 {
     public const CONTEXT_STATE_SKIP = 'muwa_change_log.skip';
 
-    private const LABEL_MAX_LENGTH = 255;
+    private const STRING_MAX_LENGTH = 255;
 
     public function __construct(
         private readonly EntityRepository $changeLogRepository,
@@ -91,17 +91,25 @@ final class ChangeLogWriter
         return [
             'id' => Uuid::randomHex(),
             'entityName' => $commit->getEntityName(),
-            'entityId' => $commit->getEntityId(),
-            'entityLabel' => $label === null ? null : mb_substr($label, 0, self::LABEL_MAX_LENGTH),
+            'entityId' => $this->truncate($commit->getEntityId()),
+            'entityLabel' => $this->truncate($label),
             'action' => $commit->getAction()->value,
             'sourceType' => $source->type->value,
             'userId' => $source->userId,
-            'userName' => $source->userName,
+            'userName' => $this->truncate($source->userName),
             'integrationId' => $source->integrationId,
             'salesChannelId' => $source->salesChannelId,
-            'sourceName' => $source->sourceName,
+            'sourceName' => $this->truncate($source->sourceName),
             'ipAddress' => $source->ipAddress,
             'changes' => array_map(static fn (FieldChange $change): array => $change->toArray(), $commit->getChanges()),
         ];
+    }
+
+    /**
+     * Keeps strings within the 255 character columns so DAL validation cannot fail.
+     */
+    private function truncate(?string $value): ?string
+    {
+        return $value === null ? null : mb_substr($value, 0, self::STRING_MAX_LENGTH);
     }
 }
