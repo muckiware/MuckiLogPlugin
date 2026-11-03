@@ -155,6 +155,8 @@ The scheduled task `muwa.cleanup_change_log_task` runs daily and deletes entries
 - `system_config` entries are written from the before-event, so a failing save could still be logged.
 - Draft-version writes are skipped; only the merged live change is logged.
 - With Shopware's `v6.8.0.0` feature flag active the detail tabs (`sw-tabs`) are not shown.
+- On Shopware 6.6 (DBAL 3, no savepoints) a failing change log write inside a third-party outer transaction
+  could mark that transaction rollback-only; normal core write paths are not affected.
 
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.

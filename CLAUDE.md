@@ -199,6 +199,7 @@ Audit-Log (Git-Log-Stil): Pro Speichervorgang und Hauptdatensatz ein „Commit�
 - `system_config` wird aus dem Before-Event geschrieben; ein fehlschlagendes Speichern kann trotzdem geloggt werden.
 - Draft-Version-Writes werden übersprungen; nur die gemergte Live-Änderung wird geloggt.
 - Bei aktivem Feature-Flag `v6.8.0.0` werden die Detail-Tabs (`sw-tabs`) nicht angezeigt.
+- Shopware 6.6 (DBAL 3, keine Savepoints): ein fehlschlagender Änderungslog-Write innerhalb einer äußeren Transaktion eines Drittanbieters kann diese rollback-only markieren; normale Core-Schreibpfade sind nicht betroffen.
 
 ### Fallstricke
 

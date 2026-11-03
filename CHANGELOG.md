@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Draft-version writes are skipped; only the merged live change is logged.
 - With the Shopware feature flag `v6.8.0.0` active the detail tabs (`sw-tabs`) are not shown.
 - Shopware 6.6 compatibility is not verified by a test run.
+- On Shopware 6.6 (DBAL 3, no savepoints) a failing change log write inside a third-party outer transaction
+  could mark that transaction rollback-only; normal core write paths are not affected.
 
 ## [2.5.0] - 2026-09-29
 
