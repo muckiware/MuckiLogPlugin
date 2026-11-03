@@ -54,13 +54,15 @@ final class EntityLabelResolver
      */
     private function load(string $entityName, array $ids, Context $context): array
     {
-        // ACL-free read, keeping the caller's language chain and version.
+        // ACL-free read, keeping the caller's language chain and version; inheritance on so variants get the parent name.
         $readContext = new Context(
             new SystemSource(),
             [],
             $context->getCurrencyId(),
             $context->getLanguageIdChain(),
-            $context->getVersionId()
+            $context->getVersionId(),
+            $context->getCurrencyFactor(),
+            true
         );
 
         try {

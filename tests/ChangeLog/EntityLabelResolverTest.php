@@ -129,7 +129,8 @@ class EntityLabelResolverTest extends TestCase
             static::anything(),
             static::callback(static fn (Context $c): bool => $c->getSource() instanceof SystemSource
                 && $c->getLanguageIdChain() === $caller->getLanguageIdChain()
-                && $c->getVersionId() === $caller->getVersionId())
+                && $c->getVersionId() === $caller->getVersionId()
+                && $c->considerInheritance())
         )->willReturn($this->searchResult([$order]));
         $registry = $this->createMock(DefinitionInstanceRegistry::class);
         $registry->method('getRepository')->willReturn($repo);

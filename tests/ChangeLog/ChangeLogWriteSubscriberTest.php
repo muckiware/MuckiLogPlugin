@@ -135,6 +135,26 @@ class ChangeLogWriteSubscriberTest extends TestCase
         static::assertSame('Renamed', $entries[0]->get('entityLabel'));
     }
 
+    public function testVariantWithoutOwnNameUsesParentNameAsLabel(): void
+    {
+        $variantId = Uuid::randomHex();
+        $this->productRepository->create([[
+            'id' => $variantId,
+            'parentId' => $this->productId,
+            'productNumber' => 'CL-V-' . $variantId,
+            'stock' => 3,
+        ]], Context::createDefaultContext());
+
+        $this->productRepository->update([['id' => $variantId, 'stock' => 4]], $this->context);
+
+        $updates = array_values(array_filter(
+            $this->entriesFor($variantId),
+            static fn (AdminChangeLogEntity $e): bool => $e->get('action') === 'update'
+        ));
+        static::assertCount(1, $updates);
+        static::assertSame('Old name', $updates[0]->get('entityLabel'));
+    }
+
     public function testBulkUpsert50Products(): void
     {
         $repository = $this->createMock(EntityRepository::class);
