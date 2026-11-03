@@ -75,6 +75,9 @@
             "visibility": "Sichtbarkeit",
             "salesChannelId": "Verkaufskanal",
             "password": "Passwort"
+        },
+        "tab": {
+            "title": "Änderungsverlauf"
         }
     },
     "sw-privileges": {

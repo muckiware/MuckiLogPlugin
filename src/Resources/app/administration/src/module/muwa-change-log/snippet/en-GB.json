@@ -75,6 +75,9 @@
             "visibility": "Visibility",
             "salesChannelId": "Sales channel",
             "password": "Password"
+        },
+        "tab": {
+            "title": "Change history"
         }
     },
     "sw-privileges": {

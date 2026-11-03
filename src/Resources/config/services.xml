@@ -89,6 +89,11 @@
         	<argument type="service" id="MuckiLogPlugin\Services\LogViewerInterface"/>
         	<tag name="controller.service_arguments"/>
         </service>
+
+        <service id="MuckiLogPlugin\Administration\Controller\ChangeLogSettingsController" public="true">
+        	<argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogConfig"/>
+        	<tag name="controller.service_arguments"/>
+        </service>
         <service id="MuckiLogPlugin\Services\SendNotification">
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
             <argument type="service" id="MuckiLogPlugin\Services\CliOutput"/>

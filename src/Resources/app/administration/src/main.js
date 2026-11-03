@@ -1,6 +1,13 @@
 import './module/muwa-log-viewer';
 import './module/muwa-change-log';
 import './service/muwa-log-viewer.api.service';
+import './service/muwa-change-log.api.service';
+import './component/muwa-change-log-entity-select';
+import './extension/sw-product-detail';
+import './extension/sw-category-view';
+import './extension/sw-order-detail';
+import './extension/sw-customer-detail';
+import './extension/sw-cms-sidebar';
 
 Shopware.Service('privileges').addPrivilegeMappingEntry({
     category: 'permissions',

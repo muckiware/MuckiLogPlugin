@@ -1,0 +1,11 @@
+{% block muwa_change_log_entity_select %}
+<sw-multi-select
+    class="muwa-change-log-entity-select"
+    :options="entityOptions"
+    :value="selectedEntities"
+    label-property="label"
+    value-property="value"
+    :value-limit="10"
+    @update:value="onChange"
+/>
+{% endblock %}

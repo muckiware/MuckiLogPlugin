@@ -1,0 +1,13 @@
+{% block muwa_change_log_detail_tab %}
+<sw-card
+    v-if="entityName && entityId"
+    class="muwa-change-log-detail-tab"
+    position-identifier="muwa-change-log-detail-tab"
+    :title="$tc('muwa-change-log.tab.title')"
+>
+    <muwa-change-log-list
+        :entity-name="entityName"
+        :entity-id="$route.params.id"
+    />
+</sw-card>
+{% endblock %}
