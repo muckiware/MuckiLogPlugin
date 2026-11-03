@@ -109,6 +109,44 @@ class FieldChangeExtractorTest extends TestCase
         static::assertSame([], $this->extractor->extract($result, null, []));
     }
 
+    public function testBinaryForeignKeyBecomesHex(): void
+    {
+        $old = str_repeat("\x01", 16);
+        $new = str_repeat("\x41", 16);
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(['tax_id' => $old], ['tax_id' => $new], false)
+        );
+
+        $changes = $this->extractor->extract($result, null, []);
+
+        static::assertCount(1, $changes);
+        static::assertSame('taxId', $changes[0]->field);
+        static::assertSame(str_repeat('01', 16), $changes[0]->old);
+        static::assertSame(str_repeat('41', 16), $changes[0]->new);
+    }
+
+    public function testSixteenByteTextFieldStaysText(): void
+    {
+        $text = "Größe\tFarbe Ro";
+        $result = new EntityWriteResult(
+            'id1',
+            [],
+            'product',
+            EntityWriteResult::OPERATION_UPDATE,
+            null,
+            new ChangeSet(['ean' => 'old'], ['ean' => $text], false)
+        );
+
+        $changes = $this->extractor->extract($result, null, []);
+
+        static::assertSame($text, $changes[0]->new);
+    }
+
     public function testDeleteUsesChangeSetBefore(): void
     {
         $result = new EntityWriteResult(

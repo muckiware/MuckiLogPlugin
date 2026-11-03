@@ -28,8 +28,7 @@ final class ValueNormalizer
 
     private function normalizeString(string $value): mixed
     {
-        if (!mb_check_encoding($value, 'UTF-8')
-            || (\strlen($value) === 16 && preg_match('/[^\x20-\x7E]/', $value) === 1)) {
+        if (!mb_check_encoding($value, 'UTF-8')) {
             return bin2hex($value);
         }
 

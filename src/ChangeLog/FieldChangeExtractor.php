@@ -13,10 +13,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Field;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FloatField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\VersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Runtime;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\WriteProtected;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 final class FieldChangeExtractor
 {
@@ -49,8 +53,8 @@ final class FieldChangeExtractor
             if ($field === null || $this->isSkipped($field, $subEntity)) {
                 continue;
             }
-            $old = $this->normalizer->normalize($old);
-            $new = $this->normalizer->normalize($new);
+            $old = $this->normalize($field, $old);
+            $new = $this->normalize($field, $new);
             if ($isUpdate && $this->isEquivalent($field, $old, $new)) {
                 continue;
             }
@@ -134,6 +138,20 @@ final class FieldChangeExtractor
         }
 
         return $subEntity !== null && $field instanceof FkField;
+    }
+
+    /**
+     * Binary ids are detected by field type, not by content (valid UTF-8 text may be 16 bytes long).
+     */
+    private function normalize(Field $field, mixed $value): mixed
+    {
+        $isIdField = $field instanceof IdField || $field instanceof FkField
+            || $field instanceof ReferenceVersionField || $field instanceof VersionField;
+        if ($isIdField && \is_string($value) && \strlen($value) === 16) {
+            return Uuid::fromBytesToHex($value);
+        }
+
+        return $this->normalizer->normalize($value);
     }
 
     /**
