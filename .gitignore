@@ -7,3 +7,5 @@ var/cache/*
 !/tests/Log4php/var/readme.md
 /tests/var/log-plugin.muwa.log
 .superpowers/
+/src/Resources/public/administration/.vite/
+/src/Resources/public/administration/assets/
