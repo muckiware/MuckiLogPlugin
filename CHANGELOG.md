@@ -13,6 +13,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   matching middleware for the installed Shopware version; on older versions the new
   `LegacyStoreClientLoggingMiddleware` logs Store-/FRW-API responses (requests are not visible there).
 
+## [2.6.0] - 2026-11-03
+
+### Added
+
+- Admin change log (opt-in): records who changed what and when, as one "commit" per root record and save
+  with a before/after diff per field. Sources: admin user, integration, sales channel and system.
+  Sub-entities (translations, owned child rows, mapping assignments) appear in the diff of the topmost
+  tracked root record; variants get their own commits. Settings (`system_config`) are captured via a
+  separate path.
+- New entity `muwa_admin_change_log` and administration module "Change log" (Settings > Plugins) with
+  search, filters and an expandable diff, plus a change history tab on the detail pages.
+- New plugin configuration card "Change log": `activeChangeLog` (default off), `changeLogEntities`
+  (default product, category, order, customer, cms_page) and `changeLogRetentionDays` (default 90,
+  `0` = never delete).
+- New ACL privilege `muwa_change_log.viewer`; the log is read-only in the Administration.
+- New scheduled task `muwa.cleanup_change_log_task` (daily) deletes entries older than the retention.
+
+### Known limitations
+
+- Secrets (passwords, keys, tokens, also nested keys) are never stored; they are shown as `***` on both sides.
+- Indexer-maintained or write-protected columns (e.g. order `amountTotal`, product `cheapestPrice`) are not
+  logged, only their source fields.
+- Writes via direct SQL are not captured (except `system_config`).
+- `system_config` entries are written from the before-event, so a failing save could still be logged.
+- Draft-version writes are skipped; only the merged live change is logged.
+- With the Shopware feature flag `v6.8.0.0` active the detail tabs (`sw-tabs`) are not shown.
+- Shopware 6.6 compatibility is not verified by a test run.
+- On Shopware 6.6 (DBAL 3, no savepoints) a failing change log write inside a third-party outer transaction
+  could mark that transaction rollback-only; normal core write paths are not affected.
+
 ## [2.5.0] - 2026-09-29
 
 ### Added

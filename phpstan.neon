@@ -13,7 +13,7 @@ parameters:
 
     excludePaths:
         analyseAndScan:
-            - src/log4php
+            - src/Log4php
     ignoreErrors:
         - identifier: missingType.generics
 

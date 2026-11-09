@@ -121,4 +121,28 @@
             <helpText>Logs all outgoing HTTP requests (Symfony http_client, Store-/FRW-API) including URL, method, parameters, and body in var/log/outbound-http.muwa.log. No automatic masking of sensitive data - enable only for targeted debugging.</helpText>
         </input-field>
     </card>
+    <card>
+        <title>Admin change log</title>
+        <title lang="de-DE">Änderungslog</title>
+        <input-field type="bool">
+            <name>activeChangeLog</name>
+            <label>Active</label>
+            <label lang="de-DE">Aktiv</label>
+            <helpText>Records changes made in the administration. Errors of the change log are only written to a log file if "Active" (above) is switched on.</helpText>
+            <helpText lang="de-DE">Protokolliert Änderungen in der Administration. Fehler des Änderungslogs werden nur in eine Log-Datei geschrieben, wenn "Active" (oben) eingeschaltet ist.</helpText>
+        </input-field>
+        <component name="muwa-change-log-entity-select">
+            <name>changeLogEntities</name>
+            <label>Tracked entities</label>
+            <label lang="de-DE">Überwachte Entitäten</label>
+            <defaultValue>["product","category","order","customer","cms_page"]</defaultValue>
+        </component>
+        <input-field type="int">
+            <name>changeLogRetentionDays</name>
+            <label>Retention in days (0 = never delete)</label>
+            <label lang="de-DE">Aufbewahrung in Tagen (0 = nie löschen)</label>
+            <defaultValue>90</defaultValue>
+            <min>0</min>
+        </input-field>
+    </card>
 </config>

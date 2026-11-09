@@ -1,0 +1,90 @@
+{
+    "muwa-change-log": {
+        "general": {
+            "mainMenuItemGeneral": "Änderungslog",
+            "description": "Änderungen an Datensätzen im Admin nachvollziehen",
+            "cardTitle": "Änderungen"
+        },
+        "list": {
+            "searchPlaceholder": "Freitextsuche …",
+            "dateFrom": "Datum von",
+            "dateTo": "Datum bis",
+            "sourceLabel": "Wer",
+            "entityLabel": "Entität",
+            "entityPlaceholder": "Alle Entitäten",
+            "optionAll": "Alle",
+            "optionSystem": "System",
+            "columnDate": "Datum",
+            "columnAction": "Aktion",
+            "columnEntity": "Entität",
+            "columnRecord": "Datensatz",
+            "columnSource": "Wer",
+            "columnIp": "IP",
+            "columnChanges": "Änderungen",
+            "fieldSingular": "Feld",
+            "fieldPlural": "Felder",
+            "empty": "Keine Einträge gefunden.",
+            "systemConfigEntity": "Einstellungen",
+            "loadError": "Die Änderungen konnten nicht geladen werden."
+        },
+        "action": {
+            "insert": "angelegt",
+            "update": "geändert",
+            "delete": "gelöscht"
+        },
+        "sourceType": {
+            "user": "Admin-User",
+            "integration": "Integration",
+            "sales_channel": "Verkaufskanal",
+            "system": "CLI / Task"
+        },
+        "diff": {
+            "yes": "ja",
+            "no": "nein",
+            "linkedEntity": "Zuordnung",
+            "added": "neu",
+            "removed": "entfernt",
+            "noChanges": "Keine Feldänderungen gespeichert."
+        },
+        "fields": {
+            "name": "Name",
+            "description": "Beschreibung",
+            "active": "Aktiv",
+            "stock": "Bestand",
+            "price": "Preis",
+            "productNumber": "Produktnummer",
+            "ean": "EAN",
+            "manufacturerId": "Hersteller",
+            "taxId": "Steuersatz",
+            "categoryId": "Kategorie",
+            "categoryIds": "Kategorien",
+            "title": "Titel",
+            "firstName": "Vorname",
+            "lastName": "Nachname",
+            "email": "E-Mail",
+            "street": "Straße",
+            "zipcode": "PLZ",
+            "city": "Stadt",
+            "orderNumber": "Bestellnummer",
+            "stateId": "Status",
+            "amountTotal": "Gesamtbetrag",
+            "customFields": "Zusatzfelder",
+            "metaTitle": "Meta-Titel",
+            "metaDescription": "Meta-Beschreibung",
+            "keywords": "Keywords",
+            "visibility": "Sichtbarkeit",
+            "salesChannelId": "Verkaufskanal",
+            "password": "Passwort"
+        },
+        "tab": {
+            "title": "Änderungsverlauf"
+        }
+    },
+    "sw-privileges": {
+        "permissions": {
+            "muwa_change_log": {
+                "label": "Änderungslog"
+            }
+        }
+    }
+}

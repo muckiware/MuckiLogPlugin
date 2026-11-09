@@ -1,0 +1,22 @@
+{% block muwa_change_log_index %}
+<sw-page class="muwa-change-log-index">
+    {% block muwa_change_log_index_header %}
+        <template #smart-bar-header>
+            <h2>{{ $tc('muwa-change-log.general.mainMenuItemGeneral') }}</h2>
+        </template>
+    {% endblock %}
+
+    {% block muwa_change_log_index_content %}
+        <template #content>
+            <sw-card-view>
+                <sw-card
+                    class="muwa-change-log-index__card"
+                    :title="$tc('muwa-change-log.general.cardTitle')"
+                >
+                    <muwa-change-log-list />
+                </sw-card>
+            </sw-card-view>
+        </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

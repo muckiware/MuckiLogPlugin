@@ -6,3 +6,4 @@ var/cache/*
 /tests/Log4php/var/*
 !/tests/Log4php/var/readme.md
 /tests/var/log-plugin.muwa.log
+.superpowers/

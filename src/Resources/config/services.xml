@@ -8,6 +8,9 @@
         <service id="MuckiLogPlugin\Core\LoggingEvent\LoggingEventDefinition">
             <tag name="shopware.entity.definition" entity="muwa_logging_event" />
         </service>
+        <service id="MuckiLogPlugin\Core\AdminChangeLog\AdminChangeLogDefinition">
+            <tag name="shopware.entity.definition" entity="muwa_admin_change_log" />
+        </service>
     	<service id="MuckiLogPlugin\Services\Settings" public="true">
         	<argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         	<argument type="service" id="Symfony\Component\HttpKernel\KernelInterface"/>
@@ -86,6 +89,11 @@
         	<argument type="service" id="MuckiLogPlugin\Services\LogViewerInterface"/>
         	<tag name="controller.service_arguments"/>
         </service>
+
+        <service id="MuckiLogPlugin\Administration\Controller\ChangeLogSettingsController" public="true">
+        	<argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogConfig"/>
+        	<tag name="controller.service_arguments"/>
+        </service>
         <service id="MuckiLogPlugin\Services\SendNotification">
             <argument type="service" id="MuckiLogPlugin\Services\LoggingEvent"/>
             <argument type="service" id="MuckiLogPlugin\Services\CliOutput"/>
@@ -142,5 +150,72 @@
             </call>
         </service>
         -->
+
+        <service id="MuckiLogPlugin\ChangeLog\ChangeLogConfig">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\ValueNormalizer"/>
+
+        <service id="MuckiLogPlugin\ChangeLog\SensitiveFieldMasker"/>
+
+        <service id="MuckiLogPlugin\ChangeLog\FieldChangeExtractor">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ValueNormalizer"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\SensitiveFieldMasker"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\EntityGraph">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\RootResolver">
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\EntityGraph"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\SourceResolver">
+            <argument type="service" id="user.repository"/>
+            <argument type="service" id="integration.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\EntityLabelResolver">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
+
+        <service id="MuckiLogPlugin\ChangeLog\ChangeLogWriter">
+            <argument type="service" id="muwa_admin_change_log.repository"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\EntityLabelResolver"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+        </service>
+
+        <service id="MuckiLogPlugin\Subscriber\ChangeLogWriteSubscriber">
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogConfig"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\EntityGraph"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\RootResolver"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\FieldChangeExtractor"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\SourceResolver"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogWriter"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="MuckiLogPlugin\Subscriber\SystemConfigChangeSubscriber">
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogConfig"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\SensitiveFieldMasker"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ValueNormalizer"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\SourceResolver"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogWriter"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="request_stack"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

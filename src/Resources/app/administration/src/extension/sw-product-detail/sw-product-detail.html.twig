@@ -1,0 +1,11 @@
+{% block sw_product_detail_content_tabs_additional %}
+{% parent %}
+<sw-tabs-item
+    v-if="muwaChangeLogTabVisible && productId"
+    class="muwa-change-log-detail-tab__tab sw-product-detail__tab-muwa-change-log"
+    :route="{ name: 'sw.product.detail.muwa-change-log', params: { id: $route.params.id } }"
+    :title="$tc('muwa-change-log.tab.title')"
+>
+    {{ $tc('muwa-change-log.tab.title') }}
+</sw-tabs-item>
+{% endblock %}

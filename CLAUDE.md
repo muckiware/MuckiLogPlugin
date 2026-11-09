@@ -2,7 +2,7 @@
 
 ## Zweck
 
-`muckiware/log-plugin` (v2.4.0) ersetzt das Standard-Monolog-Logging von Shopware durch **Apache Log4php** mittels des Symfony **Decorator-Patterns**. Jede Log-Ausgabe, die in Shopware oder Plugins über `Psr\Log\LoggerInterface` erfolgt, wird automatisch abgefangen und durch Log4php geroutet — ohne Codeänderungen in anderen Plugins.
+`muckiware/log-plugin` (v2.6.0) ersetzt das Standard-Monolog-Logging von Shopware durch **Apache Log4php** mittels des Symfony **Decorator-Patterns**. Jede Log-Ausgabe, die in Shopware oder Plugins über `Psr\Log\LoggerInterface` erfolgt, wird automatisch abgefangen und durch Log4php geroutet — ohne Codeänderungen in anderen Plugins.
 
 ---
 
@@ -125,8 +125,9 @@ Payload: `CreateLogEvent` mit `LoggerSetup`-DTO (enthält Vendor, Plugin, LogLev
 |---|---|---|
 | `LoggingEventEntity` | `muwa_logging_event` | Speichert Log-Einträge, für die eine E-Mail-Benachrichtigung aussteht |
 | `EmailNotificationEntity` | — | E-Mail-Notification-Konfiguration |
+| `AdminChangeLogEntity` | `muwa_admin_change_log` | Änderungslog (Commits mit Diff als JSON `changes`) |
 
-Migration: `src/Migration/Migration1729614227.php`
+Migrationen: `src/Migration/Migration1729614227.php`, `src/Migration/Migration1793724000AdminChangeLog.php`
 
 ---
 
@@ -148,12 +149,17 @@ Alle Keys beginnen mit `MuckiLogPlugin.config.`:
 | `notificationMailActive{Level}` | bool | Benachrichtigung je Log-Level |
 | `salesChannelId` | uuid | Sales-Channel für Mails |
 | `sendMailMode` | string | `eachLogLevelOneMail` (Default) |
+| `activeChangeLog` | bool | Änderungslog an/aus (Default: aus) |
+| `changeLogEntities` | json | Getrackte Hauptentitäten (Default: product, category, order, customer, cms_page) |
+| `changeLogRetentionDays` | int | Aufbewahrung in Tagen (Default 90, `0` = nie löschen) |
 
 ---
 
 ## Scheduled Task
 
 `SendNotificationLogsTask` — läuft alle 300 Sekunden, versendet ausstehende Log-Benachrichtigungen aus `muwa_logging_event`.
+
+`CleanupChangeLogTask` (`muwa.cleanup_change_log_task`) — täglich, löscht Einträge aus `muwa_admin_change_log` älter als `changeLogRetentionDays` (DBAL in Blöcken; `0` oder inaktiv = nichts).
 
 ---
 
@@ -174,6 +180,34 @@ Alle Keys beginnen mit `MuckiLogPlugin.config.`:
 - **Config-Datei-Erstellung**: Fehlt die XML-Konfiguration für eine Vendor/Plugin-Kombination, erstellt `Logconfig::_createConfigXML()` sie automatisch via DOM — erfordert Schreibrechte auf `src/Resources/config/`.
 - **ErrorControllerDecorator 6.6/6.7**: Header/Footer-Pagelets werden nur gesetzt, wenn `ErrorTemplateStruct` `setHeader()`/`setFooter()` besitzt (6.6 ohne Cache-Rework); in 6.7 kommen sie per ESI. `onCaptchaFailure()` delegiert an den Core-Controller (`.inner`), damit immer die versionsspezifische Implementierung greift.
 - **`http\Message` Import**: In `LoggerServiceDecorator` wird `use http\Message;` importiert, aber nie genutzt — toter Import.
+
+---
+
+## Admin-Änderungslog
+
+Audit-Log (Git-Log-Stil): Pro Speichervorgang und Hauptdatensatz ein „Commit“ mit Vorher/Nachher-Diff. Design: `docs/superpowers/specs/2026-11-03-admin-change-log-design.md`.
+
+- **Code:** `src/ChangeLog` (Writer, CommitBuilder, RootResolver, SourceResolver, FieldChangeExtractor, SensitiveFieldMasker, ValueNormalizer, EntityLabelResolver), `src/Subscriber/ChangeLogWriteSubscriber.php` (DAL: `PreWriteValidationEvent` + `EntityWrittenContainerEvent`), `src/Subscriber/SystemConfigChangeSubscriber.php`, `src/Core/AdminChangeLog`, `src/Administration/Controller/ChangeLogSettingsController.php`, Admin-Modul `muwa-change-log`.
+- **Quellen:** user / integration / sales_channel / system; IP nur mit Request. Unterdaten (Übersetzungen, Owned-Children inkl. One-to-One, Mapping-Zuordnungen) erscheinen im Diff der obersten getrackten Root; Varianten haben eigene Commits.
+- **ACL:** `muwa_change_log.viewer`; Log ist im Admin nur lesbar.
+- **Maskierung:** Secrets (auch verschachtelte Keys) als `***` auf beiden Seiten.
+
+### Bekannte Grenzen
+
+- Indexer-gepflegte / WriteProtected-Spalten (z. B. `amountTotal`, `cheapestPrice`) werden nicht geloggt, nur die Quellfelder.
+- Direktes SQL wird nicht erfasst (außer `system_config`).
+- `system_config` wird aus dem Before-Event geschrieben; ein fehlschlagendes Speichern kann trotzdem geloggt werden.
+- Draft-Version-Writes werden übersprungen; nur die gemergte Live-Änderung wird geloggt.
+- Bei aktivem Feature-Flag `v6.8.0.0` werden die Detail-Tabs (`sw-tabs`) nicht angezeigt.
+- Shopware 6.6 (DBAL 3, keine Savepoints): ein fehlschlagender Änderungslog-Write innerhalb einer äußeren Transaktion eines Drittanbieters kann diese rollback-only markieren; normale Core-Schreibpfade sind nicht betroffen.
+
+### Fallstricke
+
+- **`ChangeSetAware` ist `@internal`** (Shopware-Core). Mechanismus seit 6.4 stabil, aber bei Core-Updates (6.6/6.7) per Tests absichern.
+- **`system_config` hat einen eigenen Erfassungsweg:** `SystemConfigService` schreibt per `Connection` am DAL vorbei; deshalb `SystemConfigChangeSubscriber` auf die Before-Events. DAL-Writes auf `system_config` werden im DAL-Weg ignoriert (sonst doppelt).
+- **`RootResolver` und `SourceResolver` sind `ResetInterface`** (Reset über `kernel.reset`); sie halten Caches, die zwischen Requests/Messenger-Jobs geleert werden müssen.
+- **`CommitBuilder` ist kein Service**, sondern wird pro Event neu instanziiert (hält Zustand pro Speichervorgang).
+- Fehler im Änderungslog dürfen das Schreiben nie abbrechen: `Throwable` fangen und mit `['muwa', 'admin-change-log']` loggen.
 
 ---
 

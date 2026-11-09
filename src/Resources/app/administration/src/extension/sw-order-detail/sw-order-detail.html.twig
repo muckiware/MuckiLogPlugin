@@ -1,0 +1,11 @@
+{% block sw_order_detail_content_tabs_extension %}
+{% parent %}
+<sw-tabs-item
+    v-if="muwaChangeLogTabVisible"
+    class="muwa-change-log-detail-tab__tab sw-order-detail__tabs-tab-muwa-change-log"
+    :route="{ name: 'sw.order.detail.muwa-change-log', params: { id: $route.params.id } }"
+    :title="$tc('muwa-change-log.tab.title')"
+>
+    {{ $tc('muwa-change-log.tab.title') }}
+</sw-tabs-item>
+{% endblock %}

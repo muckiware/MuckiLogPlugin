@@ -1,0 +1,47 @@
+@import "~scss/variables";
+
+.muwa-change-log-diff {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    background: $color-gray-50;
+    border: 1px solid $color-gray-300;
+    border-radius: 4px;
+    padding: 8px 12px;
+
+    &__field + &__field {
+        margin-top: 8px;
+    }
+
+    &__heading {
+        font-weight: 600;
+        color: $color-darkgray-200;
+    }
+
+    &__status,
+    &__empty {
+        font-weight: normal;
+        color: $color-gray-600;
+    }
+
+    &__empty {
+        margin: 0;
+    }
+
+    &__line {
+        white-space: pre-wrap;
+        word-break: break-all;
+        padding: 0 4px;
+        border-radius: 2px;
+
+        &.is--old {
+            color: #b42318;
+            background: #fdecec;
+        }
+
+        &.is--new {
+            color: #1a7f3c;
+            background: #e8f7ee;
+        }
+    }
+}

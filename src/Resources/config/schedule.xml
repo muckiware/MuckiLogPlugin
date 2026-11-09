@@ -11,5 +11,15 @@
             <argument type="service" id="MuckiLogPlugin\Services\SendNotification"/>
             <tag name="messenger.message_handler" />
         </service>
+        <service id="MuckiLogPlugin\Schedules\CleanupChangeLogTask">
+            <tag name="shopware.scheduled.task" />
+        </service>
+        <service id="MuckiLogPlugin\Schedules\CleanupChangeLogTaskHandler">
+            <argument type="service" id="scheduled_task.repository" />
+            <argument type="service" id="Psr\Log\LoggerInterface"/>
+            <argument type="service" id="MuckiLogPlugin\ChangeLog\ChangeLogConfig"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>

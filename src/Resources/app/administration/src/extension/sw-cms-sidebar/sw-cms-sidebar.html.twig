@@ -1,0 +1,18 @@
+{% block sw_cms_sidebar_layout_assignment %}
+{% parent %}
+<sw-sidebar-item
+    v-if="muwaShowChangeLog"
+    ref="muwaChangeLog"
+    class="sw-cms-sidebar__muwa-change-log"
+    icon="regular-history"
+    :title="$tc('muwa-change-log.tab.title')"
+>
+    <div class="sw-cms-sidebar__muwa-change-log-content">
+        <muwa-change-log-list
+            compact
+            entity-name="cms_page"
+            :entity-id="page.id"
+        />
+    </div>
+</sw-sidebar-item>
+{% endblock %}
