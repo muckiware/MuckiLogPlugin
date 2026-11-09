@@ -6,6 +6,7 @@ namespace MuckiLogPlugin\tests\ChangeLog;
 
 use MuckiLogPlugin\ChangeLog\EntityGraph;
 use MuckiLogPlugin\ChangeLog\Struct\ParentLink;
+use MuckiLogPlugin\tests\TestCaseBase\RequiresEntityDefinitions;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -13,6 +14,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 class EntityGraphTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use RequiresEntityDefinitions;
 
     private const TRACKED = ['product', 'order', 'customer', 'customer_address', 'category'];
 
@@ -25,6 +27,8 @@ class EntityGraphTest extends TestCase
 
     public function testTranslationLinksToParent(): void
     {
+        $this->skipIfEntitiesMissing('product_translation');
+
         static::assertEquals(
             [new ParentLink('product', 'product_id', 'productId', 'translation')],
             $this->graph->getParentLinks('product_translation')
@@ -33,6 +37,8 @@ class EntityGraphTest extends TestCase
 
     public function testCascadeDeleteChildLinksToParent(): void
     {
+        $this->skipIfEntitiesMissing('product_price');
+
         static::assertContainsEquals(
             new ParentLink('product', 'product_id', 'productId', 'child'),
             $this->graph->getParentLinks('product_price')
@@ -41,6 +47,8 @@ class EntityGraphTest extends TestCase
 
     public function testOneToOneOwnedChildLinksToParent(): void
     {
+        $this->skipIfEntitiesMissing('order_customer');
+
         static::assertContainsEquals(
             new ParentLink('order', 'order_id', 'orderId', 'child'),
             $this->graph->getParentLinks('order_customer')
@@ -57,6 +65,8 @@ class EntityGraphTest extends TestCase
 
     public function testMappingLinksBothSidesInDefinitionOrder(): void
     {
+        $this->skipIfEntitiesMissing('product_category');
+
         $links = $this->graph->getParentLinks('product_category');
 
         static::assertEquals([
@@ -83,6 +93,8 @@ class EntityGraphTest extends TestCase
 
     public function testRelevance(): void
     {
+        $this->skipIfEntitiesMissing('product', 'order_delivery_position');
+
         static::assertTrue($this->graph->isRelevant('product', self::TRACKED));
         static::assertTrue($this->graph->isRelevant('product_translation', self::TRACKED));
         static::assertTrue($this->graph->isRelevant('order_delivery_position', self::TRACKED));

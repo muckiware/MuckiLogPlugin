@@ -7,6 +7,7 @@ namespace MuckiLogPlugin\tests\ChangeLog;
 use Doctrine\DBAL\Connection;
 use MuckiLogPlugin\Core\AdminChangeLog\AdminChangeLogEntity;
 use MuckiLogPlugin\Core\ConfigPath;
+use MuckiLogPlugin\tests\TestCaseBase\RequiresEntityDefinitions;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Context\AdminApiSource;
 use Shopware\Core\Framework\Context;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class SystemConfigChangeSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use RequiresEntityDefinitions;
     use SalesChannelApiTestBehaviour;
 
     private const DOMAIN = 'MuckiLogPlugin.config';
@@ -76,6 +78,8 @@ class SystemConfigChangeSubscriberTest extends TestCase
 
     public function testSalesChannelIdAndNameAreUsed(): void
     {
+        $this->skipIfEntitiesMissing('payment_method', 'shipping_method');
+
         $channel = $this->createSalesChannel(['name' => 'Mucki Testkanal']);
         $this->systemConfig->set(self::DOMAIN . '.level', 'warning', $channel['id']);
 

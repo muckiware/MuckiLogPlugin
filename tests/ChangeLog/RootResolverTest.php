@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use MuckiLogPlugin\ChangeLog\EntityGraph;
 use MuckiLogPlugin\ChangeLog\RootResolver;
 use MuckiLogPlugin\ChangeLog\Struct\RootReference;
+use MuckiLogPlugin\tests\TestCaseBase\RequiresEntityDefinitions;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
@@ -20,6 +21,7 @@ use Shopware\Core\Test\Integration\Traits\OrderFixture;
 class RootResolverTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use RequiresEntityDefinitions;
     use OrderFixture;
 
     private const TRACKED = ['product', 'order', 'customer', 'customer_address', 'category'];
@@ -36,6 +38,8 @@ class RootResolverTest extends TestCase
 
     public function testTranslationResolvesToParentWithLanguage(): void
     {
+        $this->skipIfEntitiesMissing('product_translation');
+
         $productId = Uuid::randomHex();
         $languageId = Uuid::randomHex();
         $result = new EntityWriteResult(
@@ -53,6 +57,8 @@ class RootResolverTest extends TestCase
 
     public function testChildResolvesToParentWithChildId(): void
     {
+        $this->skipIfEntitiesMissing('product_price');
+
         $productId = Uuid::randomHex();
         $priceId = Uuid::randomHex();
         $result = new EntityWriteResult($priceId, ['id' => $priceId, 'productId' => $productId], 'product_price', EntityWriteResult::OPERATION_INSERT);
@@ -65,6 +71,8 @@ class RootResolverTest extends TestCase
 
     public function testMappingResolvesToFirstSideWithLinkedEntity(): void
     {
+        $this->skipIfEntitiesMissing('product_category');
+
         $productId = Uuid::randomHex();
         $categoryId = Uuid::randomHex();
         $result = new EntityWriteResult(
@@ -82,6 +90,8 @@ class RootResolverTest extends TestCase
 
     public function testMultiLevelChildResolvesToOrderViaDatabase(): void
     {
+        $this->skipIfEntitiesMissing('order', 'salutation');
+
         $order = $this->createOrder();
 
         static::assertEquals(
@@ -92,6 +102,8 @@ class RootResolverTest extends TestCase
 
     public function testFailedLookupIsNotCached(): void
     {
+        $this->skipIfEntitiesMissing('order', 'salutation');
+
         $orderId = Uuid::randomHex();
         $context = Context::createDefaultContext();
         $data = $this->getOrderData($orderId, $context);
@@ -110,6 +122,8 @@ class RootResolverTest extends TestCase
 
     public function testResetClearsLookupCache(): void
     {
+        $this->skipIfEntitiesMissing('order', 'salutation');
+
         $first = $this->createOrder();
         $second = $this->createOrder();
         $result = $this->positionResult($first['positionId'], $first['deliveryId']);
@@ -127,6 +141,8 @@ class RootResolverTest extends TestCase
 
     public function testOneToOneChildResolvesToParent(): void
     {
+        $this->skipIfEntitiesMissing('order_customer');
+
         $orderId = Uuid::randomHex();
         $orderCustomerId = Uuid::randomHex();
         $result = new EntityWriteResult(
@@ -144,6 +160,8 @@ class RootResolverTest extends TestCase
 
     public function testTrackedSubEntityResolvesToTopmostTrackedRoot(): void
     {
+        $this->skipIfEntitiesMissing('customer_address');
+
         $customerId = Uuid::randomHex();
         $addressId = Uuid::randomHex();
         $result = new EntityWriteResult(

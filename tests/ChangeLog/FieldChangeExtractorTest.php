@@ -8,6 +8,7 @@ use MuckiLogPlugin\ChangeLog\FieldChangeExtractor;
 use MuckiLogPlugin\ChangeLog\SensitiveFieldMasker;
 use MuckiLogPlugin\ChangeLog\ValueNormalizer;
 use MuckiLogPlugin\ChangeLog\Struct\ChangeAction;
+use MuckiLogPlugin\tests\TestCaseBase\RequiresEntityDefinitions;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
@@ -17,6 +18,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 class FieldChangeExtractorTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use RequiresEntityDefinitions;
 
     private FieldChangeExtractor $extractor;
 
@@ -31,6 +33,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testInsertUsesPayloadAsNew(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult('id1', [
             'id' => 'id1', 'versionId' => 'v', 'createdAt' => 'x', 'updatedAt' => 'y',
             'stock' => 5, 'productNumber' => 'X',
@@ -46,6 +50,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testUpdateUsesChangeSetAndSkipsUnchanged(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult(
             'id1',
             ['stock' => 7, 'active' => true],
@@ -66,6 +72,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testUpdateWithoutChangeSetFallsBackToPayload(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult('id1', ['stock' => 7], 'product', EntityWriteResult::OPERATION_UPDATE);
 
         $changes = $this->extractor->extract($result, null, []);
@@ -77,6 +85,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testCanonicallyEqualJsonIsNoChange(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -97,6 +107,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testBoolAndNumericEquivalentsAreNoChange(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -111,6 +123,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testBinaryForeignKeyBecomesHex(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $old = str_repeat("\x01", 16);
         $new = str_repeat("\x41", 16);
         $result = new EntityWriteResult(
@@ -132,6 +146,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testSixteenByteTextFieldStaysText(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $text = "Größe\tFarbe Ro";
         $result = new EntityWriteResult(
             'id1',
@@ -149,6 +165,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testAutomaticallyMaintainedCustomerFieldsAreIgnored(): void
     {
+        $this->skipIfEntitiesMissing('customer');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -169,6 +187,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testDeleteUsesChangeSetBefore(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -189,6 +209,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testDeleteSkipsUnknownAssociationAndIndexerColumns(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -276,6 +298,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testNestedSecretsAreMasked(): void
     {
+        $this->skipIfEntitiesMissing('product_translation');
+
         $result = new EntityWriteResult(
             'id1',
             [],
@@ -295,6 +319,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testSubEntityAndContextArePassedThrough(): void
     {
+        $this->skipIfEntitiesMissing('product_translation');
+
         $result = new EntityWriteResult('id1', ['name' => 'Foo', 'productId' => 'p', 'languageId' => 'l'], 'product_translation', EntityWriteResult::OPERATION_INSERT);
 
         $changes = $this->extractor->extract($result, 'product_translation', ['languageId' => 'l']);
@@ -307,6 +333,8 @@ class FieldChangeExtractorTest extends TestCase
 
     public function testRootRowKeepsForeignKeys(): void
     {
+        $this->skipIfEntitiesMissing('product');
+
         $result = new EntityWriteResult('id1', ['taxId' => 't'], 'product', EntityWriteResult::OPERATION_INSERT);
 
         $changes = $this->extractor->extract($result, null, []);

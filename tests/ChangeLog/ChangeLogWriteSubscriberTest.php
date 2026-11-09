@@ -15,6 +15,7 @@ use MuckiLogPlugin\ChangeLog\SourceResolver;
 use MuckiLogPlugin\Core\AdminChangeLog\AdminChangeLogEntity;
 use MuckiLogPlugin\Core\ConfigPath;
 use MuckiLogPlugin\Subscriber\ChangeLogWriteSubscriber;
+use MuckiLogPlugin\tests\TestCaseBase\RequiresEntityDefinitions;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
@@ -32,6 +33,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class ChangeLogWriteSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use RequiresEntityDefinitions;
     use SalesChannelApiTestBehaviour;
 
     private EntityRepository $productRepository;
@@ -50,6 +52,7 @@ class ChangeLogWriteSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
+        $this->skipIfEntitiesMissing('product');
         $container = static::getContainer();
         $this->productRepository = $container->get('product.repository');
         $this->changeLogRepository = $container->get('muwa_admin_change_log.repository');
