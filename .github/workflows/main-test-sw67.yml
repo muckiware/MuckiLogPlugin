@@ -87,7 +87,7 @@ jobs:
           composer install
 
       - name: "Install code-Tools"
-        run: composer req phpunit/phpunit:^9.5 phpstan/phpstan
+        run: composer req phpunit/phpunit:^11.5 phpstan/phpstan
 
       - name: "Install Shopware"
         run: |
