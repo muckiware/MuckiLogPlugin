@@ -325,10 +325,13 @@ class ChangeLogWriteSubscriberTest extends TestCase
     {
         $this->setTracked(['user']);
 
-        static::getContainer()->get('user.repository')->update([[
-            'id' => $this->userId,
-            'password' => 'a-new-secret-password',
-        ]], $this->context);
+        // user is write-protected outside the system scope; the admin UserController scopes its writes the same way
+        $this->context->scope(Context::SYSTEM_SCOPE, function (Context $context): void {
+            static::getContainer()->get('user.repository')->update([[
+                'id' => $this->userId,
+                'password' => 'a-new-secret-password',
+            ]], $context);
+        });
 
         $entries = $this->entriesFor($this->userId);
         static::assertCount(1, $entries);
