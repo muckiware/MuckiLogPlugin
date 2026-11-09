@@ -1,6 +1,12 @@
 # MuckiLogPlugin
 ## Logger Plugin for Shopware 6 Webshops
 
+[![Latest Stable Version](http://poser.pugx.org/muckiware/log-plugin/v)](https://packagist.org/packages/muckiware/log-plugin)
+[![Total Downloads](http://poser.pugx.org/muckiware/log-plugin/downloads)](https://packagist.org/packages/muckiware/log-plugin)
+[![PHP Version Require](http://poser.pugx.org/muckiware/log-plugin/require/php)](https://packagist.org/packages/muckiware/log-plugin)
+[![Shopware](https://img.shields.io/badge/Shopware-6.6%20%7C%206.7-189eff.svg)](https://www.shopware.com/)
+[![License](https://img.shields.io/github/license/shopware/shopware.svg)](https://github.com/shopware/shopware/blob/trunk/LICENSE)
+
 This Shopware 6 Plugin creates log files with file rotation, max file size setup, loglevels, etc. You can create for all your plugins own log fieles by context.
 like /var/log/myloginplugin.vendor.log, or /var/log/myextraplugin.vendor.log
 It can send emails by log events. For example: You get an error log event, and it can sends an email to a specific address.
@@ -114,49 +120,172 @@ turn it back off once you are done.
 
 ## Admin Change Log
 
-An audit log in the style of a git log: every create / update / delete on tracked entities is stored as a
-"commit" with author, time, action and a before/after diff per field.
+An audit log in the style of a git log: every create, update and delete on tracked entities is stored as a
+"commit" with author, time, action and a before/after diff per field. It answers the question *who changed
+what, when and how* — without shell or database access.
 
-**Where to find it:** Settings → Plugins → *Change log*, and a *Change history* tab on the detail pages
-(product, category, order, customer; CMS pages in the designer sidebar).
+The feature is **opt-in and disabled by default**.
+
+### Quick start
+
+1. Open *Settings → System → Plugins → MuckiLogPlugin*, card "Admin change log".
+2. Switch on **Active** (`activeChangeLog`) and check the selection of **Tracked entities**.
+3. Assign the ACL role *Change log* (`muwa_change_log.viewer`) to the users who should see the log
+   (*Settings → System → Users & permissions → Roles*, category "Settings").
+4. Save a product, category, order, customer or shopping experience — the change appears under
+   *Settings → Plugins → Change log*.
+
+### Where to find it
+
+- **Central module:** *Settings → Plugins → Change log* — all commits of all tracked entities.
+- **Change history tab** on the detail pages of product, category, order and customer — the same list,
+  filtered to the current record.
+- **Shopping experiences (CMS pages):** the layout designer has no tabs, so the history is shown as a
+  separate entry in the designer sidebar (compact layout, only for saved pages).
+
+The tab and the sidebar entry are only shown if the user has the `muwa_change_log.viewer` role, the change
+log is active and the entity is tracked.
+
+### The list view
+
+| Column | Content |
+|---|---|
+| Date | Time of the save (stored in UTC, displayed in the browser's time zone) |
+| Action | Badge *created* / *changed* / *deleted* |
+| Entity | Root entity, e.g. product or "Settings" (hidden in the detail tab) |
+| Record | Readable label at the time of the change (e.g. product name, order number), fallback: ID |
+| Who | Admin user, integration, sales channel or "System", with the source type as subtitle |
+| IP | Client IP of the request (hidden in the compact sidebar view) |
+| Changes | Number of changed fields — click the row to expand the diff |
+
+Filters above the table:
+
+- **Free-text search** over record label, entity name, entity ID, user name and source name (debounced).
+- **Date from / to** — whole days in the browser's time zone.
+- **Who** — "All", "System" or a specific admin user, integration or sales channel. The options are only
+  loaded for the sources the user may read.
+- **Entity** — multi-select over the tracked entities plus every entity that already has entries.
+
+The list is sorted by date (newest first) and paginated (25 entries per page).
+
+### The diff
+
+Clicking a row expands a git-style diff per field: red `−` for the old value, green `+` for the new value.
+Field labels carry their origin and context, e.g. "Name (en-GB)" for a translation or a hint for an
+added/removed assignment. Inserts have no old values; deletes keep the old values, so you can see *what*
+was deleted.
 
 ### What is logged
 
-- **Sources:** admin user, integration, sales channel and system (CLI, tasks). The user is linked to the
-  `user` entity; user, integration and sales channel names are stored as a snapshot.
+- **Sources:**
+
+  | Source | Detected by | Stored |
+  |---|---|---|
+  | Admin user | `AdminApiSource` with user ID | `userId` (FK to `user`, `ON DELETE SET NULL`) and the user name as snapshot |
+  | Integration | `AdminApiSource` without user ID | `integrationId` and the integration name as snapshot |
+  | Sales channel | `SalesChannelApiSource` | `salesChannelId` and the sales channel name as snapshot |
+  | System | `SystemSource` (CLI, scheduled tasks, workers) | source type only |
+
+  Snapshots keep the name readable after the user, integration or sales channel has been deleted.
 - **IP address** only if there is an HTTP request (empty for CLI, tasks, workers).
-- **One commit per root record and save.** Sub-entities (translations, owned child rows including
-  one-to-one, mapping assignments) are shown as fields in the diff of the topmost tracked root record,
-  labelled with their origin and context (e.g. "Name (en-GB)"). Variants are own products and get their
-  own commits.
-- **Settings (`system_config`)** are captured via a separate path (not the DAL): one commit per save,
-  domain and sales channel; unchanged keys are omitted.
-- Errors of the change log never abort the actual write; they are logged with context `muwa`, `admin-change-log`.
+- **One commit per root record and save.** Sub-entities are not logged as separate entries but as fields
+  in the diff of the topmost tracked root record:
+  - translations, labelled with their language (e.g. "Name (en-GB)")
+  - owned child rows, including one-to-one associations and multi-level children
+    (e.g. `order_delivery_position` → `order_delivery` → `order`)
+  - mapping assignments (e.g. `product_category`) as "assignment added/removed"
+
+  If a save only changes sub-data, the commit is "changed". If a sub-entity is tracked itself
+  (e.g. `customer_address`), it is still logged only once, under its topmost tracked root.
+- **Variants** are products of their own and get their own commits.
+- **Settings (`system_config`)** are written by Shopware via DBAL and bypass the DAL, so they are captured
+  via a separate path (`BeforeSystemConfigMultipleChangedEvent`): one commit per save, domain
+  (e.g. `MuckiLogPlugin.config`) and sales channel. Unchanged keys are omitted. Select "Settings" in the
+  tracked entities to enable it.
 
 ### Configuration
 
-Plugin configuration, card "Change log" (keys under `MuckiLogPlugin.config.`):
+Plugin configuration, card "Admin change log" (keys under `MuckiLogPlugin.config.`):
 
 | Key | Default | Meaning |
 |---|---|---|
-| `activeChangeLog` | off | Global switch, independent of `active` |
-| `changeLogEntities` | `["product","category","order","customer","cms_page"]` | Tracked root entities (`system_config` = "Settings") |
+| `activeChangeLog` | off | Global switch, independent of `active` (file logging). Errors of the change log itself are only written to a log file if `active` is on as well. |
+| `changeLogEntities` | `["product","category","order","customer","cms_page"]` | Tracked root entities. All entities of the shop can be selected; `system_config` = "Settings". |
 | `changeLogRetentionDays` | `90` | Retention in days, `0` = never delete |
 
-The ACL role `muwa_change_log.viewer` is required to see the module and the tabs; the log is read-only.
-The scheduled task `muwa.cleanup_change_log_task` runs daily and deletes entries older than the retention.
+### Permissions
+
+The ACL role *Change log* (`muwa_change_log.viewer`, category "Settings") grants read access to
+`muwa_admin_change_log` plus `user`, `integration`, `sales_channel` and `language` (for names in the filters
+and labels in the diff). It protects the central module, the detail tabs and the CMS sidebar entry.
+The log is **read-only** in the Administration — entries cannot be edited, deleted or reverted.
+
+Users with this role do not need `system_config:read`: the visibility of the tabs is read from a dedicated
+endpoint.
+
+### Retention / cleanup
+
+The scheduled task `muwa.cleanup_change_log_task` runs daily and deletes entries older than
+`changeLogRetentionDays`, in blocks of 1,000 rows so the table is not locked for long. Nothing is deleted
+if the change log is inactive or the retention is `0`.
+
+### Data model & API
+
+All entries are stored in the entity `muwa_admin_change_log` (table of the same name):
+
+| Field | Meaning |
+|---|---|
+| `entityName`, `entityId`, `entityLabel` | Root entity, record ID and readable label at the time of the change |
+| `action` | `insert` / `update` / `delete` |
+| `sourceType` | `user` / `integration` / `sales_channel` / `system` |
+| `userId` (+ association `user`), `userName` | Admin user and name snapshot |
+| `integrationId`, `salesChannelId`, `sourceName` | Integration / sales channel and name snapshot |
+| `ipAddress` | Client IP, if any |
+| `changes` | JSON list of field changes: `field`, `subEntity`, `context`, `old`, `new`, `masked` |
+| `createdAt` | Time of the save (UTC) |
+
+Being a regular DAL entity, the log can be read via the Admin API, e.g.
+`POST /api/search/muwa-admin-change-log` with the usual criteria (filters, sorting, term). In addition:
+
+| Method & path | Purpose |
+|---|---|
+| `GET /api/_action/muwa-change-log/settings` | Returns `active` and the tracked `entities` (privilege `muwa_admin_change_log:read`) |
+
+### How it works
+
+- `ChangeLogWriteSubscriber` requests change sets for tracked entities and their sub-entities on
+  `PreWriteValidationEvent` (so Shopware provides the old values) and collects the write results on
+  `EntityWrittenContainerEvent`.
+- `RootResolver` / `EntityGraph` map every sub-entity write to its topmost tracked root, `CommitBuilder`
+  groups the results into commits and `FieldChangeExtractor` builds the field diffs.
+- `SourceResolver` determines author and IP, `EntityLabelResolver` the readable record label.
+- `ChangeLogWriter` persists all commits of a save with a single `create()` call.
+- `SystemConfigChangeSubscriber` handles settings separately (old values are read raw from the database).
+- Errors of the change log never abort the actual write; they are logged with the context `muwa`,
+  `admin-change-log`. A context state prevents the log from logging itself.
+
+### Sensitive data
+
+Secrets are never stored and appear as `***` on both sides, also for nested keys (e.g. in JSON fields and
+settings). A field counts as sensitive if it is a `PasswordField`, if its name contains `password`,
+`secret`, `token`, `accessKey`, `apiKey`, `privateKey`, `hash`, `credential`, `passphrase` or `hmac`, or if
+it ends in `key` (accepted false positives, e.g. `sortKey`).
+
+Personal customer data (name, address, email) **is** logged as-is; the retention setting limits how long
+it is kept. Choose the retention according to your privacy requirements.
 
 ### Known limitations
 
-- Secrets are never stored and appear as `***` on both sides (nested keys included).
 - Indexer-maintained / write-protected columns (e.g. order `amountTotal`, product `cheapestPrice`) are not
-  logged — their source fields are.
+  logged — their source fields are. Automatically maintained customer fields are ignored as well.
 - Writes via direct SQL are not captured (except `system_config`).
 - `system_config` entries are written from the before-event, so a failing save could still be logged.
-- Draft-version writes are skipped; only the merged live change is logged.
+- Draft-version writes (e.g. order editing) are skipped; only the merged live change is logged.
+- Text values are truncated to 255 characters in the label/name columns.
 - With Shopware's `v6.8.0.0` feature flag active the detail tabs (`sw-tabs`) are not shown.
 - On Shopware 6.6 (DBAL 3, no savepoints) a failing change log write inside a third-party outer transaction
   could mark that transaction rollback-only; normal core write paths are not affected.
+- If `emz/admin-logger` is installed as well, changes are logged twice — deactivate one of them.
 
 ## How to use
 In order not to create dependencies from Muckilog to other plugins, the original Monolog interface can be used. Muckilog plugin will replace the monolog method by using a decorator.
