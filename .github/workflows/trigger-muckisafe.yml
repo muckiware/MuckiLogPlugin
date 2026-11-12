@@ -1,0 +1,95 @@
+# Starts a MuckiSafe release whenever a release of this plugin is published.
+# MuckiSafe (github.com/muckiware/MuckiSafe) then builds a new image version
+# that contains the released plugin version.
+#
+# Requires the repository secret MUCKISAFE_DISPATCH_TOKEN (fine-grained PAT
+# with "contents: write" on muckiware/MuckiSafe). Without it the trigger is
+# skipped with a warning.
+#
+# Retry a failed trigger with "Run workflow" and the release tag.
+
+name: Trigger MuckiSafe release
+
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Release tag (vX.Y.Z)'
+        required: true
+        type: string
+    secrets:
+      MUCKISAFE_DISPATCH_TOKEN:
+        required: false
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to announce to MuckiSafe (vX.Y.Z)'
+        required: true
+
+permissions: {}
+
+jobs:
+  dispatch:
+    name: Announce the release to MuckiSafe
+    # Pre-releases do not end up in the MuckiSafe image.
+    if: github.event_name != 'release' || !github.event.release.prerelease
+    runs-on: ubuntu-latest
+    env:
+      PACKAGE: muckiware/log-plugin
+      EVENT_TYPE: muckilog-plugin-release
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      DISPATCH_TOKEN: ${{ secrets.MUCKISAFE_DISPATCH_TOKEN }}
+    steps:
+      - name: Trigger MuckiSafe image build
+        run: |
+          set -euo pipefail
+
+          if ! printf '%s' "${TAG}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::warning::${TAG} is not a release version (vX.Y.Z) - skipping the MuckiSafe trigger."
+            exit 0
+          fi
+
+          if [ -z "${DISPATCH_TOKEN}" ]; then
+            echo "::warning::MUCKISAFE_DISPATCH_TOKEN is not set - skipping the MuckiSafe trigger."
+            echo "Add a fine-grained PAT with 'contents: write' on muckiware/MuckiSafe as a repository secret to enable it."
+            exit 0
+          fi
+
+          # The MuckiSafe build installs the plugin from Packagist. Wait until
+          # the new version is listed there, otherwise the build would fail.
+          VERSION="${TAG#v}"
+          FOUND=false
+          for ATTEMPT in $(seq 1 30); do
+            if curl -fsS "https://repo.packagist.org/p2/${PACKAGE}.json" \
+              | jq -e --arg v "${VERSION}" 'any(.packages[][]; (.version | ltrimstr("v")) == $v)' > /dev/null; then
+              FOUND=true
+              break
+            fi
+            echo "${PACKAGE} ${VERSION} is not on Packagist yet (attempt ${ATTEMPT}/30) - waiting."
+            sleep 20
+          done
+
+          if [ "${FOUND}" != "true" ]; then
+            echo "::error::${PACKAGE} ${VERSION} did not appear on Packagist within 10 minutes. Re-run this workflow once it is listed."
+            exit 1
+          fi
+
+          PAYLOAD="$(jq -nc --arg type "${EVENT_TYPE}" --arg package "${PACKAGE}" --arg ref "${TAG}" \
+            '{event_type: $type, client_payload: {package: $package, ref: $ref}}')"
+
+          HTTP_CODE="$(curl -sS -o dispatch-response.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer ${DISPATCH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/muckiware/MuckiSafe/dispatches \
+            -d "${PAYLOAD}")"
+
+          if [ "${HTTP_CODE}" -ge 200 ] && [ "${HTTP_CODE}" -lt 300 ]; then
+            echo "MuckiSafe dispatch accepted (HTTP ${HTTP_CODE})."
+          else
+            echo "::error::MuckiSafe dispatch failed (HTTP ${HTTP_CODE}):"
+            cat dispatch-response.json
+            exit 1
+          fi
